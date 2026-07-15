@@ -1,115 +1,71 @@
 {
-  "last_run_at": "2026-07-15T05:17:59+00:00",
-  "lookback_days": 30,
-  "max_results": 300,
-  "min_score": 18,
-  "raw_found": 300,
-  "candidates": 274,
-  "kept": 274,
-  "added": 274,
+  "last_run_at": "2026-07-15T05:55:27+00:00",
+  "lookback_days": 3,
+  "target_date": "2026-07-12",
+  "max_results": 10,
+  "min_score": 10,
+  "raw_found": 10,
+  "candidates": 9,
+  "kept": 9,
+  "added": 9,
   "updated": 0,
-  "total": 274,
-  "deepseek_enabled": false,
+  "total": 9,
+  "deepseek_enabled": true,
   "topics": [
     {
-      "id": "visual-token-pruning",
-      "name": "Visual Token Pruning",
-      "description": "Pruning or selecting image/video tokens for vision and multimodal models.",
+      "id": "vision-token-pruning",
+      "name": "Vision Token Pruning",
+      "description": "Pruning, selecting, merging, or compressing visual tokens in vision and multimodal models.",
       "keywords": [
         "visual token pruning",
         "vision token pruning",
         "image token pruning",
         "video token pruning",
+        "visual token compression",
+        "vision token compression",
         "visual token reduction",
+        "visual token selection",
+        "visual token merging",
+        "multimodal token pruning",
         "visual tokens",
         "image tokens",
         "vision tokens"
       ]
     },
     {
-      "id": "vlm-acceleration",
-      "name": "VLM / MLLM Acceleration",
-      "description": "Efficient inference for vision-language and multimodal large language models.",
+      "id": "grpo",
+      "name": "GRPO",
+      "description": "Group Relative Policy Optimization and closely related reinforcement-learning methods.",
       "keywords": [
-        "vision language model",
-        "vision-language model",
-        "multimodal large language model",
-        "mllm",
-        "vlm",
-        "llava",
-        "qwen-vl",
-        "internvl",
-        "multimodal inference"
+        "grpo",
+        "group relative policy optimization",
+        "group relative policy optimisation",
+        "group relative policy",
+        "reinforcement learning with verifiable rewards",
+        "rlvr",
+        "reasoning policy optimization",
+        "reasoning policy optimisation"
       ]
     },
     {
-      "id": "llm-context-kv-pruning",
-      "name": "LLM Context / KV Pruning",
-      "description": "Context compression, prompt pruning, attention pruning, and KV cache reduction.",
+      "id": "interpretability",
+      "name": "可解释性",
+      "description": "Interpretability, explainability, attribution, and mechanistic analysis of machine-learning models.",
       "keywords": [
-        "kv cache pruning",
-        "kv cache compression",
-        "context pruning",
-        "prompt pruning",
-        "attention pruning",
-        "token eviction",
-        "long context",
-        "key value cache"
-      ]
-    },
-    {
-      "id": "token-merging-compression",
-      "name": "Token Merging / Compression",
-      "description": "Token merging, token compression, token dropping, or redundancy reduction.",
-      "keywords": [
-        "token merging",
-        "token compression",
-        "token reduction",
-        "token dropping",
-        "token sparsification",
-        "redundant tokens",
-        "merge tokens"
-      ]
-    },
-    {
-      "id": "efficient-vit",
-      "name": "Efficient ViT",
-      "description": "Efficient vision transformer methods related to token sparsity or adaptive tokens.",
-      "keywords": [
-        "efficient vision transformer",
-        "efficient vit",
-        "vision transformer pruning",
-        "vit pruning",
-        "dynamic vit",
-        "token learner",
-        "token pooling"
-      ]
-    },
-    {
-      "id": "dynamic-token-selection",
-      "name": "Dynamic Token Selection",
-      "description": "Input-adaptive token routing, selection, or early-exit style token control.",
-      "keywords": [
-        "dynamic token",
-        "adaptive token",
-        "token selection",
-        "token routing",
-        "token saliency",
-        "token importance",
-        "early exit"
-      ]
-    },
-    {
-      "id": "survey-benchmark",
-      "name": "Survey / Benchmark",
-      "description": "Survey, benchmark, evaluation, or analysis papers for efficient token methods.",
-      "keywords": [
-        "survey",
-        "benchmark",
-        "taxonomy",
-        "token pruning benchmark",
-        "token compression benchmark",
-        "efficient inference benchmark"
+        "interpretability",
+        "explainability",
+        "mechanistic interpretability",
+        "model interpretation",
+        "feature attribution",
+        "concept attribution",
+        "activation attribution",
+        "saliency map",
+        "explainable ai",
+        "xai",
+        "circuit analysis",
+        "representation analysis",
+        "multimodal interpretability",
+        "vision-language interpretability"
       ]
     }
   ],

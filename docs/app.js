@@ -10,15 +10,22 @@ const state = {
   customTopics: false,
   lastKnownRunAt: "",
   pollingTimer: null,
+  manualPaper: null,
+  manualCandidates: [],
 };
 
 const REPO_FULL_NAME = "MHQQysh/daily_paper";
 const WORKFLOW_FILE = "daily.yml";
 const TOPIC_STORAGE_KEY = "dailyPaper.customTopics.v1";
+const TOPIC_SCHEMA_STORAGE_KEY = "dailyPaper.topicSchemaVersion";
+const TOPIC_SCHEMA_VERSION = "2026-07-15-three-directions";
 const GITHUB_TOKEN_STORAGE_KEY = "dailyPaper.githubToken.v1";
+const DEEPSEEK_TOKEN_STORAGE_KEY = "dailyPaper.deepseekApiKey.v1";
+const IS_LOCAL_MODE = ["127.0.0.1", "localhost"].includes(window.location.hostname);
 const topicTree = document.getElementById("topicTree");
 const detail = document.getElementById("paperDetail");
 const searchInput = document.getElementById("searchInput");
+const addPaperButton = document.getElementById("addPaperButton");
 const allButton = document.getElementById("allButton");
 const highButton = document.getElementById("highButton");
 const editTopicsButton = document.getElementById("editTopicsButton");
@@ -28,10 +35,12 @@ const saveTopicsButton = document.getElementById("saveTopicsButton");
 const resetTopicsButton = document.getElementById("resetTopicsButton");
 const copyTopicsButton = document.getElementById("copyTopicsButton");
 const lookbackDays = document.getElementById("lookbackDays");
+const targetDate = document.getElementById("targetDate");
 const maxResults = document.getElementById("maxResults");
 const minScore = document.getElementById("minScore");
-const freshRun = document.getElementById("freshRun");
-const githubToken = document.getElementById("githubToken");
+const apiToken = document.getElementById("apiToken");
+const tokenLabel = document.getElementById("tokenLabel");
+const tokenHelp = document.getElementById("tokenHelp");
 const saveTokenButton = document.getElementById("saveTokenButton");
 const runSearchButton = document.getElementById("runSearchButton");
 const runStatus = document.getElementById("runStatus");
@@ -42,6 +51,17 @@ const latestDate = document.getElementById("latestDate");
 const viewTitle = document.getElementById("viewTitle");
 const openSidebar = document.getElementById("openSidebar");
 const closeSidebar = document.getElementById("closeSidebar");
+const paperDialog = document.getElementById("paperDialog");
+const closePaperDialog = document.getElementById("closePaperDialog");
+const cancelPaperAdd = document.getElementById("cancelPaperAdd");
+const confirmPaperAdd = document.getElementById("confirmPaperAdd");
+const paperAddStatus = document.getElementById("paperAddStatus");
+const paperCandidates = document.getElementById("paperCandidates");
+const paperPreview = document.getElementById("paperPreview");
+const paperPreviewTitle = document.getElementById("paperPreviewTitle");
+const paperPreviewMeta = document.getElementById("paperPreviewMeta");
+const paperPreviewSummary = document.getElementById("paperPreviewSummary");
+const paperTopicChoices = document.getElementById("paperTopicChoices");
 
 function byId(topicId) {
   return state.topics.find((topic) => topic.id === topicId);
@@ -121,6 +141,10 @@ function parseTopicsFromEditor(value) {
 }
 
 function loadStoredTopics(serverTopics) {
+  if (localStorage.getItem(TOPIC_SCHEMA_STORAGE_KEY) !== TOPIC_SCHEMA_VERSION) {
+    localStorage.removeItem(TOPIC_STORAGE_KEY);
+    localStorage.setItem(TOPIC_SCHEMA_STORAGE_KEY, TOPIC_SCHEMA_VERSION);
+  }
   const stored = localStorage.getItem(TOPIC_STORAGE_KEY);
   if (!stored) {
     state.customTopics = false;
@@ -161,15 +185,11 @@ function paperMatches(paper) {
 }
 
 function filteredPapers() {
-  return state.papers.filter(paperMatches);
+  return state.papers.filter((paper) => (paper.topics || []).some((topicId) => byId(topicId))).filter(paperMatches);
 }
 
 function papersForTopic(topicId) {
   return filteredPapers().filter((paper) => (paper.topics || []).includes(topicId));
-}
-
-function orphanPapers() {
-  return filteredPapers().filter((paper) => !paper.topics || paper.topics.length === 0);
 }
 
 function setMode(mode) {
@@ -251,15 +271,6 @@ function topicGroup(topic, papers) {
 
 function renderTopicTree() {
   const groups = state.topics.map((topic) => topicGroup(topic, papersForTopic(topic.id)));
-  const orphans = orphanPapers();
-  if (orphans.length) {
-    groups.push(
-      topicGroup(
-        { id: "unclassified", name: "Unclassified", description: "Matched by search but not assigned to a direction." },
-        orphans,
-      ),
-    );
-  }
   topicTree.innerHTML = groups.join("");
   topicTree.querySelectorAll("[data-topic-id]").forEach((button) => {
     button.addEventListener("click", () => toggleTopic(button.dataset.topicId));
@@ -277,7 +288,7 @@ function linkButton(label, href, primary = false) {
 }
 
 function renderDetail() {
-  const paper = state.papers.find((item) => item.id === state.selectedPaperId);
+  const paper = filteredPapers().find((item) => item.id === state.selectedPaperId);
   if (!paper) {
     detail.innerHTML = `
       <div class="empty-state">
@@ -354,8 +365,12 @@ async function loadData() {
     state.topics = loadStoredTopics(state.serverTopics);
     applyTopicModel();
     state.topics.forEach((topic) => state.openTopics.add(topic.id));
-    if (state.papers[0]) {
-      state.selectedPaperId = state.papers[0].id;
+    const firstPaper = filteredPapers()[0];
+    if (firstPaper) {
+      state.selectedPaperId = firstPaper.id;
+      if (!targetDate.value) {
+        targetDate.value = firstPaper.published || "";
+      }
     }
     statusText.textContent = data.last_updated ? `Updated ${new Date(data.last_updated).toLocaleString()}` : "Not updated yet";
     render();
@@ -363,6 +378,19 @@ async function loadData() {
     statusText.textContent = "Failed to load data";
     detail.innerHTML = `<div class="empty-state"><h3>Could not load papers.json</h3><p>${escapeHtml(error.message)}</p></div>`;
   }
+}
+
+function formatQueryPlan(plan) {
+  const items = plan?.topics || [];
+  if (!items.length) {
+    return "";
+  }
+  const content = items.map((item) => {
+    const topicName = byId(item.topic_id)?.name || item.topic_id;
+    const queries = (item.search_queries || []).map((query) => `<li>${escapeHtml(query)}</li>`).join("");
+    return `<div class="query-topic"><strong>${escapeHtml(topicName)}</strong><ul>${queries}</ul></div>`;
+  }).join("");
+  return `<details class="query-plan"><summary>Generated queries</summary>${content}</details>`;
 }
 
 function formatRunStatus(status) {
@@ -376,12 +404,15 @@ function formatRunStatus(status) {
   return `
     <strong>Last run:</strong> ${escapeHtml(time)}${workflow}<br>
     <strong>Range:</strong> ${Number(status.lookback_days || 0)} days,
+    <strong>date:</strong> ${escapeHtml(status.target_date || "window")},
     <strong>found:</strong> ${Number(status.raw_found || 0)},
     <strong>kept:</strong> ${Number(status.kept || 0)},
     <strong>added:</strong> ${Number(status.added || 0)},
     <strong>updated:</strong> ${Number(status.updated || 0)},
+    <strong>duplicates:</strong> ${Number(status.duplicates || 0)},
     <strong>total:</strong> ${Number(status.total || 0)}.
     <strong>DeepSeek:</strong> ${status.deepseek_enabled ? "on" : "off"}.
+    ${formatQueryPlan(status.query_plan)}
   `;
 }
 
@@ -401,23 +432,50 @@ async function loadRunStatus() {
   }
 }
 
-function getGithubToken() {
-  return githubToken.value.trim() || localStorage.getItem(GITHUB_TOKEN_STORAGE_KEY) || "";
+function activeTokenStorageKey() {
+  return IS_LOCAL_MODE ? DEEPSEEK_TOKEN_STORAGE_KEY : GITHUB_TOKEN_STORAGE_KEY;
 }
 
-function saveGithubToken() {
-  const token = githubToken.value.trim();
+function getApiToken() {
+  return apiToken.value.trim() || localStorage.getItem(activeTokenStorageKey()) || "";
+}
+
+function saveApiToken(showMessage = true) {
+  const token = apiToken.value.trim();
   if (!token) {
-    runStatus.textContent = "Paste a GitHub token first.";
-    return;
+    runStatus.textContent = IS_LOCAL_MODE ? "Paste a DeepSeek API key first." : "Paste a GitHub token first.";
+    return false;
   }
-  localStorage.setItem(GITHUB_TOKEN_STORAGE_KEY, token);
-  githubToken.value = "";
-  runStatus.textContent = "GitHub token saved in this browser.";
+  localStorage.setItem(activeTokenStorageKey(), token);
+  if (showMessage) {
+    runStatus.textContent = IS_LOCAL_MODE
+      ? "DeepSeek API key saved in this browser."
+      : "GitHub token saved in this browser.";
+  }
+  return true;
+}
+
+function configureRunMode() {
+  const storedToken = localStorage.getItem(activeTokenStorageKey()) || "";
+  apiToken.value = storedToken;
+  addPaperButton.hidden = !IS_LOCAL_MODE;
+  if (IS_LOCAL_MODE) {
+    tokenLabel.textContent = "DeepSeek API key";
+    apiToken.placeholder = "sk-...";
+    tokenHelp.textContent = "Local mode: the key stays in this browser and is sent only to this computer.";
+    saveTokenButton.textContent = "Save key";
+    runSearchButton.textContent = "Run local search";
+  } else {
+    tokenLabel.textContent = "GitHub token";
+    apiToken.placeholder = "GitHub token for triggering Actions";
+    tokenHelp.textContent = "Online mode: this triggers the repository's GitHub Actions workflow.";
+    saveTokenButton.textContent = "Save token";
+    runSearchButton.textContent = "Run search";
+  }
 }
 
 async function triggerWorkflow() {
-  const token = getGithubToken();
+  const token = getApiToken();
   if (!token) {
     runStatus.textContent = "Paste a GitHub token first, then click Save token.";
     return;
@@ -425,9 +483,9 @@ async function triggerWorkflow() {
   const previousRunAt = state.lastKnownRunAt;
   const inputs = {
     lookback_days: lookbackDays.value,
+    target_date: targetDate.value,
     max_results: maxResults.value,
     min_score: minScore.value,
-    fresh: freshRun.checked ? "true" : "false",
     topics_json: JSON.stringify({ topics: state.topics }),
   };
   runSearchButton.disabled = true;
@@ -449,6 +507,225 @@ async function triggerWorkflow() {
     return;
   }
   pollForRunUpdate(previousRunAt);
+}
+
+function localRequestPayload() {
+  return {
+    lookback_days: lookbackDays.value,
+    target_date: targetDate.value,
+    max_results: maxResults.value,
+    min_score: minScore.value,
+    topics: state.topics,
+    deepseek_api_key: getApiToken(),
+  };
+}
+
+function formatLocalJobStatus(status) {
+  const lines = (status.output || []).slice(-5).map((line) => escapeHtml(line));
+  const progress = lines.length ? `<div class="local-output">${lines.join("<br>")}</div>` : "";
+  const labels = {
+    idle: "Ready",
+    running: "Running",
+    succeeded: "Completed",
+    failed: "Failed",
+  };
+  return `<strong>${labels[status.state] || "Local"}:</strong> ${escapeHtml(status.message || "")}${progress}`;
+}
+
+async function loadLocalJobStatus(renderIdle = false) {
+  const response = await fetch(`/api/status?t=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Local API returned HTTP ${response.status}`);
+  }
+  const status = await response.json();
+  if (renderIdle || status.state !== "idle") {
+    runStatus.innerHTML = formatLocalJobStatus(status);
+  }
+  return status;
+}
+
+async function triggerLocalRun() {
+  if (!getApiToken()) {
+    runStatus.textContent = "Paste a DeepSeek API key first.";
+    return;
+  }
+  saveApiToken(false);
+  runSearchButton.disabled = true;
+  runStatus.textContent = "Starting local search...";
+  const response = await fetch("/api/run", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(localRequestPayload()),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    runSearchButton.disabled = false;
+    throw new Error(body.error || `Local API returned HTTP ${response.status}`);
+  }
+  runStatus.innerHTML = formatLocalJobStatus(body);
+  pollLocalRun();
+}
+
+function pollLocalRun() {
+  if (state.pollingTimer) {
+    clearInterval(state.pollingTimer);
+  }
+  state.pollingTimer = setInterval(async () => {
+    try {
+      const status = await loadLocalJobStatus(true);
+      if (status.state === "running") {
+        return;
+      }
+      clearInterval(state.pollingTimer);
+      state.pollingTimer = null;
+      runSearchButton.disabled = false;
+      if (status.state === "succeeded") {
+        await loadData();
+        await loadRunStatus();
+      }
+    } catch (error) {
+      clearInterval(state.pollingTimer);
+      state.pollingTimer = null;
+      runSearchButton.disabled = false;
+      runStatus.textContent = error.message;
+    }
+  }, 2000);
+}
+
+async function postLocalApi(path, payload) {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(body.error || `Local API returned HTTP ${response.status}`);
+  }
+  return body;
+}
+
+function resetPaperAddDialog() {
+  state.manualPaper = null;
+  state.manualCandidates = [];
+  paperCandidates.innerHTML = "";
+  paperPreview.hidden = true;
+  confirmPaperAdd.hidden = true;
+  confirmPaperAdd.disabled = false;
+  paperAddStatus.textContent = "";
+}
+
+function renderPaperCandidates(candidates) {
+  paperCandidates.innerHTML = candidates.map((paper, index) => `
+    <button class="paper-candidate" type="button" data-candidate-index="${index}">
+      <strong>${escapeHtml(paper.title || "Untitled")}</strong>
+      <span>${escapeHtml((paper.authors || []).slice(0, 4).join(", ") || "Unknown authors")}</span>
+      <span>${escapeHtml(paper.published || "Unknown date")} · ${escapeHtml(paper.source_id || "")}</span>
+    </button>
+  `).join("");
+  paperCandidates.querySelectorAll("[data-candidate-index]").forEach((button) => {
+    button.addEventListener("click", () => analyzeManualCandidate(Number(button.dataset.candidateIndex)));
+  });
+}
+
+function renderPaperPreview(paper) {
+  state.manualPaper = paper;
+  paperPreviewTitle.textContent = paper.title || "Untitled";
+  paperPreviewMeta.textContent = `${(paper.authors || []).join(", ") || "Unknown authors"} · ${paper.published || "Unknown date"}`;
+  paperPreviewSummary.textContent = paper.summary_zh || paper.abstract_zh || paper.abstract || "No abstract available.";
+  const recommended = new Set(paper.topics || []);
+  paperTopicChoices.innerHTML = state.topics.map((topic) => `
+    <label>
+      <input type="checkbox" value="${escapeHtml(topic.id)}" ${recommended.has(topic.id) ? "checked" : ""}>
+      <span><strong>${escapeHtml(topic.name)}</strong><small>${escapeHtml(topic.description || "")}</small></span>
+    </label>
+  `).join("");
+  paperPreview.hidden = false;
+  confirmPaperAdd.hidden = false;
+}
+
+async function analyzeManualCandidate(index) {
+  const paper = state.manualCandidates[index];
+  if (!paper) {
+    return;
+  }
+  paperCandidates.innerHTML = "";
+  paperAddStatus.textContent = "DeepSeek is translating the paper and recommending directions...";
+  try {
+    const result = await postLocalApi("/api/papers/analyze", {
+      paper,
+      topics: state.topics,
+      deepseek_api_key: getApiToken(),
+    });
+    renderPaperPreview(result.paper);
+    paperAddStatus.textContent = result.paper.analysis_warning || "Review the recommended directions, then confirm.";
+  } catch (error) {
+    paperAddStatus.textContent = error.message;
+    renderPaperCandidates(state.manualCandidates);
+  }
+}
+
+async function openPaperAddDialog() {
+  if (!IS_LOCAL_MODE) {
+    runStatus.textContent = "Manual paper addition is available in local mode.";
+    return;
+  }
+  const value = searchInput.value.trim();
+  if (!value) {
+    searchInput.focus();
+    return;
+  }
+  resetPaperAddDialog();
+  paperDialog.showModal();
+  paperAddStatus.textContent = "Searching arXiv...";
+  try {
+    const result = await postLocalApi("/api/papers/resolve", { input: value });
+    state.manualCandidates = result.candidates || [];
+    if (!state.manualCandidates.length) {
+      paperAddStatus.textContent = "No matching arXiv paper was found.";
+      return;
+    }
+    if (state.manualCandidates.length === 1) {
+      await analyzeManualCandidate(0);
+      return;
+    }
+    paperAddStatus.textContent = "Choose the correct paper.";
+    renderPaperCandidates(state.manualCandidates);
+  } catch (error) {
+    paperAddStatus.textContent = error.message;
+  }
+}
+
+async function confirmManualPaper() {
+  if (!state.manualPaper) {
+    return;
+  }
+  const selectedTopics = [...paperTopicChoices.querySelectorAll('input[type="checkbox"]:checked')]
+    .map((input) => input.value);
+  if (!selectedTopics.length) {
+    paperAddStatus.textContent = "Select at least one direction.";
+    return;
+  }
+  confirmPaperAdd.disabled = true;
+  paperAddStatus.textContent = "Adding paper to the library...";
+  try {
+    const result = await postLocalApi("/api/papers/add", {
+      paper: state.manualPaper,
+      selected_topics: selectedTopics,
+    });
+    searchInput.value = "";
+    state.query = "";
+    await loadData();
+    state.selectedPaperId = result.paper.id;
+    render();
+    paperDialog.close();
+    runStatus.textContent = result.added
+      ? "Paper added to the library."
+      : "Paper already existed; directions and metadata were updated.";
+  } catch (error) {
+    confirmPaperAdd.disabled = false;
+    paperAddStatus.textContent = error.message;
+  }
 }
 
 function pollForRunUpdate(previousRunAt) {
@@ -520,22 +797,47 @@ copyTopicsButton.addEventListener("click", async () => {
     copyTopicsButton.textContent = "Copy JSON";
   }, 1200);
 });
-saveTokenButton.addEventListener("click", saveGithubToken);
+saveTokenButton.addEventListener("click", () => saveApiToken());
 lookbackDays.addEventListener("change", () => {
   const days = Number(lookbackDays.value);
   const currentMax = Number(maxResults.value);
   if (days >= 30 && currentMax < 800) {
-    maxResults.value = "800";
-  } else if (days >= 14 && currentMax < 300) {
     maxResults.value = "300";
+  } else if (days >= 14 && currentMax < 300) {
+    maxResults.value = "160";
   }
 });
 runSearchButton.addEventListener("click", () => {
-  triggerWorkflow().catch((error) => {
+  const trigger = IS_LOCAL_MODE ? triggerLocalRun : triggerWorkflow;
+  trigger().catch((error) => {
     runSearchButton.disabled = false;
     runStatus.textContent = error.message;
   });
 });
+addPaperButton.addEventListener("click", () => {
+  openPaperAddDialog().catch((error) => {
+    paperAddStatus.textContent = error.message;
+  });
+});
+closePaperDialog.addEventListener("click", () => paperDialog.close());
+cancelPaperAdd.addEventListener("click", () => paperDialog.close());
+confirmPaperAdd.addEventListener("click", () => {
+  confirmManualPaper().catch((error) => {
+    confirmPaperAdd.disabled = false;
+    paperAddStatus.textContent = error.message;
+  });
+});
 
+configureRunMode();
 loadData();
 loadRunStatus();
+if (IS_LOCAL_MODE) {
+  loadLocalJobStatus().then((status) => {
+    if (status.state === "running") {
+      runSearchButton.disabled = true;
+      pollLocalRun();
+    }
+  }).catch(() => {
+    runStatus.textContent = "Local API is unavailable. Start Daily Paper with the local launcher.";
+  });
+}

@@ -1,6 +1,6 @@
 # Daily Paper
 
-Daily Paper is a lightweight, pure-online tracker for token-pruning research. It searches new papers, classifies them into research directions, asks DeepSeek for a concise Chinese relevance note when an API key is available, and publishes a static GitHub Pages site.
+Daily Paper is a lightweight academic paper tracker. DeepSeek expands each research direction into multiple discovery queries, arXiv results are deduplicated and fused with reciprocal rank fusion, and the best candidates are classified and translated into Chinese.
 
 ## What It Tracks
 
@@ -45,12 +45,23 @@ The run panel reports how many papers were found, kept, added, updated, and stor
 
 ## Local Run
 
+Double-click `start_daily_paper.cmd`. It starts the loopback-only local server and opens:
+
+`http://127.0.0.1:8766/`
+
+On localhost, the run panel asks for a DeepSeek API key instead of a GitHub token. The key is stored in this browser's local storage. Choose a date or range and click `Run local search`; the page starts the fetch, shows progress, and reloads the updated paper list automatically.
+
+Browser searches are append-only: newly found papers are merged into the library and older papers are never removed. The completed run report shows the DeepSeek-generated queries and the counts for added, updated, and duplicate papers.
+
+To add one paper manually, paste an arXiv URL, arXiv ID, or title into the sidebar search field and click `+`. Title searches return up to five candidates. After choosing one, review DeepSeek's suggested directions, edit the checkboxes if needed, and confirm the addition.
+
+Only one local search can run at a time. Closing the browser does not cancel a running search because the local Python server owns the process.
+
+For command-line use, the original fetcher remains available:
+
 ```powershell
 python scripts/fetch_papers.py --days 14 --max-results 80
-python -m http.server 8000 --directory docs
 ```
-
-Then open `http://127.0.0.1:8000`.
 
 ## DeepSeek
 

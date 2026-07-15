@@ -9,10 +9,14 @@ on:
         description: "How many days to search"
         required: false
         default: "3"
+      target_date:
+        description: "Optional single date to process, YYYY-MM-DD"
+        required: false
+        default: ""
       max_results:
         description: "Maximum arXiv results"
         required: false
-        default: "300"
+        default: "80"
       min_score:
         description: "Minimum relevance score"
         required: false
@@ -21,10 +25,6 @@ on:
         description: "JSON payload: {\"topics\":[...]}"
         required: false
         default: ""
-      fresh:
-        description: "Rebuild from scratch instead of merging"
-        required: false
-        default: "false"
 
 permissions:
   contents: write
@@ -52,20 +52,16 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_MODEL: deepseek-chat
           PAPER_LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '3' }}
-          PAPER_MAX_RESULTS: ${{ github.event.inputs.max_results || '300' }}
+          PAPER_TARGET_DATE: ${{ github.event.inputs.target_date || '' }}
+          PAPER_MAX_RESULTS: ${{ github.event.inputs.max_results || '80' }}
           PAPER_MIN_SCORE: ${{ github.event.inputs.min_score || '18' }}
           PAPER_TOPICS_JSON: ${{ github.event.inputs.topics_json || '' }}
-          PAPER_FRESH: ${{ github.event.inputs.fresh || 'false' }}
         run: |
-          args=()
-          if [ "$PAPER_FRESH" = "true" ]; then
-            args+=(--fresh)
-          fi
           python scripts/fetch_papers.py \
             --days "$PAPER_LOOKBACK_DAYS" \
+            --date "$PAPER_TARGET_DATE" \
             --max-results "$PAPER_MAX_RESULTS" \
-            --min-score "$PAPER_MIN_SCORE" \
-            "${args[@]}"
+            --min-score "$PAPER_MIN_SCORE"
 
       - name: Commit updates
         uses: stefanzweifel/git-auto-commit-action@v5

@@ -17,10 +17,13 @@
           <button class="icon-button mobile-close" id="closeSidebar" aria-label="Close navigation">x</button>
         </div>
 
-        <label class="search-box">
-          <span>Search</span>
-          <input id="searchInput" type="search" placeholder="title, author, keyword">
-        </label>
+        <div class="search-box">
+          <span>Search or add paper</span>
+          <span class="search-input-row">
+            <input id="searchInput" type="search" placeholder="title, arXiv link, author, keyword">
+            <button class="icon-button add-paper-button" id="addPaperButton" type="button" title="Add paper" aria-label="Add paper">+</button>
+          </span>
+        </div>
 
         <div class="sidebar-tools">
           <button class="tool-button active" id="allButton" type="button">All papers</button>
@@ -47,30 +50,34 @@
             <label>
               <span>Range</span>
               <select id="lookbackDays">
-                <option value="3">3 days</option>
+                <option value="3">latest 3 days</option>
                 <option value="7">7 days</option>
                 <option value="14">14 days</option>
                 <option value="30">30 days</option>
               </select>
             </label>
             <label>
+              <span>Single date</span>
+              <input id="targetDate" type="date">
+            </label>
+            <label>
               <span>Max results</span>
-              <input id="maxResults" type="number" min="20" max="1000" step="10" value="300">
+              <input id="maxResults" type="number" min="10" max="300" step="10" value="80">
             </label>
             <label>
               <span>Min score</span>
               <input id="minScore" type="number" min="0" max="100" step="1" value="18">
             </label>
-            <label class="checkline">
-              <input id="freshRun" type="checkbox">
-              <span>Rebuild</span>
-            </label>
           </div>
           <div class="token-row">
-            <input id="githubToken" type="password" placeholder="GitHub token for triggering Actions">
-            <button class="link-button" id="saveTokenButton" type="button">Save token</button>
+            <label class="token-field">
+              <span id="tokenLabel">API key</span>
+              <input id="apiToken" type="password" autocomplete="off">
+            </label>
+            <button class="link-button" id="saveTokenButton" type="button">Save key</button>
             <button class="link-button primary" id="runSearchButton" type="button">Run search</button>
           </div>
+          <div class="token-help" id="tokenHelp"></div>
           <div class="run-status" id="runStatus">Run status will appear here.</div>
         </section>
 
@@ -111,6 +118,30 @@
           <button class="tool-button active" id="saveTopicsButton" type="button">Save</button>
         </div>
       </form>
+    </dialog>
+
+    <dialog class="paper-dialog" id="paperDialog">
+      <div class="paper-add-flow">
+        <div class="dialog-head">
+          <div>
+            <div class="eyebrow">Add to library</div>
+            <h3>Add paper</h3>
+          </div>
+          <button class="icon-button" id="closePaperDialog" type="button" aria-label="Close add paper dialog">x</button>
+        </div>
+        <div class="paper-add-status" id="paperAddStatus"></div>
+        <div class="paper-candidates" id="paperCandidates"></div>
+        <section class="paper-preview" id="paperPreview" hidden>
+          <h4 id="paperPreviewTitle"></h4>
+          <p class="authors" id="paperPreviewMeta"></p>
+          <p id="paperPreviewSummary"></p>
+          <div class="topic-choices" id="paperTopicChoices"></div>
+        </section>
+        <div class="dialog-actions">
+          <button class="tool-button" id="cancelPaperAdd" type="button">Cancel</button>
+          <button class="tool-button active" id="confirmPaperAdd" type="button" hidden>Add paper</button>
+        </div>
+      </div>
     </dialog>
 
     <script src="app.js"></script>
