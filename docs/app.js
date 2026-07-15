@@ -544,7 +544,6 @@ function formatRunStatus(status) {
     <strong>requested:</strong> ${status.papers_per_topic ? Number(status.papers_per_topic) : "-"} per direction,
     <strong>retrieved:</strong> ${Number(status.raw_found || 0)},
     <strong>deduplicated:</strong> ${Number(status.deduplicated_found ?? status.raw_found ?? 0)},
-    <strong>shortlisted:</strong> ${Number(status.shortlisted ?? status.candidates ?? 0)},
     <strong>selected:</strong> ${Number(status.selected_union ?? status.kept ?? 0)},
     <strong>added:</strong> ${Number(status.added || 0)},
     <strong>updated:</strong> ${Number(status.updated || 0)},

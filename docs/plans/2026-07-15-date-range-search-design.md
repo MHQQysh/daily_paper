@@ -19,15 +19,13 @@ Both dates are required for interactive runs. The start date must not be later t
 
 1. Retrieve every day in the inclusive range separately from `cs.AI`, `cs.CV`, `cs.LG`, and `cs.CL`.
 2. Deduplicate the combined results by paper identity.
-3. Apply a lightweight local relevance pass using each direction's name, description, and keywords against titles and abstracts. Keep a balanced shortlist per direction so every date can contribute candidates.
-4. Union and deduplicate those shortlists.
-5. Ask DeepSeek to score the shortlisted papers against every direction.
-6. Select at most N positive-score papers per direction across the whole date range.
-7. Deduplicate overlapping selections while retaining every selected direction.
-8. Ask DeepSeek only for Chinese summaries and abstract translations for the selected union.
-9. Append the selected papers to the existing library without deleting older records.
+3. Score titles and abstracts locally using each direction's name, description, and editable keywords.
+4. Directly select at most N positive-score papers per direction across the whole date range.
+5. Deduplicate overlapping selections while retaining every selected direction.
+6. Ask DeepSeek only for Chinese TLDRs and abstract translations for the selected union.
+7. Append the selected papers to the existing library without deleting older records.
 
-For small ranges the local shortlist can include every paper. For large ranges, each direction receives a bounded shortlist derived from all dates, preventing a long range from sending thousands of irrelevant abstracts to DeepSeek while avoiding a newest-date-only bias.
+There is no intermediate shortlist and no DeepSeek relevance-ranking pass. DeepSeek receives only the final locally selected union.
 
 ## Status Reporting
 
@@ -37,7 +35,6 @@ The completed report includes:
 - Requested papers per direction
 - Number of daily retrievals
 - Raw and deduplicated paper counts
-- Shortlist size
 - Selected count per direction
 - Unique selected count
 - Added, updated, duplicate, and total stored counts
@@ -51,4 +48,4 @@ The command line and workflow move from `--date` / `target_date` to `--start-dat
 
 ## Validation
 
-Tests cover inclusive date generation, default dates, reversed or overlong ranges, daily retrieval calls, balanced shortlist behavior, per-direction Top-N selection, overlapping papers, local API payloads, and command construction. Browser checks cover desktop and mobile layouts, old-control removal, date-range validation, and horizontal overflow.
+Tests cover inclusive date generation, default dates, reversed or overlong ranges, daily retrieval calls, direct local per-direction Top-N selection, overlapping papers, local API payloads, and command construction. Browser checks cover desktop and mobile layouts, old-control removal, date-range validation, and horizontal overflow.

@@ -1,5 +1,6 @@
 import io
 import datetime as dt
+import json
 import urllib.error
 import urllib.parse
 import unittest
@@ -71,50 +72,40 @@ class ArxivFetchTests(unittest.TestCase):
         self.assertEqual(stats, {"daily_retrievals": 2, "raw_found": 3})
         self.assertEqual({paper["title"] for paper in papers}, {"Shared Paper", "Unique Paper"})
 
-    def test_shortlist_balances_dates_and_deduplicates_topics(self):
+    def test_local_selection_directly_keeps_top_n_and_overlap(self):
         topics = {
-            "vision": {"name": "Vision", "description": "visual tokens", "keywords": ["visual token"]},
-            "grpo": {"name": "GRPO", "description": "policy optimization", "keywords": ["grpo"]},
+            "vision": {
+                "name": "Vision",
+                "description": "",
+                "keywords": ["visual token", "token pruning"],
+            },
+            "interpretability": {
+                "name": "Interpretability",
+                "description": "",
+                "keywords": ["mechanistic interpretability", "circuit analysis"],
+            },
         }
         papers = [
             {
-                "id": f"paper-{day}",
-                "title": f"Visual token GRPO {day}",
-                "abstract": "visual token grpo",
-                "published": f"2026-07-{day}",
-            }
-            for day in ("10", "11", "12")
+                "id": "shared",
+                "title": "Visual token pruning with mechanistic interpretability and circuit analysis",
+                "abstract": "A direct study.",
+                "published": "2026-07-10",
+            },
+            {"id": "vision", "title": "Visual token method", "abstract": "", "published": "2026-07-11"},
+            {
+                "id": "interpret",
+                "title": "Mechanistic interpretability method",
+                "abstract": "",
+                "published": "2026-07-11",
+            },
         ]
         with mock.patch.object(fetch_papers, "TOPICS", topics):
-            shortlisted, counts = fetch_papers.shortlist_candidates(
-                papers, papers_per_topic=1, per_topic_limit=3
-            )
+            selected, counts = fetch_papers.select_local_per_topic(papers, papers_per_topic=1)
 
-        self.assertEqual({paper["published"] for paper in shortlisted}, {"2026-07-10", "2026-07-11", "2026-07-12"})
-        self.assertEqual(counts, {"vision": 3, "grpo": 3})
-
-    def test_deepseek_ranking_normalizes_topic_scores(self):
-        topics = {
-            "vision": {"name": "Vision", "description": "Vision pruning", "keywords": ["visual token"]},
-            "grpo": {"name": "GRPO", "description": "Policy optimization", "keywords": ["grpo"]},
-        }
-        papers = [
-            {"id": "paper-1", "title": "Visual tokens", "abstract": "Compress visual tokens."},
-            {"id": "paper-2", "title": "Policy", "abstract": "Group policy optimization."},
-        ]
-        response = {
-            "papers": [
-                {"id": "paper-1", "scores": {"vision": 93, "grpo": -4, "unknown": 100}},
-                {"id": "paper-2", "scores": {"vision": "8", "grpo": 120}},
-            ]
-        }
-        with mock.patch.object(fetch_papers, "TOPICS", topics), mock.patch.dict(
-            fetch_papers.os.environ, {"DEEPSEEK_API_KEY": "sk-test"}
-        ), mock.patch.object(fetch_papers, "call_deepseek_json", return_value=response):
-            scores = fetch_papers.rank_papers_by_topic(papers, model="deepseek-chat", batch_size=20)
-
-        self.assertEqual(scores["paper-1"], {"vision": 93, "grpo": 0})
-        self.assertEqual(scores["paper-2"], {"vision": 8, "grpo": 100})
+        self.assertEqual(counts, {"vision": 1, "interpretability": 1})
+        self.assertEqual(len(selected), 1)
+        self.assertEqual(selected[0]["topics"], ["vision", "interpretability"])
 
     def test_per_topic_selection_keeps_overlap_once_with_both_topics(self):
         topics = {
@@ -156,7 +147,7 @@ class ArxivFetchTests(unittest.TestCase):
         self.assertEqual(enriched["topics"], ["manifold"])
         self.assertEqual(enriched["relevance_score"], 82)
 
-    def test_deepseek_enrichment_cannot_add_unselected_topic(self):
+    def test_deepseek_enrichment_only_updates_chinese_text(self):
         topics = {
             "vision": {"name": "Vision", "description": "Vision pruning", "keywords": ["visual token"]},
             "grpo": {"name": "GRPO", "description": "Policy optimization", "keywords": ["grpo"]},
@@ -181,10 +172,18 @@ class ArxivFetchTests(unittest.TestCase):
         with mock.patch.object(fetch_papers, "TOPICS", topics), mock.patch.dict(
             "os.environ", {"DEEPSEEK_API_KEY": "sk-test"}
         ), mock.patch.object(fetch_papers, "call_deepseek", return_value=response):
+            prompt = json.loads(fetch_papers.deepseek_prompt([paper])[1]["content"])
             enriched = fetch_papers.enrich_papers([paper], model="deepseek-chat")
 
+        self.assertEqual(
+            set(prompt["output_schema"]["papers"][0]),
+            {"id", "summary_zh", "abstract_zh"},
+        )
         self.assertEqual(enriched[0]["topics"], ["vision"])
         self.assertEqual(enriched[0]["relevance_score"], 91)
+        self.assertEqual(enriched[0]["summary_zh"], "summary")
+        self.assertEqual(enriched[0]["abstract_zh"], "abstract")
+        self.assertNotEqual(enriched[0]["why_relevant_zh"], "relevant")
 
     def test_http_429_is_retried(self):
         error = urllib.error.HTTPError("https://example.test", 429, "limited", {"Retry-After": "0"}, io.BytesIO())

@@ -9,9 +9,9 @@ Simplify date-range searches so the local direction filter directly chooses the 
 1. Retrieve every arXiv paper for each day in the inclusive date range from `cs.AI`, `cs.CV`, `cs.LG`, and `cs.CL`.
 2. Deduplicate the combined records.
 3. Score titles and abstracts locally using each direction's name, description, and editable keywords.
-4. Select the final N papers independently for each direction, keeping dates represented when scores tie.
+4. Select the final N papers independently for each direction, preferring newer papers when local scores tie.
 5. Deduplicate overlapping selections while retaining all selected directions.
-6. Send only that selected union to DeepSeek for a Chinese TLDR, Chinese abstract translation, and relevance explanation.
+6. Send only that selected union to DeepSeek for a Chinese TLDR and Chinese abstract translation.
 7. Append the enriched records to the existing library.
 
 ## Removed Behavior

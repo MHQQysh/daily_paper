@@ -1,6 +1,6 @@
 # Daily Paper
 
-Daily Paper is a lightweight academic paper tracker. It retrieves papers for every UTC day in an inclusive date range from the broad arXiv categories `cs.AI`, `cs.CV`, `cs.LG`, and `cs.CL`. A date-balanced local pass creates a manageable shortlist, then DeepSeek ranks every shortlisted candidate independently for every configured direction, selects the top N papers per direction across the whole range, and translates the selected abstracts into Chinese.
+Daily Paper is a lightweight academic paper tracker. It retrieves papers for every UTC day in an inclusive date range from the broad arXiv categories `cs.AI`, `cs.CV`, `cs.LG`, and `cs.CL`. A local title-and-abstract pass directly selects the top N papers for every configured direction across the whole range. DeepSeek is used only to write the Chinese TLDR and translate the abstract for those final selections.
 
 ## What It Tracks
 
@@ -74,7 +74,7 @@ python scripts/fetch_papers.py --start-date 2026-07-01 --end-date 2026-07-14 --p
 
 ## DeepSeek
 
-Set `DEEPSEEK_API_KEY` to enable DeepSeek scoring and Chinese summaries.
+Set `DEEPSEEK_API_KEY` to enable Chinese TLDRs and abstract translations for the papers selected by the local filter. DeepSeek does not classify, score, or rank papers.
 
 ```powershell
 $env:DEEPSEEK_API_KEY="sk-..."

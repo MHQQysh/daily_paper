@@ -530,135 +530,6 @@ def fallback_topic_scores(paper: dict[str, Any]) -> dict[str, int]:
     return scores
 
 
-def shortlist_candidates(
-    papers: list[dict[str, Any]], papers_per_topic: int, per_topic_limit: int | None = None
-) -> tuple[list[dict[str, Any]], dict[str, int]]:
-    limit = per_topic_limit or min(200, max(50, papers_per_topic * 8))
-    selected: list[dict[str, Any]] = []
-    identity_index: dict[str, int] = {}
-    counts: dict[str, int] = {}
-    scores = {paper.get("id", ""): fallback_topic_scores(paper) for paper in papers}
-    dates = sorted({paper.get("published", "") for paper in papers}, reverse=True)
-    quota = max(1, limit // max(1, len(dates)))
-
-    for topic_id in TOPICS:
-        ranked = sorted(
-            papers,
-            key=lambda paper: (
-                scores.get(paper.get("id", ""), {}).get(topic_id, 0),
-                paper.get("published", ""),
-                paper.get("title", ""),
-            ),
-            reverse=True,
-        )
-        chosen: list[dict[str, Any]] = []
-        chosen_ids: set[str] = set()
-        for published in dates:
-            daily = [paper for paper in ranked if paper.get("published", "") == published]
-            for paper in daily[:quota]:
-                if len(chosen) >= limit:
-                    break
-                chosen.append(paper)
-                chosen_ids.add(paper.get("id", ""))
-        for paper in ranked:
-            if len(chosen) >= limit:
-                break
-            if paper.get("id", "") in chosen_ids:
-                continue
-            chosen.append(paper)
-            chosen_ids.add(paper.get("id", ""))
-        counts[topic_id] = len(chosen)
-
-        for paper in chosen:
-            keys = paper_identity_keys(paper) or [f"id:{paper.get('id', '')}"]
-            selected_index = next((identity_index[key] for key in keys if key in identity_index), None)
-            if selected_index is None:
-                selected_index = len(selected)
-                selected.append(dict(paper))
-            for key in keys:
-                identity_index[key] = selected_index
-
-    selected.sort(
-        key=lambda paper: (paper.get("published", ""), paper.get("title", "")),
-        reverse=True,
-    )
-    return selected, counts
-
-
-def topic_ranking_prompt(papers: list[dict[str, Any]]) -> list[dict[str, str]]:
-    catalog = [
-        {
-            "id": topic_id,
-            "name": topic["name"],
-            "description": topic.get("description", ""),
-            "keywords": topic.get("keywords", []),
-        }
-        for topic_id, topic in TOPICS.items()
-    ]
-    compact = [
-        {"id": paper["id"], "title": paper["title"], "abstract": paper.get("abstract", "")[:1600]}
-        for paper in papers
-    ]
-    payload = {
-        "task": "Score every paper independently against every research direction using its title and abstract.",
-        "directions": catalog,
-        "papers": compact,
-        "rules": [
-            "Return every paper id exactly once.",
-            "Return every direction id for every paper.",
-            "Scores are integers from 0 to 100.",
-            "Use 0 for unrelated work and reserve scores above 70 for directly relevant work.",
-            "Judge semantic content, not literal keyword overlap.",
-        ],
-        "output_schema": {"papers": [{"id": "paper-id", "scores": {"direction-id": 0}}]},
-    }
-    return [
-        {
-            "role": "system",
-            "content": "You rank academic papers for a personalized research tracker. Return strict JSON only.",
-        },
-        {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
-    ]
-
-
-def rank_papers_by_topic(
-    papers: list[dict[str, Any]], model: str, batch_size: int = 20
-) -> dict[str, dict[str, int]]:
-    scores = {paper["id"]: fallback_topic_scores(paper) for paper in papers}
-    if not papers:
-        return scores
-    if not os.environ.get("DEEPSEEK_API_KEY"):
-        print("DeepSeek API key is not configured; using local ranking fallback.", flush=True)
-        return scores
-
-    total_batches = (len(papers) + batch_size - 1) // batch_size
-    print(f"DeepSeek ranking {len(papers)} papers in {total_batches} batches.", flush=True)
-    for start in range(0, len(papers), batch_size):
-        batch = papers[start : start + batch_size]
-        batch_number = start // batch_size + 1
-        print(f"DeepSeek ranking batch {batch_number}/{total_batches}: {len(batch)} papers...", flush=True)
-        try:
-            parsed = call_deepseek_json(topic_ranking_prompt(batch), model=model)
-        except Exception as exc:
-            print(f"DeepSeek ranking batch failed; using fallback scores: {exc}", file=sys.stderr)
-            continue
-        batch_ids = {paper["id"] for paper in batch}
-        for item in parsed.get("papers", []):
-            paper_id = normalize_text(item.get("id", ""))
-            if paper_id not in batch_ids or not isinstance(item.get("scores"), dict):
-                continue
-            normalized_scores: dict[str, int] = {}
-            for topic_id in TOPICS:
-                try:
-                    value = int(item["scores"].get(topic_id, 0))
-                except (TypeError, ValueError):
-                    value = 0
-                normalized_scores[topic_id] = max(0, min(100, value))
-            scores[paper_id] = normalized_scores
-        time.sleep(0.5)
-    return scores
-
-
 def select_per_topic(
     papers: list[dict[str, Any]], scores: dict[str, dict[str, int]], papers_per_topic: int
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
@@ -700,6 +571,13 @@ def select_per_topic(
         reverse=True,
     )
     return selected, counts
+
+
+def select_local_per_topic(
+    papers: list[dict[str, Any]], papers_per_topic: int
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    scores = {paper.get("id", ""): fallback_topic_scores(paper) for paper in papers}
+    return select_per_topic(papers, scores, papers_per_topic)
 
 
 def arxiv_expression_for_phrase(value: str) -> str:
@@ -861,25 +739,17 @@ def fallback_enrichment(paper: dict[str, Any]) -> dict[str, Any]:
         "relevance_score": relevance,
         "summary_zh": f"候选论文：{first_sentence[:220]}",
         "abstract_zh": paper.get("abstract", ""),
-        "why_relevant_zh": f"关键词匹配到 {topic_names}；DeepSeek API 未配置时使用本地规则打分。",
+        "why_relevant_zh": f"标题或摘要中的关键词匹配到：{topic_names}。",
         "deepseek_used": False,
     }
 
 
 def deepseek_prompt(papers: list[dict[str, Any]]) -> list[dict[str, str]]:
-    topic_catalog = [
-        {"id": topic_id, "name": topic["name"], "description": topic["description"]}
-        for topic_id, topic in TOPICS.items()
-    ]
     compact = [
         {
             "id": p["id"],
             "title": p["title"],
             "abstract": p["abstract"][:1800],
-            "local_topics": p.get("topics", []),
-            "local_score": p.get("relevance_score", 0),
-            "discovery_topics": p.get("discovery_topics", []),
-            "matched_queries": p.get("matched_queries", []),
         }
         for p in papers
     ]
@@ -888,26 +758,19 @@ def deepseek_prompt(papers: list[dict[str, Any]]) -> list[dict[str, str]]:
         "Return strict JSON only. Do not include markdown."
     )
     user = {
-        "task": "Classify and summarize papers for the configured research directions.",
-        "topic_catalog": topic_catalog,
+        "task": "Write a Chinese TLDR and translate the abstract into Chinese for each paper.",
         "rules": [
-            "Return local_topics unchanged; topic ranking has already been completed.",
-            "relevance_score is an integer from 0 to 100.",
             "summary_zh is one concise Chinese sentence.",
             "abstract_zh is a faithful Chinese translation of the abstract, 1 to 3 concise paragraphs.",
-            "why_relevant_zh is one concise Chinese sentence explaining relevance to the selected direction.",
-            "If a paper is weakly related, give a low score and explain why.",
+            "Do not classify, rank, or score the papers.",
         ],
         "papers": compact,
         "output_schema": {
             "papers": [
                 {
                     "id": "paper id",
-                    "topics": ["topic-id"],
-                    "relevance_score": 0,
                     "summary_zh": "中文一句话总结",
                     "abstract_zh": "中文摘要翻译",
-                    "why_relevant_zh": "中文相关性说明",
                 }
             ]
         },
@@ -974,22 +837,10 @@ def enrich_papers(papers: list[dict[str, Any]], model: str, batch_size: int = 8)
         for paper_id, item in result.items():
             if paper_id not in by_id:
                 continue
-            resolved_topics = by_id[paper_id].get("topics", [])
-            try:
-                returned_score = int(item.get("relevance_score", 0))
-            except (TypeError, ValueError):
-                returned_score = 0
             by_id[paper_id].update(
                 {
-                    "topics": resolved_topics,
-                    "relevance_score": max(
-                        int(by_id[paper_id].get("relevance_score", 0)), returned_score
-                    ),
                     "summary_zh": normalize_text(item.get("summary_zh", by_id[paper_id].get("summary_zh", ""))),
                     "abstract_zh": normalize_text(item.get("abstract_zh", by_id[paper_id].get("abstract_zh", ""))),
-                    "why_relevant_zh": normalize_text(
-                        item.get("why_relevant_zh", by_id[paper_id].get("why_relevant_zh", ""))
-                    ),
                     "deepseek_used": True,
                 }
             )
@@ -1112,17 +963,9 @@ def main() -> int:
         f"deduplicated={len(raw)}.",
         flush=True,
     )
-    shortlisted, shortlist_counts = shortlist_candidates(raw, args.papers_per_topic)
+    selected, selected_counts = select_local_per_topic(raw, args.papers_per_topic)
     print(
-        "Local shortlist per direction: "
-        + ", ".join(f"{topic_id}={count}" for topic_id, count in shortlist_counts.items())
-        + f"; unique union={len(shortlisted)}.",
-        flush=True,
-    )
-    topic_scores = rank_papers_by_topic(shortlisted, model=args.model)
-    selected, selected_counts = select_per_topic(shortlisted, topic_scores, args.papers_per_topic)
-    print(
-        "Selected per direction: "
+        "Locally selected per direction: "
         + ", ".join(f"{topic_id}={count}" for topic_id, count in selected_counts.items())
         + f"; unique union={len(selected)}.",
         flush=True,
@@ -1140,9 +983,6 @@ def main() -> int:
         "daily_retrievals": retrieval_stats["daily_retrievals"],
         "raw_found": retrieval_stats["raw_found"],
         "deduplicated_found": len(raw),
-        "shortlisted": len(shortlisted),
-        "shortlisted_per_topic": shortlist_counts,
-        "candidates": len(shortlisted),
         "selected_per_topic": selected_counts,
         "selected_union": len(selected),
         "kept": len(kept),
@@ -1162,11 +1002,10 @@ def main() -> int:
         )
     write_status(status)
     print(
-        "Fetched {raw} arXiv records, shortlisted {shortlisted}, selected {selected}, "
+        "Fetched {raw} arXiv records, selected {selected}, "
         "kept {kept}, added {added}, "
         "updated {updated}, total stored {total}.".format(
             raw=retrieval_stats["raw_found"],
-            shortlisted=len(shortlisted),
             selected=len(selected),
             kept=len(kept),
             added=merge_stats["added"],
