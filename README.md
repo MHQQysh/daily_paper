@@ -13,32 +13,17 @@ Default directions and keywords live in `config/topics.json`. The current defaul
 
 The site does not download PDFs. It stores only paper metadata, abstracts, and links.
 
-## Customize Directions
+## Public Website
 
-On the website, click `Edit directions`. Each line uses:
+The GitHub Pages site is a read-only public showcase of the latest committed `docs/papers.json` snapshot. Visitors can browse directions, search the library, filter by relevance, read Chinese summaries and abstracts, and open source or PDF links.
 
-```text
-Direction Name | keyword one, keyword two, keyword three
-```
+Search runs, API keys, direction editing, manual paper addition, and deletion are available only on localhost. The public site contains no writable backend and no GitHub or DeepSeek token input.
 
-Saving there changes the grouping in your browser immediately and stores it in local storage.
+## Publish Local Results
 
-To change the default directions used by the daily GitHub Actions fetcher, edit `config/topics.json` in the repository.
+Run and review paper operations locally. When the snapshot is ready to publish, commit `data/papers.json`, `docs/papers.json`, and `docs/run_status.json`, then push `main`. The deploy-only Pages workflow publishes `docs/` without running a paper search.
 
-## Run From The Website
-
-The website can trigger the GitHub Actions workflow directly. This avoids any extra backend service.
-
-1. Create a GitHub fine-grained token that can access this repository and trigger Actions.
-2. Open the site.
-3. Paste the token into `GitHub token for triggering Actions`.
-4. Click `Save token`. It is saved only in your browser local storage.
-5. Choose a start date, an end date, and the number of papers wanted for each direction across the whole range. The inclusive range can contain up to 31 days.
-6. Click `Run search`.
-
-The workflow will search papers, use the repository secret `DEEPSEEK_API_KEY` for DeepSeek translation, update `docs/papers.json`, update `docs/run_status.json`, and redeploy the site.
-
-The run panel reports how many papers were found, kept, added, updated, and stored in total.
+Default directions and keyword lists are edited locally and persisted to `config/topics.json`.
 
 ## Local Run
 
@@ -52,9 +37,9 @@ Install the local PDF reader dependency once when setting up the project:
 python -m pip install -r requirements.txt
 ```
 
-On localhost, the run panel asks for a DeepSeek API key instead of a GitHub token. The key is stored in this browser's local storage. Choose an inclusive date range of up to 31 days and a paper count per direction, then click `Run local search`; the page starts the fetch, shows progress, and reloads the updated paper list automatically.
+On localhost, the run panel asks for a DeepSeek API key. The key is stored in this browser's local storage. Choose an inclusive date range of up to 31 days and a paper count per direction, then click `Run local search`; the page starts the fetch, shows progress, and reloads the updated paper list automatically.
 
-Use `Edit directions` to add, rename, or remove research directions and edit their keyword lists. Chinese direction names receive stable unique IDs, so categories such as `可解释性` and `流形` remain separate. In local mode, Save creates a backup and persists the catalog to `config/topics.json`; on the hosted static page, custom directions remain in that browser and are included when it triggers a workflow.
+Use `Edit directions` to add, rename, or remove research directions and edit their keyword lists. Chinese direction names receive stable unique IDs, so categories such as `可解释性` and `流形` remain separate. Save creates a backup and persists the catalog to `config/topics.json`.
 
 Automatic browser searches are append-only: newly found papers are merged into the library and older papers are not removed by a search. The same paper may be selected for multiple directions but is stored only once with all matching directions. The completed run report shows the retrieved count, per-direction selected counts, unique selected count, and counts for added, updated, and duplicate papers.
 
@@ -81,21 +66,11 @@ $env:DEEPSEEK_API_KEY="sk-..."
 python scripts/fetch_papers.py --start-date 2026-07-01 --end-date 2026-07-14 --papers-per-topic 5
 ```
 
-In GitHub, add the same key under:
-
-`Settings -> Secrets and variables -> Actions -> New repository secret`
-
-Secret name:
-
-`DEEPSEEK_API_KEY`
-
 ## Deployment
 
-The included GitHub Actions workflow runs every day with both range bounds set to the previous UTC date and updates `data/papers.json` plus `docs/papers.json`. Enable GitHub Pages with:
+The included GitHub Actions workflow deploys the committed `docs/` snapshot whenever `main` receives a relevant push. It does not search papers or call DeepSeek. Configure GitHub Pages to use GitHub Actions as its source.
 
-- Source: `Deploy from a branch`
-- Branch: `main`
-- Folder: `/docs`
+- Source: `GitHub Actions`
 
 The public URL will be:
 

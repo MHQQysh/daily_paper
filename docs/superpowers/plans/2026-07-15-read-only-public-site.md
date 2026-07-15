@@ -22,6 +22,7 @@
 - Modify: `docs/index.html`
 - Modify: `docs/app.js`
 - Modify: `docs/styles.css`
+- Replace: `.github/workflows/daily.yml` with `.github/workflows/pages.yml`
 - Test: `tests/test_public_site.py`
 
 **Interfaces:**
@@ -40,7 +41,7 @@ Expected: FAIL because the stable public-mode selectors and visibility assignmen
 
 - [ ] **Step 3: Implement the capability gate**
 
-Add `id="searchModeLabel"` and `id="runPanel"` in `docs/index.html`. In `configureRunMode()`, set `runPanel.hidden`, `editTopicsButton.hidden`, and `addPaperButton.hidden` from `IS_LOCAL_MODE`; set the public label to `Search papers`; return before configuring token controls in public mode. Add a generic `[hidden] { display: none !important; }` rule.
+Add `id="searchModeLabel"` and `id="runPanel"` in `docs/index.html`. In `configureRunMode()`, set `runPanel.hidden`, `editTopicsButton.hidden`, and `addPaperButton.hidden` from `IS_LOCAL_MODE`; set the public label to `Search papers`; return before configuring token controls in public mode. Add a generic `[hidden] { display: none !important; }` rule. Replace the search workflow with a deploy-only Pages workflow triggered by pushes to `main`.
 
 - [ ] **Step 4: Run the focused and full tests**
 
@@ -86,6 +87,8 @@ Check a 390 by 844 viewport and confirm there is no horizontal overflow.
 - Commit: `docs/index.html`
 - Commit: `docs/app.js`
 - Commit: `docs/styles.css`
+- Commit: `.github/workflows/pages.yml`
+- Delete: `.github/workflows/daily.yml`
 - Commit: `tests/test_public_site.py`
 
 **Interfaces:**

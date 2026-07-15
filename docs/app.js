@@ -8,23 +8,20 @@ const state = {
   query: "",
   openTopics: new Set(),
   customTopics: false,
-  lastKnownRunAt: "",
   pollingTimer: null,
   manualPaper: null,
   manualCandidates: [],
 };
 
-const REPO_FULL_NAME = "MHQQysh/daily_paper";
-const WORKFLOW_FILE = "daily.yml";
 const TOPIC_STORAGE_KEY = "dailyPaper.customTopics.v1";
 const TOPIC_SCHEMA_STORAGE_KEY = "dailyPaper.topicSchemaVersion";
 const TOPIC_SCHEMA_VERSION = "2026-07-15-three-directions";
-const GITHUB_TOKEN_STORAGE_KEY = "dailyPaper.githubToken.v1";
 const DEEPSEEK_TOKEN_STORAGE_KEY = "dailyPaper.deepseekApiKey.v1";
 const IS_LOCAL_MODE = ["127.0.0.1", "localhost"].includes(window.location.hostname);
 const topicTree = document.getElementById("topicTree");
 const detail = document.getElementById("paperDetail");
 const searchInput = document.getElementById("searchInput");
+const searchModeLabel = document.getElementById("searchModeLabel");
 const addPaperButton = document.getElementById("addPaperButton");
 const allButton = document.getElementById("allButton");
 const highButton = document.getElementById("highButton");
@@ -36,6 +33,7 @@ const addTopicButton = document.getElementById("addTopicButton");
 const saveTopicsButton = document.getElementById("saveTopicsButton");
 const resetTopicsButton = document.getElementById("resetTopicsButton");
 const copyTopicsButton = document.getElementById("copyTopicsButton");
+const runPanel = document.getElementById("runPanel");
 const startDate = document.getElementById("startDate");
 const endDate = document.getElementById("endDate");
 const papersPerTopic = document.getElementById("papersPerTopic");
@@ -498,7 +496,7 @@ async function loadData() {
     const data = await response.json();
     state.sourcePapers = (data.papers || []).map(clonePaper);
     state.serverTopics = await loadProjectTopics(data.topics || []);
-    state.topics = loadStoredTopics(state.serverTopics);
+    state.topics = IS_LOCAL_MODE ? loadStoredTopics(state.serverTopics) : state.serverTopics;
     applyTopicModel();
     state.topics.forEach((topic) => state.openTopics.add(topic.id));
     const firstPaper = filteredPapers()[0];
@@ -561,7 +559,6 @@ async function loadRunStatus() {
       throw new Error(`HTTP ${response.status}`);
     }
     const status = await response.json();
-    state.lastKnownRunAt = state.lastKnownRunAt || status.last_run_at || "";
     runStatus.innerHTML = formatRunStatus(status);
     return status;
   } catch {
@@ -570,81 +567,38 @@ async function loadRunStatus() {
   }
 }
 
-function activeTokenStorageKey() {
-  return IS_LOCAL_MODE ? DEEPSEEK_TOKEN_STORAGE_KEY : GITHUB_TOKEN_STORAGE_KEY;
-}
-
 function getApiToken() {
-  return apiToken.value.trim() || localStorage.getItem(activeTokenStorageKey()) || "";
+  return apiToken.value.trim() || localStorage.getItem(DEEPSEEK_TOKEN_STORAGE_KEY) || "";
 }
 
 function saveApiToken(showMessage = true) {
   const token = apiToken.value.trim();
   if (!token) {
-    runStatus.textContent = IS_LOCAL_MODE ? "Paste a DeepSeek API key first." : "Paste a GitHub token first.";
+    runStatus.textContent = "Paste a DeepSeek API key first.";
     return false;
   }
-  localStorage.setItem(activeTokenStorageKey(), token);
+  localStorage.setItem(DEEPSEEK_TOKEN_STORAGE_KEY, token);
   if (showMessage) {
-    runStatus.textContent = IS_LOCAL_MODE
-      ? "DeepSeek API key saved in this browser."
-      : "GitHub token saved in this browser.";
+    runStatus.textContent = "DeepSeek API key saved in this browser.";
   }
   return true;
 }
 
 function configureRunMode() {
-  const storedToken = localStorage.getItem(activeTokenStorageKey()) || "";
-  apiToken.value = storedToken;
+  runPanel.hidden = !IS_LOCAL_MODE;
+  editTopicsButton.hidden = !IS_LOCAL_MODE;
   addPaperButton.hidden = !IS_LOCAL_MODE;
-  if (IS_LOCAL_MODE) {
-    tokenLabel.textContent = "DeepSeek API key";
-    apiToken.placeholder = "sk-...";
-    tokenHelp.textContent = "Local mode: the key stays in this browser and is sent only to this computer.";
-    saveTokenButton.textContent = "Save key";
-    runSearchButton.textContent = "Run local search";
-  } else {
-    tokenLabel.textContent = "GitHub token";
-    apiToken.placeholder = "GitHub token for triggering Actions";
-    tokenHelp.textContent = "Online mode: this triggers the repository's GitHub Actions workflow.";
-    saveTokenButton.textContent = "Save token";
-    runSearchButton.textContent = "Run search";
-  }
-}
-
-async function triggerWorkflow() {
-  const token = getApiToken();
-  if (!token) {
-    runStatus.textContent = "Paste a GitHub token first, then click Save token.";
+  searchModeLabel.textContent = IS_LOCAL_MODE ? "Search or add paper" : "Search papers";
+  if (!IS_LOCAL_MODE) {
     return;
   }
-  const options = selectedRunOptions();
-  const previousRunAt = state.lastKnownRunAt;
-  const inputs = {
-    start_date: options.startDate,
-    end_date: options.endDate,
-    papers_per_topic: String(options.papersPerTopic),
-    topics_json: JSON.stringify({ topics: state.topics }),
-  };
-  runSearchButton.disabled = true;
-  runStatus.innerHTML = "Triggered GitHub Actions. Waiting for the updated run report...";
-  const response = await fetch(`https://api.github.com/repos/${REPO_FULL_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`, {
-    method: "POST",
-    headers: {
-      "Accept": "application/vnd.github+json",
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-    body: JSON.stringify({ ref: "main", inputs }),
-  });
-  if (!response.ok) {
-    const body = await response.text();
-    runSearchButton.disabled = false;
-    runStatus.textContent = `Failed to trigger workflow: HTTP ${response.status}. ${body}`;
-    return;
-  }
-  pollForRunUpdate(previousRunAt);
+  const storedToken = localStorage.getItem(DEEPSEEK_TOKEN_STORAGE_KEY) || "";
+  apiToken.value = storedToken;
+  tokenLabel.textContent = "DeepSeek API key";
+  apiToken.placeholder = "sk-...";
+  tokenHelp.textContent = "Local mode: the key stays in this browser and is sent only to this computer.";
+  saveTokenButton.textContent = "Save key";
+  runSearchButton.textContent = "Run local search";
 }
 
 function selectedRunOptions() {
@@ -893,32 +847,6 @@ async function confirmManualPaper() {
   }
 }
 
-function pollForRunUpdate(previousRunAt) {
-  if (state.pollingTimer) {
-    clearInterval(state.pollingTimer);
-  }
-  let attempts = 0;
-  state.pollingTimer = setInterval(async () => {
-    attempts += 1;
-    const status = await loadRunStatus();
-    if (status?.last_run_at && status.last_run_at !== previousRunAt) {
-      state.lastKnownRunAt = status.last_run_at;
-      clearInterval(state.pollingTimer);
-      state.pollingTimer = null;
-      runSearchButton.disabled = false;
-      await loadData();
-      return;
-    }
-    runStatus.innerHTML = `Workflow is still running... checked ${attempts} time${attempts === 1 ? "" : "s"}.`;
-    if (attempts >= 40) {
-      clearInterval(state.pollingTimer);
-      state.pollingTimer = null;
-      runSearchButton.disabled = false;
-      runStatus.innerHTML = "Workflow was triggered, but the site has not published a new status yet. Check the Actions tab.";
-    }
-  }, 15000);
-}
-
 searchInput.addEventListener("input", (event) => {
   state.query = event.target.value.trim();
   render();
@@ -987,8 +915,7 @@ copyTopicsButton.addEventListener("click", async () => {
 });
 saveTokenButton.addEventListener("click", () => saveApiToken());
 runSearchButton.addEventListener("click", () => {
-  const trigger = IS_LOCAL_MODE ? triggerLocalRun : triggerWorkflow;
-  trigger().catch((error) => {
+  triggerLocalRun().catch((error) => {
     runSearchButton.disabled = false;
     runStatus.textContent = error.message;
   });
@@ -1010,7 +937,9 @@ confirmPaperAdd.addEventListener("click", () => {
 async function initializeApp() {
   configureRunMode();
   await loadData();
-  await loadRunStatus();
+  if (IS_LOCAL_MODE) {
+    await loadRunStatus();
+  }
 }
 
 initializeApp().catch((error) => {

@@ -30,7 +30,7 @@ The public site hides:
 
 ## Data Flow
 
-Local operations continue to update `data/papers.json`, `docs/papers.json`, and `docs/run_status.json`. Publishing consists of committing the desired JSON snapshot and pushing `main`; GitHub Pages then serves the updated files from `docs/`.
+Local operations continue to update `data/papers.json`, `docs/papers.json`, and `docs/run_status.json`. Publishing consists of committing the desired JSON snapshot and pushing `main`; a deploy-only GitHub Actions workflow serves `docs/` without running search or DeepSeek.
 
 ## Validation
 
