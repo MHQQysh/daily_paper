@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-15T04:35:57+00:00",
+  "last_updated": "2026-07-15T04:49:30+00:00",
   "topics": [
     {
       "id": "visual-token-pruning",
@@ -68,9 +68,9 @@
         "token-merging-compression"
       ],
       "relevance_score": 100,
-      "summary_zh": "候选论文：Vision-Language-Action (VLA) models have emerged as a powerful end-to-end paradigm for robotic manipulation by mapping language instructions and 2D visual inputs directly to actions.",
-      "why_relevant_zh": "关键词匹配到 Token Merging / Compression；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出VistaVLA框架，通过Merge-then-Query机制将3D高斯原语压缩为紧凑上下文令牌，实现99%令牌缩减。",
+      "why_relevant_zh": "直接提出令牌合并与压缩方法，显著减少令牌数量，高度相关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12756v1",
@@ -95,14 +95,14 @@
         "code": ""
       },
       "topics": [
-        "vlm-acceleration",
         "visual-token-pruning",
-        "token-merging-compression"
+        "token-merging-compression",
+        "vlm-acceleration"
       ],
       "relevance_score": 100,
-      "summary_zh": "候选论文：Vision-language models (VLMs) process large numbers of visual tokens, resulting in substantial inference latency and memory overhead.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Visual Token Pruning, Token Merging / Compression；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出VisCo，利用预训练VLM自身作为编码器进行视觉token压缩，无需额外训练。",
+      "why_relevant_zh": "直接针对视觉token压缩，训练高效且性能优异，高度相关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12557v1",
@@ -133,9 +133,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 100,
-      "summary_zh": "候选论文：Large Vision-Language Models (LVLMs) face significant challenges in long video understanding due to the excessive computational cost and information loss associated with uniform sampling.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出基于高斯混合模型的事件感知视觉分配方法，通过差异化分配高/低分辨率关键帧来优化令牌预算。",
+      "why_relevant_zh": "直接针对视觉令牌预算优化，属于VLM加速和令牌选择，且方法即插即用，高度相关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12550v1",
@@ -163,9 +163,9 @@
         "llm-context-kv-pruning"
       ],
       "relevance_score": 100,
-      "summary_zh": "候选论文：The key-value (KV) cache has become the dominant memory cost of transformer inference.",
-      "why_relevant_zh": "关键词匹配到 LLM Context / KV Pruning；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出联合Tucker分解和JL残差分配的KV缓存压缩方法，实现近无损的2-3倍压缩。",
+      "why_relevant_zh": "直接针对KV缓存压缩，属于LLM上下文/KV剪枝范畴，方法新颖且效果显著。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12656v1",
@@ -195,9 +195,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 80,
-      "summary_zh": "候选论文：Recent progress in compressing large-scale 3D Gaussian Splatting (3DGS) data has substantially reduced storage footprint, network transmission bandwidth, and memory traffic to GPU caches before rendering.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出内容感知的3D高斯泼溅压缩方法，通过自适应量化和剪枝优化结构，并将几何转换为稀疏八叉树令牌进行编码。",
+      "why_relevant_zh": "涉及令牌剪枝和自适应令牌选择，属于动态令牌选择范畴，但主要针对3DGS压缩，与视觉令牌剪枝直接相关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12725v1",
@@ -222,9 +222,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 72,
-      "summary_zh": "候选论文：Neural audio codecs were originally developed for high-fidelity compression; however, their latent token representations and expressive decoders also constitute a powerful substrate for controllable audio transformation.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出神经变形方法，在神经音频编解码器中进行token级变形。",
+      "why_relevant_zh": "涉及token选择与编辑，但应用于音频领域，与视觉token剪枝间接相关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12696v1",
@@ -257,9 +257,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 68,
-      "summary_zh": "候选论文：Sparse Mixture-of-Experts (MoE) models have become an important approach for scaling Large Language Models (LLMs), but their inference efficiency depends strongly on expert activation patterns.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出成本感知的推测解码框架EcoSpec，优化MoE模型专家激活。",
+      "why_relevant_zh": "虽涉及解码效率，但核心是专家路由而非token剪枝，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12815v1",
@@ -290,9 +290,9 @@
         "visual-token-pruning"
       ],
       "relevance_score": 64,
-      "summary_zh": "候选论文：Chain-of-Thought (CoT) prompting is widely used as a test-time scaling strategy for Vision-Language Models (VLMs), but it remains unclear what is extended when VLMs generate longer reasoning traces.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Visual Token Pruning；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "通过视觉访问扫描干预，发现CoT推理主要依赖语言侧计算而非持续图像token访问。",
+      "why_relevant_zh": "直接研究图像token访问边界，揭示token冗余，对视觉token剪枝有指导意义。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12334v1",
@@ -319,9 +319,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "候选论文：Retrieval-augmented question answering depends on selecting evidence passages that jointly support answer generation.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "将证据选择建模为QUBO优化问题，通过离散优化选择紧凑证据子集。",
+      "why_relevant_zh": "涉及动态选择证据子集，与动态token选择相关，但主要针对检索增强问答，非典型token剪枝。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12968v1",
@@ -347,9 +347,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "候选论文：A finite quantum reference token with group-valued misalignment induces a random-unitary channel, but optimal degradation is generally an optimization over all quantum post-processings.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "研究量子参考系噪声的经典化条件，涉及动态选择与token效率。",
+      "why_relevant_zh": "论文讨论动态选择机制，但属于量子信息领域，与视觉/语言token剪枝间接相关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12250v1",
@@ -387,9 +387,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "候选论文：To secure modern distributed digital infrastructures, quantum blockchains exploit quantum resources to achieve information-theoretic security and surpass the classical one-third fault-tolerance bound.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "实验演示可扩展量子区块链，实现指数级量子通信复杂度降低。",
+      "why_relevant_zh": "涉及token交换应用，但量子区块链与视觉/语言token剪枝无关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12634v1",
@@ -416,9 +416,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "候选论文：This paper proposes a theoretical framework for understanding intelligence as a process of atomic compression and compositional reuse.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出智能是原子压缩与组合复用的理论框架，强调将复杂现象分解为可复用的原子单元。",
+      "why_relevant_zh": "讨论令牌级处理与原子结构，与动态令牌选择概念相关，但偏理论且不涉及具体剪枝方法。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12503v1",
@@ -453,9 +453,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 52,
-      "summary_zh": "候选论文：4D spatio-temporal reasoning, jointly modeling 3D spatial structure and temporal evolution, is essential for understanding dynamic worlds and enabling embodied interaction.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出无训练框架DynTrace，通过动态轨迹令牌跟踪物体证据以增强4D时空推理。",
+      "why_relevant_zh": "引入动态轨迹令牌，属于令牌级操作，但主要关注推理增强而非加速，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12786v1",
@@ -481,13 +481,12 @@
         "code": ""
       },
       "topics": [
-        "vlm-acceleration",
-        "survey-benchmark"
+        "vlm-acceleration"
       ],
       "relevance_score": 52,
-      "summary_zh": "候选论文：Cross-image comparative reasoning remains challenging for vision-language models (VLMs), especially when correct prediction requires fine-grained attribute grounding and globally consistent reasoning.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出跨图像比较推理框架CoRe，包含数据集、奖励机制和基准。",
+      "why_relevant_zh": "涉及VLM推理效率，但核心是推理能力而非token剪枝，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12278v1",
@@ -517,9 +516,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 52,
-      "summary_zh": "候选论文：Recent vision-language models (VLMs) for computational pathology report striking zero-shot performance on whole-slide image (WSI) visual question answering (VQA) benchmarks.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "审计病理学VLM基准中的数据泄露问题，提出评估建议。",
+      "why_relevant_zh": "作为基准分析论文，与VLM加速评估相关，但非直接token剪枝方法。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12477v1",
@@ -551,9 +550,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "候选论文：Autonomous UAV systems increasingly rely on multimodal large language models (MLLMs) to operate in complex real-world environments.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出SIS-Bench基准评估无人机具身智能中MLLM的空间认知与自我意识，并探索运动感知表示。",
+      "why_relevant_zh": "涉及MLLM效率评估，但主要关注基准测试而非直接加速或剪枝方法，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12375v1",
@@ -588,9 +587,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "候选论文：Image Quality Assessment (IQA) in open-world environments remains challenging due to limited generalization and interpretability.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出IQA-T1框架，通过工具生成视觉证据增强MLLM在图像质量评估中的推理能力。",
+      "why_relevant_zh": "涉及MLLM推理增强，但核心是工具集成而非token效率，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12764v1",
@@ -626,13 +625,12 @@
         "code": ""
       },
       "topics": [
-        "vlm-acceleration",
-        "survey-benchmark"
+        "vlm-acceleration"
       ],
       "relevance_score": 44,
-      "summary_zh": "候选论文：Retrieval-augmented generation (RAG) has emerged as a critical paradigm for grounding Multimodal Large Language Models (MLLMs) in external knowledge.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出自演化多模态知识超图框架EvoGraph-R1，用于代理检索。",
+      "why_relevant_zh": "涉及多模态检索效率，但未直接处理token剪枝或压缩。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12787v1",
@@ -662,13 +660,12 @@
         "code": ""
       },
       "topics": [
-        "vlm-acceleration",
-        "survey-benchmark"
+        "vlm-acceleration"
       ],
       "relevance_score": 44,
-      "summary_zh": "候选论文：Recent advances in multimodal large language models (MLLMs) have significantly improved the performance of multimodal emotion recognition (MER) and enabled interpretable description generation by jointly modeling video, ",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出轻量级多模态情感识别框架Light-MER，通过知识蒸馏实现高效推理。",
+      "why_relevant_zh": "通过知识蒸馏压缩模型，间接涉及token处理效率，但未直接讨论token剪枝或选择。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12319v1",
@@ -701,9 +698,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "候选论文：As vision-language models (VLMs) are increasingly deployed in geospatial question answering and visual scene understanding, improving their spatial cognition capability on street view imagery for complex logical reasonin",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出DM-KG框架，通过知识图谱增强VLM空间推理能力。",
+      "why_relevant_zh": "虽涉及VLM加速，但核心是空间推理增强，非直接token剪枝或加速方法。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12818v1",
@@ -732,9 +729,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "候选论文：Visual place recognition (VPR) is a key enabler of accurate localization and long-term autonomous navigation in robotics applications, such as loop closure detection for simultaneous localisation and mapping (SLAM).",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出VLM审计框架，独立验证视觉地点识别结果，提升召回率并降低误接受率。",
+      "why_relevant_zh": "使用VLM进行后验证，涉及推理效率，但核心是验证而非token剪枝。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12911v1",
@@ -764,9 +761,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "候选论文：Multimodal Large Language Models (MLLMs) are increasingly used for dietary assessment from meal images, where retrieval-augmented grounding was shown to sharpen nutrition estimates.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出Open-KNEAD框架，通过知识检索和agent分解实现营养估计，无需训练且本地部署。",
+      "why_relevant_zh": "涉及MLLM推理效率，但主要贡献在检索增强和分解，非直接token剪枝。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12711v1",
@@ -794,9 +791,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "候选论文：Vision--Language Models (VLMs) have recently demonstrated promising performance on structured visual reasoning tasks, including grid-based puzzles.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出神经符号方法，利用MaxSAT优化VLM在数独任务中的逻辑一致性。",
+      "why_relevant_zh": "通过外部推理提升VLM性能，但未涉及token效率，相关性一般。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12418v1",
@@ -825,9 +822,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "候选论文：Large-scale Vision-Language Models have demonstrated impressive transfer learning capabilities across a wide range of tasks.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出多模态量子适配器MQAdapter，通过粗到细的量子学习提升VLM少样本分类的细粒度判别能力。",
+      "why_relevant_zh": "虽涉及VLM微调效率，但核心是量子特征增强而非token剪枝或加速，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12982v1",
@@ -856,9 +853,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "候选论文：Math reasoning has achieved significant progress with the rapid advancement of Multimodal Large Language Models (MLLMs), however analytic geometry remains largely underexplored, primarily due to the scarcity of annotated",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出FormalAnalyticGeo框架，利用形式语言和MLLM自动生成解析几何问题。",
+      "why_relevant_zh": "涉及MLLM加速生成，但主要贡献在数据集生成而非token效率优化，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12287v1",
@@ -891,9 +888,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 36,
-      "summary_zh": "候选论文：Vision-Language-Action (VLA) models exhibit strong generalization for robotic manipulation, yet their high inference latency limits real time deployment.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "通过减少视觉编码和扩散采样的时间冗余加速VLA模型推理。",
+      "why_relevant_zh": "涉及减少冗余，但主要针对VLA系统级加速，非通用token剪枝方法。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12640v1",
@@ -924,9 +921,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 36,
-      "summary_zh": "候选论文：Reinforcement learning with verifiable rewards, and Group Relative Policy Optimization (GRPO) in particular, is now run routinely on a supervised checkpoint in the hope of producing a stronger agent.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "研究GRPO强化学习在小规模视觉语言模型智能体上的失败机制，发现仅在存在提升空间时有效。",
+      "why_relevant_zh": "涉及视觉语言模型加速，但主要关注强化学习训练而非令牌剪枝，相关性较弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12571v1",
@@ -958,9 +955,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 32,
-      "summary_zh": "候选论文：Vision-Language-Action (VLA) models are deployed through pipelines that end users cannot audit, and a poisoned VLA can behave normally on clean observations while a small visual trigger redirects a long-horizon robot pol",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出推理时防御机制，通过监测令牌级不确定性检测并恢复视觉语言动作模型的后门攻击。",
+      "why_relevant_zh": "涉及令牌级不确定性监测，但主要关注安全防御而非令牌剪枝或加速，相关性较低。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12931v1",
@@ -991,9 +988,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 32,
-      "summary_zh": "候选论文：Reinforcement Learning (RL) has demonstrated significant potential for improving Vision-Language-Action (VLA) models on complex manipulation tasks.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出ExToken框架，通过离散行为先验token实现结构化探索，加速VLA模型强化学习。",
+      "why_relevant_zh": "使用token进行行为选择，但核心是强化学习探索效率，非传统token剪枝。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12541v1",
@@ -1022,9 +1019,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Docker is widely used to create reproducible build environments, but Dockerfile drift, the divergence between a Dockerfile and its evolving source code, can cause CI/CD builds to fail.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出上下文感知的Dockerfile漂移修复框架，使用依赖图指导补丁生成。",
+      "why_relevant_zh": "与令牌剪枝无关，仅因涉及令牌预算控制（提示长度）而弱相关，但主题是软件工程。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12380v1",
@@ -1052,9 +1049,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Small molecules, crystals, and proteins all reduce to atoms in 3D space, yet their generative pipelines remain fragmented across domains, each with its Small molecules, crystals, and proteins all reduce to atoms in 3D sp",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出单一架构流匹配自编码器SinAE，用于跨域原子系统的近无损重建与生成。",
+      "why_relevant_zh": "不涉及token剪枝或效率，属于生成模型架构，相关性弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12792v1",
@@ -1083,9 +1080,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Jailbreak-robustness research typically evaluates safety through generated responses using an LLM-as-judge approach.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出JADR协议，通过Jacobian空间评估模型内部危险识别能力，比较不同量化级别。",
+      "why_relevant_zh": "涉及模型内部表示分析，但与token剪枝无直接关联，相关性弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12395v1",
@@ -1125,9 +1122,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Reinforcement learning with verifiable rewards without human-annotated data, often referred to as zero RL, has emerged as a powerful paradigm for eliciting chain-of-thought reasoning.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "探索零强化学习扩展到万亿参数模型，发现涌现推理行为并提出评估框架。",
+      "why_relevant_zh": "关注大规模RL训练而非token效率，仅作为基准或分析提及，相关性弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12341v1",
@@ -1156,9 +1153,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Text-to-SQL is increasingly deployed across trust boundaries between data providers and users.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出策略条件约束解码PCC-SQL，实现Text-to-SQL中的列级访问控制。",
+      "why_relevant_zh": "不涉及token剪枝或效率，属于SQL安全领域，相关性弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12277v1",
@@ -1191,9 +1188,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Next-Token Prediction (NTP) carries two structural training signal limitations.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出NONTP扩展生成式推荐中的训练信号覆盖。",
+      "why_relevant_zh": "与token剪枝无关，属于推荐系统训练方法。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12463v1",
@@ -1226,9 +1223,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Coding agents must integrate external tool returns into ongoing reasoning - a capability that standard left-to-right pretraining on code exposes only in its forward direction.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出函数感知的填充中间训练方法，提升编码代理模型在工具使用和代码生成上的性能。",
+      "why_relevant_zh": "不涉及token剪枝或效率优化，仅作为基准方法提及，相关性弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.13034v1",
@@ -1257,9 +1254,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Large language model (LLM) agents increasingly automate multi-step engineering and informatics workflows, yet they rarely ask how much effort a task actually requires.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出任务感知执行范围估计方法E3，通过最小充分执行减少冗余token消耗。",
+      "why_relevant_zh": "论文关注token冗余和成本削减，但核心是任务复杂度估计而非通用token剪枝方法，相关性较弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12767v1",
@@ -1284,9 +1281,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Multiple-choice benchmarks that rank candidate completions by conditional log-probability suffer from a length bias: because log-probabilities sum over tokens, longer answers tend to be penalized relative to shorter ones",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "分析长度偏差对多项选择基准的影响，提出贝叶斯准确率评分规则。",
+      "why_relevant_zh": "关注评估方法而非token效率，与token剪枝弱相关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12161v1",
@@ -1312,9 +1309,9 @@
         "token-merging-compression"
       ],
       "relevance_score": 84,
-      "summary_zh": "候选论文：Context-reduction layers for API-based coding agents, including command-output compressors, retrieval rankers, and payload-optimizing proxies, are usually evaluated by how much text they remove.",
-      "why_relevant_zh": "关键词匹配到 Token Merging / Compression；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "本文研究了API编码代理中上下文缩减层的实际成本效益，发现令牌减少并不总能降低计费成本。",
+      "why_relevant_zh": "直接探讨令牌缩减（压缩）对成本和任务成功率的影响，属于令牌合并/压缩范畴。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11266v1",
@@ -1340,9 +1337,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 76,
-      "summary_zh": "候选论文：Chain-of-Thought (CoT) prompting has significantly advanced the reasoning capabilities of Large Language Models (LLMs), yet it often incurs substantial computational costs due to over-reasoning: the generation of redunda",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出RIV-GSM8K基准和CAID指标，诊断并压缩CoT中的低效推理步骤，减少token消耗。",
+      "why_relevant_zh": "论文聚焦于推理步骤的token效率诊断和压缩，属于token剪枝/压缩的评估与优化。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11326v1",
@@ -1394,9 +1391,9 @@
         "token-merging-compression"
       ],
       "relevance_score": 76,
-      "summary_zh": "候选论文：Generative retrieval has become an increasingly adopted paradigm for industrial search, recommendation, and advertising systems, delivering significant online gains.",
-      "why_relevant_zh": "关键词匹配到 Token Merging / Compression；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出Prompt Generation框架，通过配置驱动和token压缩解耦特征处理与模型架构，加速训练、部署和推理。",
+      "why_relevant_zh": "论文明确提到内置token压缩处理超长序列，属于token压缩/合并范畴。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12204v1",
@@ -1421,9 +1418,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 72,
-      "summary_zh": "候选论文：Attention can be viewed as an online learner over context, yet existing test-time memories cannot certify that dropping a token leaves outputs unchanged or delete its influence outright.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出支持向量注意力，实现可认证的token丢弃和精确遗忘。",
+      "why_relevant_zh": "直接涉及token选择与丢弃，具有动态选择特性，但主要针对注意力机制。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12079v1",
@@ -1451,9 +1448,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 68,
-      "summary_zh": "候选论文：Decoding continuous language from fMRI signals remains a core challenge in non-invasive brain-computer interface research.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "改进fMRI语言解码基线，并揭示高容量语言模型可能掩盖解码失败。",
+      "why_relevant_zh": "作为基准和评估研究，涉及令牌效率（如语言先验主导），但非直接剪枝方法。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11451v1",
@@ -1485,9 +1482,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "候选论文：Cryptocurrency markets are vulnerable to trade-based manipulation, such as wash trading, which can distort price signals and mislead investors.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "本文提出ManiScope，利用LLM辅助分析加密货币操纵风险。",
+      "why_relevant_zh": "涉及动态token选择和LLM辅助分析，但主题为金融分析，与token剪枝方法关联较弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12056v1",
@@ -1514,9 +1511,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "候选论文：Online shopping is increasingly shifting toward a model in which AI agents independently search for products, compare options, evaluate constraints, and carry out parts of the purchasing process for users.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出面向AI代理的网站设计框架，通过结构清晰性和动作提示减少令牌消耗。",
+      "why_relevant_zh": "通过优化网站结构减少代理的令牌消耗，属于动态令牌选择（输入自适应）范畴。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11436v1",
@@ -1547,13 +1544,12 @@
         "code": ""
       },
       "topics": [
-        "vlm-acceleration",
-        "survey-benchmark"
+        "vlm-acceleration"
       ],
       "relevance_score": 52,
-      "summary_zh": "候选论文：Vision-language models increasingly succeed on multimodal reasoning benchmarks, yet their visual evidence often becomes unstable once it enters the language stack, weakening evidence-grounded reasoning.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出TRACE框架，通过调度视觉中继窗口来增强VLM的接地推理能力。",
+      "why_relevant_zh": "通过控制视觉令牌在推理过程中的分配和保留，实现高效的视觉令牌利用，属于VLM加速范畴。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11844v1",
@@ -1582,9 +1578,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 52,
-      "summary_zh": "候选论文：Recent Multimodal Large Language Models (MLLMs) achieve strong performance on single-view video understanding benchmarks.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "引入多视角体育视频理解基准SportMV-Bench，并提出代理框架提升多模态大模型性能。",
+      "why_relevant_zh": "涉及多模态大模型的高效推理（视图选择），但非直接令牌剪枝，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11581v1",
@@ -1614,9 +1610,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 52,
-      "summary_zh": "候选论文：This paper introduces Actor as Its Own Critic, a unified reinforcement learning framework, Cycle Group Relative Policy Optimization (CycleGRPO), that jointly optimizes region understanding and localization for Multimodal",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "本文提出CycleGRPO框架，统一区域理解和定位，无需文本标注。",
+      "why_relevant_zh": "涉及VLM加速和token级奖励，但核心是强化学习框架，token剪枝非主要焦点。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12177v1",
@@ -1643,9 +1639,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 48,
-      "summary_zh": "候选论文：The analysis of satellite and aerial imagery has entered a new era with the advent of foundation models.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "综述地理空间基础模型，涵盖预训练到智能推理。",
+      "why_relevant_zh": "作为综述论文，与VLM加速相关，但非具体token剪枝方法。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11598v1",
@@ -1671,9 +1667,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 48,
-      "summary_zh": "候选论文：There are two standard ways to spend more compute at test time: let a model reason longer, or sample more attempts and keep one.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "本文提出交互式测试时计算扩展，通过外部工具反馈提升模型性能。",
+      "why_relevant_zh": "涉及VLM作为评判器，但主要关注计算扩展而非token剪枝，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11228v1",
@@ -1706,9 +1702,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "候选论文：While Large Vision-Language Models (LVLMs) demonstrate remarkable capabilities, they remain highly susceptible to embedded social biases.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出DeepBias框架，通过自适应生成和探测评估LVLM中的社会偏见。",
+      "why_relevant_zh": "论文主要关注偏见评估，与token剪枝或加速无直接关系，但涉及VLM的评估，勉强相关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12112v1",
@@ -1740,13 +1736,12 @@
         "code": ""
       },
       "topics": [
-        "vlm-acceleration",
-        "survey-benchmark"
+        "vlm-acceleration"
       ],
       "relevance_score": 44,
-      "summary_zh": "候选论文：Federated fine-tuning of Multimodal Large Language Models (MLLMs) across distributed networks enables privacy-sensitive adaptation to evolving data streams, yet a fundamental obstacle prevents robust deployment in dynami",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出FedCMM框架，通过弹性权重巩固和生成重放缓解联邦多模态大模型中的灾难性遗忘。",
+      "why_relevant_zh": "涉及多模态大模型的高效微调，但核心是持续学习而非令牌剪枝，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11633v1",
@@ -1775,9 +1770,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 44,
-      "summary_zh": "候选论文：Service robots in retail stores increasingly rely on cascaded speech pipelines (STT-LLM-TTS), yet many customer-robot interactions are initiated or guided by nonverbal behaviors such as approaching, waving, pointing, or ",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "本文提出利用非语言线索触发机器人主动响应，并引入VLM生成token。",
+      "why_relevant_zh": "涉及VLM加速和token生成，但核心是交互设计而非token剪枝，相关性中等。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11270v1",
@@ -1811,9 +1806,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 40,
-      "summary_zh": "候选论文：Learning, at its core, extends beyond memorization to the ability to reason and solve novel problems by navigating a space of possibilities.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出Lumo-2潜在世界-动作模型，通过多阶段模态预对齐实现跨模态推理和动作生成。",
+      "why_relevant_zh": "论文涉及潜在空间中的动态推理和动作token选择，但与显式token剪枝或压缩关系较弱，相关性一般。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11388v1",
@@ -1846,9 +1841,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "候选论文：Recent advances in large language models (LLMs) and vision-language models (VLMs) have enabled increasingly capable digital agents for computer use.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出StructAgent框架，通过统一因果结构提升长时数字代理的性能。",
+      "why_relevant_zh": "通过结构化状态和验证器减少冗余令牌处理，提升VLM推理效率。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12111v1",
@@ -1884,9 +1879,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "候选论文：Agentic AI systems are reshaping communications and networking by deploying autonomous intelligent agents capable of collaborative learning while maintaining data privacy at network edges.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出PFAdapter，通过分层LoRA分解实现个性化联邦多模态大模型的高效通信。",
+      "why_relevant_zh": "关注多模态大模型的通信效率，但未直接涉及令牌剪枝或选择，相关性较低。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11562v1",
@@ -1925,9 +1920,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 40,
-      "summary_zh": "候选论文：Mainstream visual encoders are pretrained on natural images and cannot be effectively applied to document images without document-oriented adaptation, as dense text and fine-grained character strokes demand character-lev",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "本文提出MonkeyOCRv2，一种文档AI的视觉-文本基础模型。",
+      "why_relevant_zh": "涉及VLM作为编码器，但主要关注文档理解，token剪枝非核心。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12042v1",
@@ -1956,12 +1951,12 @@
         "code": ""
       },
       "topics": [
-        "survey-benchmark"
+        "token-merging-compression"
       ],
       "relevance_score": 36,
-      "summary_zh": "候选论文：Visual generation is increasingly ubiquitous in diverse domains, from text-to-image/video synthesis to multimodal interactive creation.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出SymbOmni，通过符号概念学习实现代理式全模态模型的累积进化，并减少令牌消耗。",
+      "why_relevant_zh": "提到令牌消耗减少40%，但核心是符号学习而非令牌剪枝，相关性中等偏低。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.12048v1",
@@ -1993,9 +1988,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 36,
-      "summary_zh": "候选论文：Deploying medical visual question answering (MedVQA) systems in real-world clinical settings requires models that adapt to new clinical tasks without forgetting previously acquired knowledge.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "系统评估持续学习方法在异构医学视觉问答中的表现，发现现有方法难以平衡稳定性与可塑性。",
+      "why_relevant_zh": "涉及多模态模型的高效适应，但未直接研究令牌剪枝，相关性弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11211v1",
@@ -2039,9 +2034,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 32,
-      "summary_zh": "候选论文：The popularity of large language models (LLMs) escalates an ongoing demand for effective inference.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出FastTPS方法，通过KV缓存拼接和融合注意力加速LLM推理的token阶段。",
+      "why_relevant_zh": "论文聚焦于推理加速，但未涉及token剪枝或动态选择，仅与token阶段优化相关，相关性较弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11434v1",
@@ -2069,9 +2064,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 32,
-      "summary_zh": "候选论文：Translating Han-Nom manuscripts into modern Vietnamese is challenging because historical pages are often degraded, the script contains rare logographic characters, and parallel supervision is limited.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出多模态RLHF偏好对齐框架，用于汉喃手稿的现代越南语翻译。",
+      "why_relevant_zh": "涉及多模态特征融合和令牌选择，但主要关注翻译质量，令牌效率不是核心。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11586v1",
@@ -2096,9 +2091,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 20,
-      "summary_zh": "候选论文：Mixture-of-Experts (MoE) large language models (LLM) activate only a small number of experts during inference, but token routing introduces persistent expert hotness skew: a small set of hot experts continuously receives",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "本文提出MoE芯片推理中的热专家映射框架，动态管理token路由。",
+      "why_relevant_zh": "涉及token路由和动态选择，但聚焦硬件系统而非模型内token剪枝。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11987v1",
@@ -2140,9 +2135,9 @@
         "dynamic-token-selection"
       ],
       "relevance_score": 20,
-      "summary_zh": "候选论文：Perineural invasion (PNI) is associated with poor postoperative outcomes in intrahepatic cholangiocarcinoma, but it is confirmed by surgical pathology.",
-      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "本文提出解剖知识蒸馏框架，通过token路由在固定预算下选择信息性token。",
+      "why_relevant_zh": "涉及动态token选择，但应用于医学图像，与通用token剪枝方法关联较弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11338v1",
@@ -2172,9 +2167,9 @@
         "vlm-acceleration"
       ],
       "relevance_score": 16,
-      "summary_zh": "候选论文：Symbolic expressions can effectively characterize and predict circuit behavior, but deriving them directly from circuit schematics is challenging.",
-      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出AutoVSR，自动从电路图生成符号表达式。",
+      "why_relevant_zh": "使用VLM进行视觉推理，但令牌效率不是主要贡献，相关性较弱。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11751v1",
@@ -2202,9 +2197,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：As multi-agent, tool-using LLM systems are deployed, a common safety net is a runtime monitor that checks each message, tool call, or step on its own.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "本文研究多智能体系统中的分布式后门攻击，指出局部监控无法检测组合性危害。",
+      "why_relevant_zh": "论文主要关注安全检测而非token剪枝，仅因涉及监控视角的局限性而弱相关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11423v1",
@@ -2238,9 +2233,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Agentic coding tools present new opportunities to transform research workflows.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出ToFu，一个白盒、令牌高效的智能体工具。",
+      "why_relevant_zh": "虽然提到令牌效率，但重点是智能体框架设计，而非令牌剪枝或压缩。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11358v1",
@@ -2270,9 +2265,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Automatic Heuristic Design (AHD) has emerged as a transformative approach for solving combinatorial optimization problems.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出RefineEvo，一种规划引导的启发式进化框架。",
+      "why_relevant_zh": "提到令牌效率，但主要关注组合优化，与令牌剪枝无关。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11427v1",
@@ -2302,9 +2297,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Learning effective action representations is critical for robotic manipulation, where raw control trajectories are often noisy, redundant, and difficult to model directly.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "提出环境依赖的动作表示，用于机器人操作。",
+      "why_relevant_zh": "与令牌剪枝无关，主要关注动作表示学习。",
+      "deepseek_used": true
     },
     {
       "id": "arxiv-2607.11414v1",
@@ -2329,9 +2324,9 @@
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "候选论文：Large language models (LLMs) in financial applications fail most consequentially when they are confidently wrong.",
-      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
-      "deepseek_used": false
+      "summary_zh": "利用LLM内部状态检测金融问答中的幻觉。",
+      "why_relevant_zh": "与令牌剪枝无关，主要关注幻觉检测。",
+      "deepseek_used": true
     }
   ]
 }
