@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "data" / "papers.json"
 DOCS_PATH = ROOT / "docs" / "papers.json"
 CONFIG_PATH = ROOT / "config" / "topics.json"
+STATUS_PATH = ROOT / "docs" / "run_status.json"
 ARXIV_API = "https://export.arxiv.org/api/query"
 DEEPSEEK_API = "https://api.deepseek.com/chat/completions"
 
@@ -168,11 +169,21 @@ def arxiv_base_id(arxiv_id: str) -> str:
     return re.sub(r"v\d+$", "", arxiv_id)
 
 
-def load_topics() -> dict[str, dict[str, Any]]:
+def load_topics(override_json: str = "") -> dict[str, dict[str, Any]]:
+    if override_json:
+        try:
+            data = json.loads(override_json)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"Invalid topics JSON: {exc}") from exc
+        return normalize_topics_payload(data)
     if not CONFIG_PATH.exists():
         return TOPICS
     with CONFIG_PATH.open("r", encoding="utf-8") as handle:
         data = json.load(handle)
+    return normalize_topics_payload(data)
+
+
+def normalize_topics_payload(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
     loaded: dict[str, dict[str, Any]] = {}
     for item in data.get("topics", []):
         name = normalize_text(item.get("name", ""))
@@ -189,7 +200,20 @@ def load_topics() -> dict[str, dict[str, Any]]:
 
 
 def arxiv_query() -> str:
-    title_abs = [f"ti:{term} OR abs:{term}" for term in BASE_QUERY_TERMS]
+    dynamic_terms = list(BASE_QUERY_TERMS)
+    for topic in TOPICS.values():
+        for keyword in topic.get("keywords", []):
+            keyword = normalize_text(keyword)
+            if keyword:
+                dynamic_terms.append(f'"{keyword}"' if " " in keyword else keyword)
+    seen: set[str] = set()
+    unique_terms: list[str] = []
+    for term in dynamic_terms:
+        key = term.lower()
+        if key not in seen:
+            seen.add(key)
+            unique_terms.append(term)
+    title_abs = [f"ti:{term} OR abs:{term}" for term in unique_terms[:60]]
     return " OR ".join(f"({part})" for part in title_abs)
 
 
@@ -275,7 +299,7 @@ def score_and_topics(paper: dict[str, Any]) -> tuple[list[str], int]:
     if any(term in text for term in ["vision-language", "multimodal", "vision transformer", "kv cache"]):
         broad_score += 2
     topics = [k for k, _ in sorted(topic_scores.items(), key=lambda item: item[1], reverse=True)]
-    if not topics and broad_score >= 3:
+    if not topics and broad_score >= 3 and "dynamic-token-selection" in TOPICS:
         topics = ["dynamic-token-selection"]
     relevance = min(100, max(0, broad_score * 8 + sum(topic_scores.values()) * 4))
     return topics[:4], relevance
@@ -425,17 +449,21 @@ def paper_key(paper: dict[str, Any]) -> str:
     return re.sub(r"\W+", "", paper.get("title", "").lower())
 
 
-def merge_papers(existing: list[dict[str, Any]], incoming: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def merge_papers(existing: list[dict[str, Any]], incoming: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, int]]:
     merged: dict[str, dict[str, Any]] = {paper_key(p): p for p in existing}
+    added = 0
+    updated = 0
     for paper in incoming:
         key = paper_key(paper)
         if key in merged:
             merged[key].update({k: v for k, v in paper.items() if v not in (None, "", [])})
+            updated += 1
         else:
             merged[key] = paper
+            added += 1
     papers = list(merged.values())
     papers.sort(key=lambda p: (p.get("published", ""), p.get("relevance_score", 0), p.get("title", "")), reverse=True)
-    return papers
+    return papers, {"added": added, "updated": updated, "total": len(papers)}
 
 
 def build_payload(papers: list[dict[str, Any]]) -> dict[str, Any]:
@@ -465,6 +493,13 @@ def write_outputs(papers: list[dict[str, Any]]) -> None:
             handle.write("\n")
 
 
+def write_status(status: dict[str, Any]) -> None:
+    STATUS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with STATUS_PATH.open("w", encoding="utf-8") as handle:
+        json.dump(status, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+
+
 def main() -> int:
     global TOPICS
     parser = argparse.ArgumentParser(description="Fetch daily token-pruning papers.")
@@ -473,8 +508,9 @@ def main() -> int:
     parser.add_argument("--min-score", type=int, default=int(os.environ.get("PAPER_MIN_SCORE", "18")))
     parser.add_argument("--model", default=os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"))
     parser.add_argument("--fresh", action="store_true", help="Ignore the existing store and rebuild from this run.")
+    parser.add_argument("--topics-json", default=os.environ.get("PAPER_TOPICS_JSON", ""))
     args = parser.parse_args()
-    TOPICS = load_topics()
+    TOPICS = load_topics(args.topics_json)
 
     existing_store = {"papers": []} if args.fresh else read_store(DATA_PATH)
     raw = fetch_arxiv(days=args.days, max_results=args.max_results)
@@ -482,9 +518,39 @@ def main() -> int:
     candidates = [p for p in prelim if p.get("relevance_score", 0) >= args.min_score or p.get("topics")]
     enriched = enrich_papers(candidates, model=args.model)
     kept = [p for p in enriched if p.get("relevance_score", 0) >= args.min_score or p.get("topics")]
-    merged = merge_papers(existing_store.get("papers", []), kept)
+    merged, merge_stats = merge_papers(existing_store.get("papers", []), kept)
     write_outputs(merged)
-    print(f"Fetched {len(raw)} arXiv papers, kept {len(kept)}, total stored {len(merged)}.")
+    status = {
+        "last_run_at": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
+        "lookback_days": args.days,
+        "max_results": args.max_results,
+        "min_score": args.min_score,
+        "raw_found": len(raw),
+        "candidates": len(candidates),
+        "kept": len(kept),
+        "added": merge_stats["added"],
+        "updated": merge_stats["updated"],
+        "total": merge_stats["total"],
+        "deepseek_enabled": bool(os.environ.get("DEEPSEEK_API_KEY")),
+        "topics": [{"id": topic_id, **topic} for topic_id, topic in TOPICS.items()],
+        "github_run_id": os.environ.get("GITHUB_RUN_ID", ""),
+        "github_server_url": os.environ.get("GITHUB_SERVER_URL", ""),
+        "github_repository": os.environ.get("GITHUB_REPOSITORY", ""),
+    }
+    if status["github_run_id"] and status["github_server_url"] and status["github_repository"]:
+        status["workflow_url"] = (
+            f"{status['github_server_url']}/{status['github_repository']}/actions/runs/{status['github_run_id']}"
+        )
+    write_status(status)
+    print(
+        "Fetched {raw} arXiv papers, kept {kept}, added {added}, updated {updated}, total stored {total}.".format(
+            raw=len(raw),
+            kept=len(kept),
+            added=merge_stats["added"],
+            updated=merge_stats["updated"],
+            total=merge_stats["total"],
+        )
+    )
     return 0
 
 

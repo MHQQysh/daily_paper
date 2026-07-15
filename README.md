@@ -28,6 +28,21 @@ Saving there changes the grouping in your browser immediately and stores it in l
 
 To change the default directions used by the daily GitHub Actions fetcher, edit `config/topics.json` in the repository.
 
+## Run From The Website
+
+The website can trigger the GitHub Actions workflow directly. This avoids any extra backend service.
+
+1. Create a GitHub fine-grained token that can access this repository and trigger Actions.
+2. Open the site.
+3. Paste the token into `GitHub token for triggering Actions`.
+4. Click `Save token`. It is saved only in your browser local storage.
+5. Choose the range, such as `30 days`.
+6. Click `Run search`.
+
+The workflow will search papers, use the repository secret `DEEPSEEK_API_KEY` for DeepSeek translation, update `docs/papers.json`, update `docs/run_status.json`, and redeploy the site.
+
+The run panel reports how many papers were found, kept, added, updated, and stored in total.
+
 ## Local Run
 
 ```powershell

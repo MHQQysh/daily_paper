@@ -8,9 +8,14 @@ const state = {
   query: "",
   openTopics: new Set(),
   customTopics: false,
+  lastKnownRunAt: "",
+  pollingTimer: null,
 };
 
+const REPO_FULL_NAME = "MHQQysh/daily_paper";
+const WORKFLOW_FILE = "daily.yml";
 const TOPIC_STORAGE_KEY = "dailyPaper.customTopics.v1";
+const GITHUB_TOKEN_STORAGE_KEY = "dailyPaper.githubToken.v1";
 const topicTree = document.getElementById("topicTree");
 const detail = document.getElementById("paperDetail");
 const searchInput = document.getElementById("searchInput");
@@ -22,6 +27,14 @@ const topicEditor = document.getElementById("topicEditor");
 const saveTopicsButton = document.getElementById("saveTopicsButton");
 const resetTopicsButton = document.getElementById("resetTopicsButton");
 const copyTopicsButton = document.getElementById("copyTopicsButton");
+const lookbackDays = document.getElementById("lookbackDays");
+const maxResults = document.getElementById("maxResults");
+const minScore = document.getElementById("minScore");
+const freshRun = document.getElementById("freshRun");
+const githubToken = document.getElementById("githubToken");
+const saveTokenButton = document.getElementById("saveTokenButton");
+const runSearchButton = document.getElementById("runSearchButton");
+const runStatus = document.getElementById("runStatus");
 const statusText = document.getElementById("statusText");
 const paperCount = document.getElementById("paperCount");
 const topicCount = document.getElementById("topicCount");
@@ -209,7 +222,7 @@ function groupedPaperRows(papers) {
   return Array.from(grouped.entries())
     .map(([date, items]) => `
       <div class="date-group">
-        <div class="date-label">${escapeHtml(date)} · ${items.length}</div>
+        <div class="date-label">${escapeHtml(date)} / ${items.length}</div>
         ${items.map(paperRow).join("")}
       </div>
     `)
@@ -299,7 +312,7 @@ function renderDetail() {
         </section>
       </div>
       <section class="abstract">
-        <h4>中文 Abstract</h4>
+        <h4>Chinese Abstract</h4>
         <p>${escapeHtml(paper.abstract_zh || paper.abstract || "No abstract available.")}</p>
       </section>
       <details class="original-abstract">
@@ -352,6 +365,118 @@ async function loadData() {
   }
 }
 
+function formatRunStatus(status) {
+  if (!status || !status.last_run_at) {
+    return "No completed run yet.";
+  }
+  const time = new Date(status.last_run_at).toLocaleString();
+  const workflow = status.workflow_url
+    ? ` <a href="${escapeHtml(status.workflow_url)}" target="_blank" rel="noreferrer">workflow</a>`
+    : "";
+  return `
+    <strong>Last run:</strong> ${escapeHtml(time)}${workflow}<br>
+    <strong>Range:</strong> ${Number(status.lookback_days || 0)} days,
+    <strong>found:</strong> ${Number(status.raw_found || 0)},
+    <strong>kept:</strong> ${Number(status.kept || 0)},
+    <strong>added:</strong> ${Number(status.added || 0)},
+    <strong>updated:</strong> ${Number(status.updated || 0)},
+    <strong>total:</strong> ${Number(status.total || 0)}.
+    <strong>DeepSeek:</strong> ${status.deepseek_enabled ? "on" : "off"}.
+  `;
+}
+
+async function loadRunStatus() {
+  try {
+    const response = await fetch(`run_status.json?t=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const status = await response.json();
+    state.lastKnownRunAt = state.lastKnownRunAt || status.last_run_at || "";
+    runStatus.innerHTML = formatRunStatus(status);
+    return status;
+  } catch {
+    runStatus.textContent = "No completed run yet.";
+    return null;
+  }
+}
+
+function getGithubToken() {
+  return githubToken.value.trim() || localStorage.getItem(GITHUB_TOKEN_STORAGE_KEY) || "";
+}
+
+function saveGithubToken() {
+  const token = githubToken.value.trim();
+  if (!token) {
+    runStatus.textContent = "Paste a GitHub token first.";
+    return;
+  }
+  localStorage.setItem(GITHUB_TOKEN_STORAGE_KEY, token);
+  githubToken.value = "";
+  runStatus.textContent = "GitHub token saved in this browser.";
+}
+
+async function triggerWorkflow() {
+  const token = getGithubToken();
+  if (!token) {
+    runStatus.textContent = "Paste a GitHub token first, then click Save token.";
+    return;
+  }
+  const previousRunAt = state.lastKnownRunAt;
+  const inputs = {
+    lookback_days: lookbackDays.value,
+    max_results: maxResults.value,
+    min_score: minScore.value,
+    fresh: freshRun.checked ? "true" : "false",
+    topics_json: JSON.stringify({ topics: state.topics }),
+  };
+  runSearchButton.disabled = true;
+  runStatus.innerHTML = "Triggered GitHub Actions. Waiting for the updated run report...";
+  const response = await fetch(`https://api.github.com/repos/${REPO_FULL_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`, {
+    method: "POST",
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+    body: JSON.stringify({ ref: "main", inputs }),
+  });
+  if (!response.ok) {
+    const body = await response.text();
+    runSearchButton.disabled = false;
+    runStatus.textContent = `Failed to trigger workflow: HTTP ${response.status}. ${body}`;
+    return;
+  }
+  pollForRunUpdate(previousRunAt);
+}
+
+function pollForRunUpdate(previousRunAt) {
+  if (state.pollingTimer) {
+    clearInterval(state.pollingTimer);
+  }
+  let attempts = 0;
+  state.pollingTimer = setInterval(async () => {
+    attempts += 1;
+    const status = await loadRunStatus();
+    if (status?.last_run_at && status.last_run_at !== previousRunAt) {
+      state.lastKnownRunAt = status.last_run_at;
+      clearInterval(state.pollingTimer);
+      state.pollingTimer = null;
+      runSearchButton.disabled = false;
+      await loadData();
+      return;
+    }
+    runStatus.innerHTML = `Workflow is still running... checked ${attempts} time${attempts === 1 ? "" : "s"}.`;
+    if (attempts >= 40) {
+      clearInterval(state.pollingTimer);
+      state.pollingTimer = null;
+      runSearchButton.disabled = false;
+      runStatus.innerHTML = "Workflow was triggered, but the site has not published a new status yet. Check the Actions tab.";
+    }
+  }, 15000);
+}
+
 searchInput.addEventListener("input", (event) => {
   state.query = event.target.value.trim();
   render();
@@ -395,5 +520,22 @@ copyTopicsButton.addEventListener("click", async () => {
     copyTopicsButton.textContent = "Copy JSON";
   }, 1200);
 });
+saveTokenButton.addEventListener("click", saveGithubToken);
+lookbackDays.addEventListener("change", () => {
+  const days = Number(lookbackDays.value);
+  const currentMax = Number(maxResults.value);
+  if (days >= 30 && currentMax < 800) {
+    maxResults.value = "800";
+  } else if (days >= 14 && currentMax < 300) {
+    maxResults.value = "300";
+  }
+});
+runSearchButton.addEventListener("click", () => {
+  triggerWorkflow().catch((error) => {
+    runSearchButton.disabled = false;
+    runStatus.textContent = error.message;
+  });
+});
 
 loadData();
+loadRunStatus();

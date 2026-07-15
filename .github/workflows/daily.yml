@@ -4,6 +4,27 @@ on:
   schedule:
     - cron: "10 0 * * *"
   workflow_dispatch:
+    inputs:
+      lookback_days:
+        description: "How many days to search"
+        required: false
+        default: "3"
+      max_results:
+        description: "Maximum arXiv results"
+        required: false
+        default: "300"
+      min_score:
+        description: "Minimum relevance score"
+        required: false
+        default: "18"
+      topics_json:
+        description: "JSON payload: {\"topics\":[...]}"
+        required: false
+        default: ""
+      fresh:
+        description: "Rebuild from scratch instead of merging"
+        required: false
+        default: "false"
 
 permissions:
   contents: write
@@ -30,16 +51,27 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_MODEL: deepseek-chat
-          PAPER_LOOKBACK_DAYS: "3"
-          PAPER_MAX_RESULTS: "100"
-          PAPER_MIN_SCORE: "18"
-        run: python scripts/fetch_papers.py
+          PAPER_LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '3' }}
+          PAPER_MAX_RESULTS: ${{ github.event.inputs.max_results || '300' }}
+          PAPER_MIN_SCORE: ${{ github.event.inputs.min_score || '18' }}
+          PAPER_TOPICS_JSON: ${{ github.event.inputs.topics_json || '' }}
+          PAPER_FRESH: ${{ github.event.inputs.fresh || 'false' }}
+        run: |
+          args=()
+          if [ "$PAPER_FRESH" = "true" ]; then
+            args+=(--fresh)
+          fi
+          python scripts/fetch_papers.py \
+            --days "$PAPER_LOOKBACK_DAYS" \
+            --max-results "$PAPER_MAX_RESULTS" \
+            --min-score "$PAPER_MIN_SCORE" \
+            "${args[@]}"
 
       - name: Commit updates
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update daily papers"
-          file_pattern: data/papers.json docs/papers.json
+          file_pattern: data/papers.json docs/papers.json docs/run_status.json
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
