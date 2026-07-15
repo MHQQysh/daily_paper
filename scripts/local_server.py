@@ -213,7 +213,13 @@ class LocalRequestHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         path = urlparse(self.path).path
-        if path not in {"/api/run", "/api/papers/resolve", "/api/papers/analyze", "/api/papers/add"}:
+        if path not in {
+            "/api/run",
+            "/api/papers/resolve",
+            "/api/papers/analyze",
+            "/api/papers/add",
+            "/api/papers/delete",
+        }:
             self._send_json({"error": "API endpoint not found"}, HTTPStatus.NOT_FOUND)
             return
 
@@ -247,7 +253,7 @@ class LocalRequestHandler(SimpleHTTPRequestHandler):
                     )
                 }
                 response_status = HTTPStatus.OK
-            else:
+            elif path == "/api/papers/add":
                 if not OPERATION_LOCK.acquire(blocking=False):
                     raise RuntimeError("Another paper operation is already running.")
                 try:
@@ -258,11 +264,22 @@ class LocalRequestHandler(SimpleHTTPRequestHandler):
                 finally:
                     OPERATION_LOCK.release()
                 response_status = HTTPStatus.OK
+            else:
+                if not OPERATION_LOCK.acquire(blocking=False):
+                    raise RuntimeError("Another paper operation is already running.")
+                try:
+                    response_payload = paper_service.delete_paper(payload.get("paper", {}))
+                finally:
+                    OPERATION_LOCK.release()
+                response_status = HTTPStatus.OK
         except json.JSONDecodeError:
             self._send_json({"error": "request body must be valid JSON"}, HTTPStatus.BAD_REQUEST)
             return
         except ValueError as exc:
             self._send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+            return
+        except LookupError as exc:
+            self._send_json({"error": str(exc)}, HTTPStatus.NOT_FOUND)
             return
         except RuntimeError as exc:
             self._send_json({"error": str(exc), "status": JOB_MANAGER.snapshot()}, HTTPStatus.CONFLICT)

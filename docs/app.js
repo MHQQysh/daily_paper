@@ -287,6 +287,34 @@ function linkButton(label, href, primary = false) {
   return `<a class="link-button${primary ? " primary" : ""}" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${escapeHtml(label)}</a>`;
 }
 
+function refreshIcons() {
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
+async function deletePaper(paper) {
+  const confirmed = window.confirm(`Delete this paper from the current library?\n\n${paper.title}`);
+  if (!confirmed) {
+    return;
+  }
+  const button = detail.querySelector("[data-delete-paper]");
+  if (button) {
+    button.disabled = true;
+  }
+  try {
+    await postLocalApi("/api/papers/delete", { paper });
+    state.selectedPaperId = null;
+    await loadData();
+    runStatus.textContent = `Deleted: ${paper.title}. A future search may add it again.`;
+  } catch (error) {
+    if (button) {
+      button.disabled = false;
+    }
+    runStatus.textContent = error.message;
+  }
+}
+
 function renderDetail() {
   const paper = filteredPapers().find((item) => item.id === state.selectedPaperId);
   if (!paper) {
@@ -302,6 +330,9 @@ function renderDetail() {
     .map((topicId) => `<span class="tag">${escapeHtml(byId(topicId)?.name || topicId)}</span>`)
     .join("");
   const links = paper.links || {};
+  const deleteButton = IS_LOCAL_MODE
+    ? `<button class="icon-button delete-paper-button" type="button" data-delete-paper title="Delete paper" aria-label="Delete paper"><i data-lucide="trash-2" aria-hidden="true"></i></button>`
+    : "";
   detail.innerHTML = `
     <article class="paper-detail">
       <div class="detail-kicker">
@@ -334,9 +365,12 @@ function renderDetail() {
         ${linkButton("Abstract", links.abstract, true)}
         ${linkButton("PDF", links.pdf)}
         ${linkButton("Code", links.code)}
+        ${deleteButton}
       </div>
     </article>
   `;
+  refreshIcons();
+  detail.querySelector("[data-delete-paper]")?.addEventListener("click", () => deletePaper(paper));
 }
 
 function renderMetrics() {

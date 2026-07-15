@@ -9,6 +9,7 @@
   --accent-strong: #0b5f59;
   --blue: #1d4ed8;
   --warn: #a16207;
+  --danger: #b42318;
   --shadow: 0 18px 45px rgba(18, 32, 29, 0.12);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -534,6 +535,7 @@ input {
 
 .links {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -557,6 +559,37 @@ input {
 .icon-button {
   width: 38px;
   height: 38px;
+}
+
+.delete-paper-button {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--danger);
+}
+
+.delete-paper-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.delete-paper-button:hover {
+  border-color: rgba(180, 35, 24, 0.42);
+  background: #fff1f0;
+}
+
+.delete-paper-button:focus-visible {
+  outline: 3px solid rgba(180, 35, 24, 0.22);
+  outline-offset: 2px;
+}
+
+.delete-paper-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .topic-dialog,

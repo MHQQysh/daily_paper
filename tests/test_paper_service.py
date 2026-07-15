@@ -83,7 +83,7 @@ class PaperServiceTests(unittest.TestCase):
                 fetch_papers, "DOCS_PATH", docs_path
             ), mock.patch.object(fetch_papers, "STATUS_PATH", status_path), mock.patch.object(
                 fetch_papers, "load_topics", return_value=TOPICS
-            ), mock.patch.object(paper_service, "_backup_before_add", return_value=None):
+            ), mock.patch.object(paper_service, "_backup_before_mutation", return_value=None):
                 result = paper_service.add_paper(incoming, ["interpretability"])
 
             stored = json.loads(data_path.read_text(encoding="utf-8"))["papers"]
@@ -91,6 +91,60 @@ class PaperServiceTests(unittest.TestCase):
         self.assertEqual(set(stored[0]["manual_topics"]), {"vision", "interpretability"})
         self.assertEqual(result["added"], 0)
         self.assertEqual(result["updated"], 1)
+
+    def test_delete_removes_current_record_without_blocking_future_merge(self):
+        removed_paper = {
+            "id": "arxiv-2607.12345v1",
+            "source": "arXiv",
+            "source_id": "2607.12345v1",
+            "title": "Paper to remove",
+            "topics": ["vision"],
+        }
+        retained_paper = {
+            "id": "arxiv-2607.99999v1",
+            "source": "arXiv",
+            "source_id": "2607.99999v1",
+            "title": "Paper to retain",
+            "topics": ["interpretability"],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            data_path = root / "data.json"
+            docs_path = root / "docs.json"
+            status_path = root / "status.json"
+            data_path.write_text(json.dumps({"papers": [removed_paper, retained_paper]}), encoding="utf-8")
+            with mock.patch.object(fetch_papers, "DATA_PATH", data_path), mock.patch.object(
+                fetch_papers, "DOCS_PATH", docs_path
+            ), mock.patch.object(fetch_papers, "STATUS_PATH", status_path), mock.patch.object(
+                fetch_papers, "TOPICS", TOPICS
+            ), mock.patch.object(paper_service, "_backup_before_mutation", return_value=None):
+                result = paper_service.delete_paper(removed_paper)
+                stored = json.loads(data_path.read_text(encoding="utf-8"))["papers"]
+                published = json.loads(docs_path.read_text(encoding="utf-8"))["papers"]
+                restored, stats = fetch_papers.merge_papers(stored, [removed_paper])
+
+        self.assertEqual(result["deleted"], 1)
+        self.assertEqual(result["total"], 1)
+        self.assertEqual([paper["source_id"] for paper in stored], ["2607.99999v1"])
+        self.assertEqual([paper["source_id"] for paper in published], ["2607.99999v1"])
+        self.assertEqual(len(restored), 2)
+        self.assertEqual(stats["added"], 1)
+
+    def test_delete_missing_paper_raises_lookup_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            data_path = root / "data.json"
+            data_path.write_text(json.dumps({"papers": []}), encoding="utf-8")
+            with mock.patch.object(fetch_papers, "DATA_PATH", data_path):
+                with self.assertRaisesRegex(LookupError, "not found"):
+                    paper_service.delete_paper(
+                        {
+                            "id": "arxiv-2607.12345v1",
+                            "source": "arXiv",
+                            "source_id": "2607.12345v1",
+                            "title": "Missing paper",
+                        }
+                    )
 
 
 if __name__ == "__main__":

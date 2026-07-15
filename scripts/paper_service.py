@@ -156,7 +156,7 @@ def _sanitize_paper(paper: Any) -> dict[str, Any]:
     return sanitized
 
 
-def _backup_before_add() -> Path | None:
+def _backup_before_mutation(prefix: str) -> Path | None:
     sources = {
         "data-papers.json": fp.DATA_PATH,
         "docs-papers.json": fp.DOCS_PATH,
@@ -166,7 +166,7 @@ def _backup_before_add() -> Path | None:
     if not existing:
         return None
     stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S-%f")
-    backup_dir = ROOT / ".local_backups" / f"before-manual-add-{stamp}"
+    backup_dir = ROOT / ".local_backups" / f"{prefix}-{stamp}"
     backup_dir.mkdir(parents=True, exist_ok=False)
     for name, source in existing.items():
         shutil.copy2(source, backup_dir / name)
@@ -181,10 +181,24 @@ def add_paper(paper: dict[str, Any], selected_topics: list[str]) -> dict[str, An
     incoming = _sanitize_paper(paper)
     incoming["manual_topics"] = list(dict.fromkeys(incoming.get("manual_topics", []) + valid_topics))
     incoming["topics"] = list(dict.fromkeys(incoming.get("topics", []) + valid_topics))
-    _backup_before_add()
+    _backup_before_mutation("before-manual-add")
     existing = fp.read_store(fp.DATA_PATH).get("papers", [])
     merged, stats = fp.merge_papers(existing, [incoming])
     fp.write_outputs(merged)
     keys = set(fp.paper_identity_keys(incoming))
     stored = next((item for item in merged if keys.intersection(fp.paper_identity_keys(item))), incoming)
     return {"paper": stored, **stats}
+
+
+def delete_paper(paper: dict[str, Any]) -> dict[str, Any]:
+    target = _sanitize_paper(paper)
+    target_keys = set(fp.paper_identity_keys(target))
+    existing = fp.read_store(fp.DATA_PATH).get("papers", [])
+    removed = [item for item in existing if target_keys.intersection(fp.paper_identity_keys(item))]
+    if not removed:
+        raise LookupError("Paper was not found in the current library")
+
+    kept = [item for item in existing if not target_keys.intersection(fp.paper_identity_keys(item))]
+    _backup_before_mutation("before-manual-delete")
+    fp.write_outputs(kept)
+    return {"paper": removed[0], "deleted": len(removed), "total": len(kept)}

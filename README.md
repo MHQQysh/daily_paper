@@ -51,9 +51,11 @@ Double-click `start_daily_paper.cmd`. It starts the loopback-only local server a
 
 On localhost, the run panel asks for a DeepSeek API key instead of a GitHub token. The key is stored in this browser's local storage. Choose a date or range and click `Run local search`; the page starts the fetch, shows progress, and reloads the updated paper list automatically.
 
-Browser searches are append-only: newly found papers are merged into the library and older papers are never removed. The completed run report shows the DeepSeek-generated queries and the counts for added, updated, and duplicate papers.
+Automatic browser searches are append-only: newly found papers are merged into the library and older papers are not removed by a search. The completed run report shows the DeepSeek-generated queries and the counts for added, updated, and duplicate papers.
 
 To add one paper manually, paste an arXiv URL, arXiv ID, or title into the sidebar search field and click `+`. Title searches return up to five candidates. After choosing one, review DeepSeek's suggested directions, edit the checkboxes if needed, and confirm the addition.
+
+To remove an unwanted paper, select it and click the trash icon in the detail view. Local deletion asks for confirmation, creates a timestamped backup, and removes only the current record. It does not create an ignore rule, so a future search may add the paper again.
 
 Only one local search can run at a time. Closing the browser does not cancel a running search because the local Python server owns the process.
 
