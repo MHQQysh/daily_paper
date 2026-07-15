@@ -27,6 +27,8 @@
           <button class="tool-button" id="highButton" type="button">High relevance</button>
         </div>
 
+        <button class="wide-button" id="editTopicsButton" type="button">Edit directions</button>
+
         <nav id="topicTree" class="topic-tree"></nav>
       </aside>
 
@@ -63,6 +65,21 @@
         </section>
       </main>
     </div>
+
+    <dialog class="topic-dialog" id="topicDialog">
+      <form method="dialog" class="topic-editor">
+        <div class="dialog-head">
+          <h3>Edit directions</h3>
+          <button class="icon-button" value="cancel" aria-label="Close editor">x</button>
+        </div>
+        <textarea id="topicEditor" spellcheck="false"></textarea>
+        <div class="dialog-actions">
+          <button class="tool-button" id="resetTopicsButton" type="button">Reset</button>
+          <button class="tool-button" id="copyTopicsButton" type="button">Copy JSON</button>
+          <button class="tool-button active" id="saveTopicsButton" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
 
     <script src="app.js"></script>
   </body>

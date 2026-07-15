@@ -112,6 +112,18 @@ input {
   color: var(--muted);
 }
 
+.wide-button {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(15, 118, 110, 0.35);
+  border-radius: 6px;
+  background: #e7f4f1;
+  color: var(--accent-strong);
+  cursor: pointer;
+  font-weight: 750;
+}
+
 .tool-button.active,
 .topic-header.active {
   border-color: rgba(15, 118, 110, 0.35);
@@ -423,6 +435,55 @@ input {
 .icon-button {
   width: 38px;
   height: 38px;
+}
+
+.topic-dialog {
+  width: min(760px, calc(100vw - 28px));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: var(--shadow);
+}
+
+.topic-dialog::backdrop {
+  background: rgba(12, 22, 20, 0.32);
+}
+
+.topic-editor {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  background: var(--panel);
+}
+
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dialog-head h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.topic-editor textarea {
+  width: 100%;
+  min-height: 360px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--ink);
+  background: #fbfcfa;
+  line-height: 1.55;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .menu-button,

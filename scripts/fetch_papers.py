@@ -21,6 +21,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "data" / "papers.json"
 DOCS_PATH = ROOT / "docs" / "papers.json"
+CONFIG_PATH = ROOT / "config" / "topics.json"
 ARXIV_API = "https://export.arxiv.org/api/query"
 DEEPSEEK_API = "https://api.deepseek.com/chat/completions"
 
@@ -165,6 +166,26 @@ def slugify(value: str) -> str:
 
 def arxiv_base_id(arxiv_id: str) -> str:
     return re.sub(r"v\d+$", "", arxiv_id)
+
+
+def load_topics() -> dict[str, dict[str, Any]]:
+    if not CONFIG_PATH.exists():
+        return TOPICS
+    with CONFIG_PATH.open("r", encoding="utf-8") as handle:
+        data = json.load(handle)
+    loaded: dict[str, dict[str, Any]] = {}
+    for item in data.get("topics", []):
+        name = normalize_text(item.get("name", ""))
+        if not name:
+            continue
+        topic_id = normalize_text(item.get("id", "")) or slugify(name)
+        keywords = [normalize_text(k) for k in item.get("keywords", []) if normalize_text(k)]
+        loaded[topic_id] = {
+            "name": name,
+            "description": normalize_text(item.get("description", "")),
+            "keywords": keywords,
+        }
+    return loaded or TOPICS
 
 
 def arxiv_query() -> str:
@@ -422,7 +443,12 @@ def build_payload(papers: list[dict[str, Any]]) -> dict[str, Any]:
     return {
         "last_updated": now,
         "topics": [
-            {"id": topic_id, "name": topic["name"], "description": topic["description"]}
+            {
+                "id": topic_id,
+                "name": topic["name"],
+                "description": topic["description"],
+                "keywords": topic.get("keywords", []),
+            }
             for topic_id, topic in TOPICS.items()
         ],
         "papers": papers,
@@ -440,6 +466,7 @@ def write_outputs(papers: list[dict[str, Any]]) -> None:
 
 
 def main() -> int:
+    global TOPICS
     parser = argparse.ArgumentParser(description="Fetch daily token-pruning papers.")
     parser.add_argument("--days", type=int, default=int(os.environ.get("PAPER_LOOKBACK_DAYS", "3")))
     parser.add_argument("--max-results", type=int, default=int(os.environ.get("PAPER_MAX_RESULTS", "80")))
@@ -447,6 +474,7 @@ def main() -> int:
     parser.add_argument("--model", default=os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"))
     parser.add_argument("--fresh", action="store_true", help="Ignore the existing store and rebuild from this run.")
     args = parser.parse_args()
+    TOPICS = load_topics()
 
     existing_store = {"papers": []} if args.fresh else read_store(DATA_PATH)
     raw = fetch_arxiv(days=args.days, max_results=args.max_results)

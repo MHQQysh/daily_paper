@@ -1,17 +1,27 @@
 const state = {
   papers: [],
+  sourcePapers: [],
   topics: [],
+  serverTopics: [],
   selectedPaperId: null,
   mode: "all",
   query: "",
   openTopics: new Set(),
+  customTopics: false,
 };
 
+const TOPIC_STORAGE_KEY = "dailyPaper.customTopics.v1";
 const topicTree = document.getElementById("topicTree");
 const detail = document.getElementById("paperDetail");
 const searchInput = document.getElementById("searchInput");
 const allButton = document.getElementById("allButton");
 const highButton = document.getElementById("highButton");
+const editTopicsButton = document.getElementById("editTopicsButton");
+const topicDialog = document.getElementById("topicDialog");
+const topicEditor = document.getElementById("topicEditor");
+const saveTopicsButton = document.getElementById("saveTopicsButton");
+const resetTopicsButton = document.getElementById("resetTopicsButton");
+const copyTopicsButton = document.getElementById("copyTopicsButton");
 const statusText = document.getElementById("statusText");
 const paperCount = document.getElementById("paperCount");
 const topicCount = document.getElementById("topicCount");
@@ -24,6 +34,14 @@ function byId(topicId) {
   return state.topics.find((topic) => topic.id === topicId);
 }
 
+function slugify(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 100) || "direction";
+}
+
 function escapeHtml(value) {
   return String(value || "")
     .replaceAll("&", "&amp;")
@@ -31,6 +49,81 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function clonePaper(paper) {
+  return {
+    ...paper,
+    source_topics: paper.source_topics || paper.topics || [],
+  };
+}
+
+function matchCustomTopics(paper, topics) {
+  const text = [paper.title, paper.abstract, paper.abstract_zh, paper.summary_zh, paper.why_relevant_zh]
+    .join(" ")
+    .toLowerCase();
+  return topics
+    .filter((topic) => (topic.keywords || []).some((keyword) => text.includes(String(keyword).toLowerCase())))
+    .map((topic) => topic.id);
+}
+
+function applyTopicModel() {
+  state.papers = state.sourcePapers.map((paper) => {
+    const next = clonePaper(paper);
+    if (state.customTopics) {
+      next.topics = matchCustomTopics(next, state.topics);
+    } else {
+      next.topics = next.source_topics || next.topics || [];
+    }
+    return next;
+  });
+}
+
+function formatTopicsForEditor(topics) {
+  return topics
+    .map((topic) => `${topic.name} | ${(topic.keywords || []).join(", ")}`)
+    .join("\n");
+}
+
+function parseTopicsFromEditor(value) {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [rawName, rawKeywords = ""] = line.split("|");
+      const name = rawName.trim();
+      const keywords = rawKeywords
+        .split(",")
+        .map((keyword) => keyword.trim())
+        .filter(Boolean);
+      return {
+        id: slugify(name),
+        name,
+        description: keywords.slice(0, 5).join(", "),
+        keywords,
+      };
+    })
+    .filter((topic) => topic.name && topic.keywords.length);
+}
+
+function loadStoredTopics(serverTopics) {
+  const stored = localStorage.getItem(TOPIC_STORAGE_KEY);
+  if (!stored) {
+    state.customTopics = false;
+    return serverTopics;
+  }
+  try {
+    const parsed = JSON.parse(stored);
+    if (Array.isArray(parsed.topics) && parsed.topics.length) {
+      state.customTopics = true;
+      return parsed.topics;
+    }
+  } catch {
+    localStorage.removeItem(TOPIC_STORAGE_KEY);
+  }
+  state.customTopics = false;
+  return serverTopics;
 }
 
 function paperMatches(paper) {
@@ -227,6 +320,7 @@ function renderMetrics() {
   paperCount.textContent = String(papers.length);
   topicCount.textContent = String(state.topics.length);
   latestDate.textContent = papers[0]?.published || "-";
+  editTopicsButton.textContent = state.customTopics ? "Edit directions *" : "Edit directions";
 }
 
 function render() {
@@ -242,8 +336,10 @@ async function loadData() {
       throw new Error(`HTTP ${response.status}`);
     }
     const data = await response.json();
-    state.papers = data.papers || [];
-    state.topics = data.topics || [];
+    state.sourcePapers = (data.papers || []).map(clonePaper);
+    state.serverTopics = data.topics || [];
+    state.topics = loadStoredTopics(state.serverTopics);
+    applyTopicModel();
     state.topics.forEach((topic) => state.openTopics.add(topic.id));
     if (state.papers[0]) {
       state.selectedPaperId = state.papers[0].id;
@@ -264,5 +360,40 @@ allButton.addEventListener("click", () => setMode("all"));
 highButton.addEventListener("click", () => setMode("high"));
 openSidebar.addEventListener("click", () => document.body.classList.add("sidebar-open"));
 closeSidebar.addEventListener("click", () => document.body.classList.remove("sidebar-open"));
+editTopicsButton.addEventListener("click", () => {
+  topicEditor.value = formatTopicsForEditor(state.topics);
+  topicDialog.showModal();
+});
+saveTopicsButton.addEventListener("click", () => {
+  const topics = parseTopicsFromEditor(topicEditor.value);
+  if (!topics.length) {
+    return;
+  }
+  localStorage.setItem(TOPIC_STORAGE_KEY, JSON.stringify({ topics }));
+  state.customTopics = true;
+  state.topics = topics;
+  state.openTopics = new Set(topics.map((topic) => topic.id));
+  applyTopicModel();
+  topicDialog.close();
+  render();
+});
+resetTopicsButton.addEventListener("click", () => {
+  localStorage.removeItem(TOPIC_STORAGE_KEY);
+  state.customTopics = false;
+  state.topics = state.serverTopics;
+  state.openTopics = new Set(state.topics.map((topic) => topic.id));
+  applyTopicModel();
+  topicEditor.value = formatTopicsForEditor(state.topics);
+  render();
+});
+copyTopicsButton.addEventListener("click", async () => {
+  const topics = parseTopicsFromEditor(topicEditor.value);
+  const content = JSON.stringify({ topics }, null, 2);
+  await navigator.clipboard.writeText(content);
+  copyTopicsButton.textContent = "Copied";
+  setTimeout(() => {
+    copyTopicsButton.textContent = "Copy JSON";
+  }, 1200);
+});
 
 loadData();

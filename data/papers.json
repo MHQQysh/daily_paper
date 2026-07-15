@@ -1,40 +1,106 @@
 {
-  "last_updated": "2026-07-15T04:53:12+00:00",
+  "last_updated": "2026-07-15T04:56:55+00:00",
   "topics": [
     {
       "id": "visual-token-pruning",
       "name": "Visual Token Pruning",
-      "description": "Pruning or selecting image/video tokens for vision and multimodal models."
+      "description": "Pruning or selecting image/video tokens for vision and multimodal models.",
+      "keywords": [
+        "visual token pruning",
+        "vision token pruning",
+        "image token pruning",
+        "video token pruning",
+        "visual token reduction",
+        "visual tokens",
+        "image tokens",
+        "vision tokens"
+      ]
     },
     {
       "id": "vlm-acceleration",
       "name": "VLM / MLLM Acceleration",
-      "description": "Efficient inference for vision-language and multimodal large language models."
+      "description": "Efficient inference for vision-language and multimodal large language models.",
+      "keywords": [
+        "vision language model",
+        "vision-language model",
+        "multimodal large language model",
+        "mllm",
+        "vlm",
+        "llava",
+        "qwen-vl",
+        "internvl",
+        "multimodal inference"
+      ]
     },
     {
       "id": "llm-context-kv-pruning",
       "name": "LLM Context / KV Pruning",
-      "description": "Context compression, prompt pruning, attention pruning, and KV cache reduction."
+      "description": "Context compression, prompt pruning, attention pruning, and KV cache reduction.",
+      "keywords": [
+        "kv cache pruning",
+        "kv cache compression",
+        "context pruning",
+        "prompt pruning",
+        "attention pruning",
+        "token eviction",
+        "long context",
+        "key value cache"
+      ]
     },
     {
       "id": "token-merging-compression",
       "name": "Token Merging / Compression",
-      "description": "Token merging, token compression, token dropping, or redundancy reduction."
+      "description": "Token merging, token compression, token dropping, or redundancy reduction.",
+      "keywords": [
+        "token merging",
+        "token compression",
+        "token reduction",
+        "token dropping",
+        "token sparsification",
+        "redundant tokens",
+        "merge tokens"
+      ]
     },
     {
       "id": "efficient-vit",
       "name": "Efficient ViT",
-      "description": "Efficient vision transformer methods related to token sparsity or adaptive tokens."
+      "description": "Efficient vision transformer methods related to token sparsity or adaptive tokens.",
+      "keywords": [
+        "efficient vision transformer",
+        "efficient vit",
+        "vision transformer pruning",
+        "vit pruning",
+        "dynamic vit",
+        "token learner",
+        "token pooling"
+      ]
     },
     {
       "id": "dynamic-token-selection",
       "name": "Dynamic Token Selection",
-      "description": "Input-adaptive token routing, selection, or early-exit style token control."
+      "description": "Input-adaptive token routing, selection, or early-exit style token control.",
+      "keywords": [
+        "dynamic token",
+        "adaptive token",
+        "token selection",
+        "token routing",
+        "token saliency",
+        "token importance",
+        "early exit"
+      ]
     },
     {
       "id": "survey-benchmark",
       "name": "Survey / Benchmark",
-      "description": "Survey, benchmark, evaluation, or analysis papers for efficient token methods."
+      "description": "Survey, benchmark, evaluation, or analysis papers for efficient token methods.",
+      "keywords": [
+        "survey",
+        "benchmark",
+        "taxonomy",
+        "token pruning benchmark",
+        "token compression benchmark",
+        "efficient inference benchmark"
+      ]
     }
   ],
   "papers": [

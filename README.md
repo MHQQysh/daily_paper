@@ -4,6 +4,8 @@ Daily Paper is a lightweight, pure-online tracker for token-pruning research. It
 
 ## What It Tracks
 
+Default directions and keywords live in `config/topics.json`. The current defaults are:
+
 - Visual Token Pruning
 - VLM / MLLM Acceleration
 - LLM Context / KV Pruning
@@ -13,6 +15,18 @@ Daily Paper is a lightweight, pure-online tracker for token-pruning research. It
 - Survey / Benchmark
 
 The site does not download PDFs. It stores only paper metadata, abstracts, and links.
+
+## Customize Directions
+
+On the website, click `Edit directions`. Each line uses:
+
+```text
+Direction Name | keyword one, keyword two, keyword three
+```
+
+Saving there changes the grouping in your browser immediately and stores it in local storage.
+
+To change the default directions used by the daily GitHub Actions fetcher, edit `config/topics.json` in the repository.
 
 ## Local Run
 
