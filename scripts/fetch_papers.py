@@ -26,6 +26,8 @@ CONFIG_PATH = ROOT / "config" / "topics.json"
 STATUS_PATH = ROOT / "docs" / "run_status.json"
 ARXIV_API = "https://export.arxiv.org/api/query"
 DEEPSEEK_API = "https://api.deepseek.com/chat/completions"
+ARXIV_CATEGORIES = ("cs.AI", "cs.CV", "cs.LG", "cs.CL")
+ARXIV_CATEGORY_EXPRESSION = "(" + " OR ".join(f"cat:{category}" for category in ARXIV_CATEGORIES) + ")"
 
 TOPICS = {
     "vision-token-pruning": {
@@ -419,6 +421,173 @@ def fetch_arxiv(
     return papers
 
 
+def resolve_target_date(value: str, today: dt.date | None = None) -> str:
+    if value:
+        try:
+            return dt.date.fromisoformat(value).isoformat()
+        except ValueError as exc:
+            raise ValueError("date must use YYYY-MM-DD") from exc
+    current = today or dt.datetime.now(dt.timezone.utc).date()
+    return (current - dt.timedelta(days=1)).isoformat()
+
+
+def fetch_daily_category_papers(target_date: str, max_scan: int = 1000) -> list[dict[str, Any]]:
+    selected_date = dt.date.fromisoformat(resolve_target_date(target_date))
+    today = dt.datetime.now(dt.timezone.utc).date()
+    effective_days = max(2, (today - selected_date).days + 2)
+    date_token = selected_date.strftime("%Y%m%d")
+    search_expression = (
+        f"{ARXIV_CATEGORY_EXPRESSION} AND "
+        f"submittedDate:[{date_token}0000 TO {date_token}2359]"
+    )
+    print(
+        f"Retrieving all {selected_date.isoformat()} submissions from "
+        + ", ".join(ARXIV_CATEGORIES)
+        + ".",
+        flush=True,
+    )
+    return fetch_arxiv(
+        days=effective_days,
+        max_results=max_scan,
+        target_date=selected_date.isoformat(),
+        search_expression=search_expression,
+        query_label="daily-categories",
+    )
+
+
+def fallback_topic_scores(paper: dict[str, Any]) -> dict[str, int]:
+    text = f"{paper.get('title', '')} {paper.get('abstract', '')}".lower()
+    scores: dict[str, int] = {}
+    for topic_id, topic in TOPICS.items():
+        score = 0
+        name = normalize_text(topic.get("name", "")).lower()
+        if name and name in text:
+            score += 35
+        for keyword in topic.get("keywords", []):
+            keyword_text = normalize_text(keyword).lower()
+            if keyword_text and keyword_text in text:
+                score += 30 if " " in keyword_text else 12
+        scores[topic_id] = min(100, score)
+    return scores
+
+
+def topic_ranking_prompt(papers: list[dict[str, Any]]) -> list[dict[str, str]]:
+    catalog = [
+        {
+            "id": topic_id,
+            "name": topic["name"],
+            "description": topic.get("description", ""),
+            "keywords": topic.get("keywords", []),
+        }
+        for topic_id, topic in TOPICS.items()
+    ]
+    compact = [
+        {"id": paper["id"], "title": paper["title"], "abstract": paper.get("abstract", "")[:1600]}
+        for paper in papers
+    ]
+    payload = {
+        "task": "Score every paper independently against every research direction using its title and abstract.",
+        "directions": catalog,
+        "papers": compact,
+        "rules": [
+            "Return every paper id exactly once.",
+            "Return every direction id for every paper.",
+            "Scores are integers from 0 to 100.",
+            "Use 0 for unrelated work and reserve scores above 70 for directly relevant work.",
+            "Judge semantic content, not literal keyword overlap.",
+        ],
+        "output_schema": {"papers": [{"id": "paper-id", "scores": {"direction-id": 0}}]},
+    }
+    return [
+        {
+            "role": "system",
+            "content": "You rank academic papers for a personalized research tracker. Return strict JSON only.",
+        },
+        {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+    ]
+
+
+def rank_papers_by_topic(
+    papers: list[dict[str, Any]], model: str, batch_size: int = 20
+) -> dict[str, dict[str, int]]:
+    scores = {paper["id"]: fallback_topic_scores(paper) for paper in papers}
+    if not papers:
+        return scores
+    if not os.environ.get("DEEPSEEK_API_KEY"):
+        print("DeepSeek API key is not configured; using local ranking fallback.", flush=True)
+        return scores
+
+    total_batches = (len(papers) + batch_size - 1) // batch_size
+    print(f"DeepSeek ranking {len(papers)} papers in {total_batches} batches.", flush=True)
+    for start in range(0, len(papers), batch_size):
+        batch = papers[start : start + batch_size]
+        batch_number = start // batch_size + 1
+        print(f"DeepSeek ranking batch {batch_number}/{total_batches}: {len(batch)} papers...", flush=True)
+        try:
+            parsed = call_deepseek_json(topic_ranking_prompt(batch), model=model)
+        except Exception as exc:
+            print(f"DeepSeek ranking batch failed; using fallback scores: {exc}", file=sys.stderr)
+            continue
+        batch_ids = {paper["id"] for paper in batch}
+        for item in parsed.get("papers", []):
+            paper_id = normalize_text(item.get("id", ""))
+            if paper_id not in batch_ids or not isinstance(item.get("scores"), dict):
+                continue
+            normalized_scores: dict[str, int] = {}
+            for topic_id in TOPICS:
+                try:
+                    value = int(item["scores"].get(topic_id, 0))
+                except (TypeError, ValueError):
+                    value = 0
+                normalized_scores[topic_id] = max(0, min(100, value))
+            scores[paper_id] = normalized_scores
+        time.sleep(0.5)
+    return scores
+
+
+def select_per_topic(
+    papers: list[dict[str, Any]], scores: dict[str, dict[str, int]], papers_per_topic: int
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    selected: list[dict[str, Any]] = []
+    identity_index: dict[str, int] = {}
+    counts: dict[str, int] = {}
+    for topic_id in TOPICS:
+        ranked = sorted(
+            papers,
+            key=lambda paper: (
+                scores.get(paper.get("id", ""), {}).get(topic_id, 0),
+                paper.get("published", ""),
+                paper.get("title", ""),
+            ),
+            reverse=True,
+        )
+        chosen = [
+            paper
+            for paper in ranked
+            if scores.get(paper.get("id", ""), {}).get(topic_id, 0) > 0
+        ][:papers_per_topic]
+        counts[topic_id] = len(chosen)
+        for paper in chosen:
+            keys = paper_identity_keys(paper)
+            selected_index = next((identity_index[key] for key in keys if key in identity_index), None)
+            if selected_index is None:
+                selected_index = len(selected)
+                selected.append({**paper, "topics": [], "relevance_score": 0})
+            record = selected[selected_index]
+            record["topics"] = list(dict.fromkeys(record.get("topics", []) + [topic_id]))
+            record["relevance_score"] = max(
+                int(record.get("relevance_score", 0)),
+                scores.get(paper.get("id", ""), {}).get(topic_id, 0),
+            )
+            for key in keys:
+                identity_index[key] = selected_index
+    selected.sort(
+        key=lambda paper: (paper.get("published", ""), paper.get("relevance_score", 0), paper.get("title", "")),
+        reverse=True,
+    )
+    return selected, counts
+
+
 def arxiv_expression_for_phrase(value: str) -> str:
     phrase = normalize_text(value).replace('"', "")[:180]
     if not phrase:
@@ -558,8 +727,10 @@ def score_and_topics(paper: dict[str, Any]) -> tuple[list[str], int]:
 
 def fallback_enrichment(paper: dict[str, Any]) -> dict[str, Any]:
     topics, relevance = score_and_topics(paper)
+    selected_topics = [topic_id for topic_id in paper.get("topics", []) if topic_id in TOPICS]
     discovery_topics = [topic_id for topic_id in paper.get("discovery_topics", []) if topic_id in TOPICS]
-    topics = list(dict.fromkeys(topics + discovery_topics))
+    topics = selected_topics or list(dict.fromkeys(topics + discovery_topics))
+    relevance = max(relevance, int(paper.get("relevance_score", 0)))
     if discovery_topics:
         relevance = max(relevance, 20)
     abstract = paper.get("abstract", "")
@@ -606,7 +777,7 @@ def deepseek_prompt(papers: list[dict[str, Any]]) -> list[dict[str, str]]:
         "task": "Classify and summarize papers for the configured research directions.",
         "topic_catalog": topic_catalog,
         "rules": [
-            "Keep only topic ids from topic_catalog.",
+            "Return local_topics unchanged; topic ranking has already been completed.",
             "relevance_score is an integer from 0 to 100.",
             "summary_zh is one concise Chinese sentence.",
             "abstract_zh is a faithful Chinese translation of the abstract, 1 to 3 concise paragraphs.",
@@ -689,12 +860,17 @@ def enrich_papers(papers: list[dict[str, Any]], model: str, batch_size: int = 8)
         for paper_id, item in result.items():
             if paper_id not in by_id:
                 continue
-            topics = [t for t in item.get("topics", []) if t in TOPICS]
-            resolved_topics = topics if "topics" in item else by_id[paper_id].get("topics", [])
+            resolved_topics = by_id[paper_id].get("topics", [])
+            try:
+                returned_score = int(item.get("relevance_score", 0))
+            except (TypeError, ValueError):
+                returned_score = 0
             by_id[paper_id].update(
                 {
                     "topics": resolved_topics,
-                    "relevance_score": int(item.get("relevance_score", by_id[paper_id].get("relevance_score", 0))),
+                    "relevance_score": max(
+                        int(by_id[paper_id].get("relevance_score", 0)), returned_score
+                    ),
                     "summary_zh": normalize_text(item.get("summary_zh", by_id[paper_id].get("summary_zh", ""))),
                     "abstract_zh": normalize_text(item.get("abstract_zh", by_id[paper_id].get("abstract_zh", ""))),
                     "why_relevant_zh": normalize_text(
@@ -791,67 +967,57 @@ def write_status(status: dict[str, Any]) -> None:
 
 def main() -> int:
     global TOPICS
-    parser = argparse.ArgumentParser(description="Fetch daily token-pruning papers.")
-    parser.add_argument("--days", type=int, default=int(os.environ.get("PAPER_LOOKBACK_DAYS", "3")))
-    parser.add_argument("--max-results", type=int, default=int(os.environ.get("PAPER_MAX_RESULTS", "80")))
-    parser.add_argument("--min-score", type=int, default=int(os.environ.get("PAPER_MIN_SCORE", "18")))
+    parser = argparse.ArgumentParser(description="Fetch and rank one day of arXiv papers.")
+    parser.add_argument(
+        "--papers-per-topic",
+        type=int,
+        default=int(os.environ.get("PAPER_PAPERS_PER_TOPIC", "5")),
+        help="Maximum number of papers selected independently for each direction.",
+    )
     parser.add_argument("--model", default=os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"))
     parser.add_argument("--fresh", action="store_true", help="Ignore the existing store and rebuild from this run.")
     parser.add_argument("--topics-json", default=os.environ.get("PAPER_TOPICS_JSON", ""))
     parser.add_argument("--date", default=os.environ.get("PAPER_TARGET_DATE", ""), help="Only process one date, YYYY-MM-DD.")
     args = parser.parse_args()
+    if not 1 <= args.papers_per_topic <= 50:
+        parser.error("--papers-per-topic must be between 1 and 50")
     TOPICS = load_topics(args.topics_json)
 
     existing_store = {"papers": []} if args.fresh else read_store(DATA_PATH)
-    effective_days = args.days
-    if args.date:
-        target = dt.date.fromisoformat(args.date)
-        today = dt.datetime.now(dt.timezone.utc).date()
-        effective_days = max(args.days, (today - target).days + 2)
+    target_date = resolve_target_date(args.date)
     print(
-        f"Starting fetch: days={effective_days}, target_date={args.date or 'latest window'}, "
-        f"max_results={args.max_results}, min_score={args.min_score}, fresh={args.fresh}, topics={len(TOPICS)}.",
+        f"Starting fetch: target_date={target_date}, papers_per_topic={args.papers_per_topic}, "
+        f"fresh={args.fresh}, topics={len(TOPICS)}.",
         flush=True,
     )
-    query_plan = build_query_plan(TOPICS, model=args.model)
-    for item in query_plan["topics"]:
-        print(
-            f"Generated queries [{item['topic_id']}]: " + " | ".join(item["search_queries"]),
-            flush=True,
-        )
-    raw, retrieved_occurrences = fetch_from_query_plan(
-        query_plan,
-        days=effective_days,
-        max_results=args.max_results,
-        target_date=args.date,
+    raw = fetch_daily_category_papers(target_date)
+    print(f"Fetched broad arXiv candidates: {len(raw)}.", flush=True)
+    topic_scores = rank_papers_by_topic(raw, model=args.model)
+    selected, selected_counts = select_per_topic(raw, topic_scores, args.papers_per_topic)
+    print(
+        "Selected per direction: "
+        + ", ".join(f"{topic_id}={count}" for topic_id, count in selected_counts.items())
+        + f"; unique union={len(selected)}.",
+        flush=True,
     )
-    print(f"Fetched unique arXiv candidates: {len(raw)}.", flush=True)
-    prelim = [fallback_enrichment(p) for p in raw]
-    candidates = [p for p in prelim if p.get("relevance_score", 0) >= args.min_score or p.get("topics")]
-    print(f"Local filter candidates: {len(candidates)}.", flush=True)
-    enriched = enrich_papers(candidates, model=args.model)
-    if os.environ.get("DEEPSEEK_API_KEY"):
-        kept = [p for p in enriched if p.get("relevance_score", 0) >= args.min_score and p.get("topics")]
-    else:
-        kept = [p for p in enriched if p.get("relevance_score", 0) >= args.min_score or p.get("topics")]
+    enriched = enrich_papers(selected, model=args.model)
+    kept = [paper for paper in enriched if paper.get("topics")]
     print(f"Kept after enrichment: {len(kept)}.", flush=True)
     merged, merge_stats = merge_papers(existing_store.get("papers", []), kept)
     write_outputs(merged)
     status = {
         "last_run_at": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
-        "lookback_days": args.days,
-        "target_date": args.date,
-        "max_results": args.max_results,
-        "min_score": args.min_score,
+        "target_date": target_date,
+        "papers_per_topic": args.papers_per_topic,
         "raw_found": len(raw),
-        "retrieved_occurrences": retrieved_occurrences,
-        "candidates": len(candidates),
+        "candidates": len(raw),
+        "selected_per_topic": selected_counts,
+        "selected_union": len(selected),
         "kept": len(kept),
         "added": merge_stats["added"],
         "updated": merge_stats["updated"],
         "duplicates": merge_stats["duplicates"],
         "total": merge_stats["total"],
-        "query_plan": query_plan,
         "deepseek_enabled": bool(os.environ.get("DEEPSEEK_API_KEY")),
         "topics": [{"id": topic_id, **topic} for topic_id, topic in TOPICS.items()],
         "github_run_id": os.environ.get("GITHUB_RUN_ID", ""),
@@ -864,8 +1030,10 @@ def main() -> int:
         )
     write_status(status)
     print(
-        "Fetched {raw} arXiv papers, kept {kept}, added {added}, updated {updated}, total stored {total}.".format(
+        "Fetched {raw} arXiv papers, selected {selected}, kept {kept}, added {added}, "
+        "updated {updated}, total stored {total}.".format(
             raw=len(raw),
+            selected=len(selected),
             kept=len(kept),
             added=merge_stats["added"],
             updated=merge_stats["updated"],

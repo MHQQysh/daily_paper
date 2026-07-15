@@ -36,10 +36,8 @@ const addTopicButton = document.getElementById("addTopicButton");
 const saveTopicsButton = document.getElementById("saveTopicsButton");
 const resetTopicsButton = document.getElementById("resetTopicsButton");
 const copyTopicsButton = document.getElementById("copyTopicsButton");
-const lookbackDays = document.getElementById("lookbackDays");
 const targetDate = document.getElementById("targetDate");
-const maxResults = document.getElementById("maxResults");
-const minScore = document.getElementById("minScore");
+const papersPerTopic = document.getElementById("papersPerTopic");
 const apiToken = document.getElementById("apiToken");
 const tokenLabel = document.getElementById("tokenLabel");
 const tokenHelp = document.getElementById("tokenHelp");
@@ -517,17 +515,16 @@ async function loadData() {
   }
 }
 
-function formatQueryPlan(plan) {
-  const items = plan?.topics || [];
+function formatSelectedPerTopic(counts) {
+  const items = Object.entries(counts || {});
   if (!items.length) {
     return "";
   }
-  const content = items.map((item) => {
-    const topicName = byId(item.topic_id)?.name || item.topic_id;
-    const queries = (item.search_queries || []).map((query) => `<li>${escapeHtml(query)}</li>`).join("");
-    return `<div class="query-topic"><strong>${escapeHtml(topicName)}</strong><ul>${queries}</ul></div>`;
+  const content = items.map(([topicId, count]) => {
+    const topicName = byId(topicId)?.name || topicId;
+    return `<span><strong>${escapeHtml(topicName)}:</strong> ${Number(count || 0)}</span>`;
   }).join("");
-  return `<details class="query-plan"><summary>Generated queries</summary>${content}</details>`;
+  return `<div class="topic-run-counts">${content}</div>`;
 }
 
 function formatRunStatus(status) {
@@ -540,16 +537,16 @@ function formatRunStatus(status) {
     : "";
   return `
     <strong>Last run:</strong> ${escapeHtml(time)}${workflow}<br>
-    <strong>Range:</strong> ${Number(status.lookback_days || 0)} days,
-    <strong>date:</strong> ${escapeHtml(status.target_date || "window")},
-    <strong>found:</strong> ${Number(status.raw_found || 0)},
-    <strong>kept:</strong> ${Number(status.kept || 0)},
+    <strong>Date:</strong> ${escapeHtml(status.target_date || "-")},
+    <strong>requested:</strong> ${status.papers_per_topic ? Number(status.papers_per_topic) : "-"} per direction,
+    <strong>retrieved:</strong> ${Number(status.raw_found || 0)},
+    <strong>selected:</strong> ${Number(status.selected_union ?? status.kept ?? 0)},
     <strong>added:</strong> ${Number(status.added || 0)},
     <strong>updated:</strong> ${Number(status.updated || 0)},
     <strong>duplicates:</strong> ${Number(status.duplicates || 0)},
     <strong>total:</strong> ${Number(status.total || 0)}.
     <strong>DeepSeek:</strong> ${status.deepseek_enabled ? "on" : "off"}.
-    ${formatQueryPlan(status.query_plan)}
+    ${formatSelectedPerTopic(status.selected_per_topic)}
   `;
 }
 
@@ -617,12 +614,11 @@ async function triggerWorkflow() {
     runStatus.textContent = "Paste a GitHub token first, then click Save token.";
     return;
   }
+  const options = selectedRunOptions();
   const previousRunAt = state.lastKnownRunAt;
   const inputs = {
-    lookback_days: lookbackDays.value,
-    target_date: targetDate.value,
-    max_results: maxResults.value,
-    min_score: minScore.value,
+    target_date: options.targetDate,
+    papers_per_topic: String(options.papersPerTopic),
     topics_json: JSON.stringify({ topics: state.topics }),
   };
   runSearchButton.disabled = true;
@@ -646,12 +642,23 @@ async function triggerWorkflow() {
   pollForRunUpdate(previousRunAt);
 }
 
+function selectedRunOptions() {
+  const selectedDate = targetDate.value;
+  const count = Number(papersPerTopic.value);
+  if (!selectedDate) {
+    throw new Error("Choose a date first.");
+  }
+  if (!Number.isInteger(count) || count < 1 || count > 50) {
+    throw new Error("Papers per direction must be an integer from 1 to 50.");
+  }
+  return { targetDate: selectedDate, papersPerTopic: count };
+}
+
 function localRequestPayload() {
+  const options = selectedRunOptions();
   return {
-    lookback_days: lookbackDays.value,
-    target_date: targetDate.value,
-    max_results: maxResults.value,
-    min_score: minScore.value,
+    target_date: options.targetDate,
+    papers_per_topic: options.papersPerTopic,
     topics: state.topics,
     deepseek_api_key: getApiToken(),
   };
@@ -963,15 +970,6 @@ copyTopicsButton.addEventListener("click", async () => {
   }
 });
 saveTokenButton.addEventListener("click", () => saveApiToken());
-lookbackDays.addEventListener("change", () => {
-  const days = Number(lookbackDays.value);
-  const currentMax = Number(maxResults.value);
-  if (days >= 30 && currentMax < 800) {
-    maxResults.value = "300";
-  } else if (days >= 14 && currentMax < 300) {
-    maxResults.value = "160";
-  }
-});
 runSearchButton.addEventListener("click", () => {
   const trigger = IS_LOCAL_MODE ? triggerLocalRun : triggerWorkflow;
   trigger().catch((error) => {

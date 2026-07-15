@@ -28,6 +28,10 @@ MAX_OUTPUT_LINES = 30
 OPERATION_LOCK = threading.Lock()
 
 
+def previous_utc_date() -> str:
+    return (dt.datetime.now(dt.timezone.utc).date() - dt.timedelta(days=1)).isoformat()
+
+
 def _bounded_int(payload: dict[str, Any], name: str, default: int, minimum: int, maximum: int) -> int:
     try:
         value = int(payload.get(name, default))
@@ -43,11 +47,12 @@ def validate_run_payload(payload: Any) -> dict[str, Any]:
         raise ValueError("request body must be a JSON object")
 
     target_date = str(payload.get("target_date", "") or "").strip()
-    if target_date:
-        try:
-            dt.date.fromisoformat(target_date)
-        except ValueError as exc:
-            raise ValueError("target_date must use YYYY-MM-DD") from exc
+    if not target_date:
+        target_date = previous_utc_date()
+    try:
+        dt.date.fromisoformat(target_date)
+    except ValueError as exc:
+        raise ValueError("target_date must use YYYY-MM-DD") from exc
 
     topics = payload.get("topics", [])
     if not isinstance(topics, list):
@@ -60,10 +65,8 @@ def validate_run_payload(payload: Any) -> dict[str, Any]:
         raise ValueError("deepseek_api_key is too long")
 
     return {
-        "lookback_days": _bounded_int(payload, "lookback_days", 3, 1, 365),
         "target_date": target_date,
-        "max_results": _bounded_int(payload, "max_results", 80, 1, 1000),
-        "min_score": _bounded_int(payload, "min_score", 18, 0, 100),
+        "papers_per_topic": _bounded_int(payload, "papers_per_topic", 5, 1, 50),
         "topics": topics,
         "deepseek_api_key": api_key,
     }
@@ -73,15 +76,11 @@ def build_fetch_command(request: dict[str, Any]) -> list[str]:
     command = [
         sys.executable,
         str(FETCH_SCRIPT),
-        "--days",
-        str(request["lookback_days"]),
-        "--max-results",
-        str(request["max_results"]),
-        "--min-score",
-        str(request["min_score"]),
+        "--date",
+        request["target_date"],
+        "--papers-per-topic",
+        str(request["papers_per_topic"]),
     ]
-    if request["target_date"]:
-        command.extend(["--date", request["target_date"]])
     if request["topics"]:
         command.extend(["--topics-json", json.dumps({"topics": request["topics"]}, ensure_ascii=False)])
     return command

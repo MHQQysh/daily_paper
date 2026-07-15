@@ -5,22 +5,14 @@ on:
     - cron: "10 0 * * *"
   workflow_dispatch:
     inputs:
-      lookback_days:
-        description: "How many days to search"
-        required: false
-        default: "3"
       target_date:
-        description: "Optional single date to process, YYYY-MM-DD"
+        description: "Single UTC date to process, YYYY-MM-DD; blank means previous UTC day"
         required: false
         default: ""
-      max_results:
-        description: "Maximum arXiv results"
+      papers_per_topic:
+        description: "Number of papers to select independently for each direction"
         required: false
-        default: "80"
-      min_score:
-        description: "Minimum relevance score"
-        required: false
-        default: "18"
+        default: "5"
       topics_json:
         description: "JSON payload: {\"topics\":[...]}"
         required: false
@@ -51,17 +43,13 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_MODEL: deepseek-chat
-          PAPER_LOOKBACK_DAYS: ${{ github.event.inputs.lookback_days || '3' }}
           PAPER_TARGET_DATE: ${{ github.event.inputs.target_date || '' }}
-          PAPER_MAX_RESULTS: ${{ github.event.inputs.max_results || '80' }}
-          PAPER_MIN_SCORE: ${{ github.event.inputs.min_score || '18' }}
+          PAPER_PAPERS_PER_TOPIC: ${{ github.event.inputs.papers_per_topic || '5' }}
           PAPER_TOPICS_JSON: ${{ github.event.inputs.topics_json || '' }}
         run: |
           python scripts/fetch_papers.py \
-            --days "$PAPER_LOOKBACK_DAYS" \
             --date "$PAPER_TARGET_DATE" \
-            --max-results "$PAPER_MAX_RESULTS" \
-            --min-score "$PAPER_MIN_SCORE"
+            --papers-per-topic "$PAPER_PAPERS_PER_TOPIC"
 
       - name: Commit updates
         uses: stefanzweifel/git-auto-commit-action@v5

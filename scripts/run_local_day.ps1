@@ -1,7 +1,6 @@
 param(
     [string]$Date = "",
-    [int]$MaxResults = 20,
-    [int]$MinScore = 18,
+    [int]$PapersPerTopic = 5,
     [switch]$NoDeepSeek
 )
 
@@ -30,13 +29,11 @@ if (-not $NoDeepSeek -and -not $env:DEEPSEEK_API_KEY) {
 $argsList = @(
     "scripts\fetch_papers.py",
     "--date", $Date,
-    "--days", "3",
-    "--max-results", "$MaxResults",
-    "--min-score", "$MinScore"
+    "--papers-per-topic", "$PapersPerTopic"
 )
 
 Write-Host "Running local one-day update..."
-Write-Host "Date=$Date MaxResults=$MaxResults MinScore=$MinScore Mode=append-only"
+Write-Host "Date=$Date PapersPerTopic=$PapersPerTopic Mode=append-only"
 python @argsList
 
 Write-Host ""

@@ -1,18 +1,15 @@
 # Daily Paper
 
-Daily Paper is a lightweight academic paper tracker. DeepSeek expands each research direction into multiple discovery queries, arXiv results are deduplicated and fused with reciprocal rank fusion, and the best candidates are classified and translated into Chinese.
+Daily Paper is a lightweight academic paper tracker. It retrieves all papers submitted on one UTC date from the broad arXiv categories `cs.AI`, `cs.CV`, `cs.LG`, and `cs.CL`. DeepSeek then ranks every candidate independently for every configured direction, selects the top N papers per direction, and translates the selected abstracts into Chinese.
 
 ## What It Tracks
 
 Default directions and keywords live in `config/topics.json`. The current defaults are:
 
-- Visual Token Pruning
-- VLM / MLLM Acceleration
-- LLM Context / KV Pruning
-- Token Merging / Compression
-- Efficient ViT
-- Dynamic Token Selection
-- Survey / Benchmark
+- Vision Token Pruning
+- GRPO
+- 可解释性
+- 流形
 
 The site does not download PDFs. It stores only paper metadata, abstracts, and links.
 
@@ -36,7 +33,7 @@ The website can trigger the GitHub Actions workflow directly. This avoids any ex
 2. Open the site.
 3. Paste the token into `GitHub token for triggering Actions`.
 4. Click `Save token`. It is saved only in your browser local storage.
-5. Choose the range, such as `30 days`.
+5. Choose one date and the number of papers wanted for each direction.
 6. Click `Run search`.
 
 The workflow will search papers, use the repository secret `DEEPSEEK_API_KEY` for DeepSeek translation, update `docs/papers.json`, update `docs/run_status.json`, and redeploy the site.
@@ -55,11 +52,11 @@ Install the local PDF reader dependency once when setting up the project:
 python -m pip install -r requirements.txt
 ```
 
-On localhost, the run panel asks for a DeepSeek API key instead of a GitHub token. The key is stored in this browser's local storage. Choose a date or range and click `Run local search`; the page starts the fetch, shows progress, and reloads the updated paper list automatically.
+On localhost, the run panel asks for a DeepSeek API key instead of a GitHub token. The key is stored in this browser's local storage. Choose one date and a paper count per direction, then click `Run local search`; the page starts the fetch, shows progress, and reloads the updated paper list automatically.
 
 Use `Edit directions` to add, rename, or remove research directions and edit their keyword lists. Chinese direction names receive stable unique IDs, so categories such as `可解释性` and `流形` remain separate. In local mode, Save creates a backup and persists the catalog to `config/topics.json`; on the hosted static page, custom directions remain in that browser and are included when it triggers a workflow.
 
-Automatic browser searches are append-only: newly found papers are merged into the library and older papers are not removed by a search. The completed run report shows the DeepSeek-generated queries and the counts for added, updated, and duplicate papers.
+Automatic browser searches are append-only: newly found papers are merged into the library and older papers are not removed by a search. The same paper may be selected for multiple directions but is stored only once with all matching directions. The completed run report shows the retrieved count, per-direction selected counts, unique selected count, and counts for added, updated, and duplicate papers.
 
 To add one paper manually, paste an arXiv URL, arXiv ID, or title into the sidebar search field and click `+`. Title searches return up to five candidates. After choosing one, review DeepSeek's suggested directions, edit the checkboxes if needed, and confirm the addition.
 
@@ -72,7 +69,7 @@ Only one local search can run at a time. Closing the browser does not cancel a r
 For command-line use, the original fetcher remains available:
 
 ```powershell
-python scripts/fetch_papers.py --days 14 --max-results 80
+python scripts/fetch_papers.py --date 2026-07-14 --papers-per-topic 5
 ```
 
 ## DeepSeek
@@ -81,7 +78,7 @@ Set `DEEPSEEK_API_KEY` to enable DeepSeek scoring and Chinese summaries.
 
 ```powershell
 $env:DEEPSEEK_API_KEY="sk-..."
-python scripts/fetch_papers.py --days 14 --max-results 80
+python scripts/fetch_papers.py --date 2026-07-14 --papers-per-topic 5
 ```
 
 In GitHub, add the same key under:
@@ -94,7 +91,7 @@ Secret name:
 
 ## Deployment
 
-The included GitHub Actions workflow runs every day and updates `data/papers.json` plus `docs/papers.json`. Enable GitHub Pages with:
+The included GitHub Actions workflow runs every day for the previous UTC date and updates `data/papers.json` plus `docs/papers.json`. Enable GitHub Pages with:
 
 - Source: `Deploy from a branch`
 - Branch: `main`

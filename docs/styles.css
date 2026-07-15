@@ -294,7 +294,7 @@ input {
 
 .run-grid {
   display: grid;
-  grid-template-columns: 1.1fr 1fr 1fr 1fr;
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr);
   gap: 10px;
   align-items: end;
   margin-bottom: 10px;
@@ -330,6 +330,14 @@ input {
   font-family: Consolas, "Courier New", monospace;
   font-size: 12px;
   line-height: 1.55;
+}
+
+.topic-run-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 8px;
+  color: var(--muted);
 }
 
 .run-grid label {

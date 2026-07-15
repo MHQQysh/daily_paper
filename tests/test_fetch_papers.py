@@ -1,4 +1,5 @@
 import io
+import datetime as dt
 import urllib.error
 import urllib.parse
 import unittest
@@ -22,6 +23,117 @@ class FakeResponse:
 
 
 class ArxivFetchTests(unittest.TestCase):
+    def test_daily_category_retrieval_uses_broad_arxiv_categories(self):
+        expected = [{"id": "paper-1"}]
+        with mock.patch.object(fetch_papers, "fetch_arxiv", return_value=expected) as fetch:
+            result = fetch_papers.fetch_daily_category_papers("2026-07-10")
+
+        self.assertEqual(result, expected)
+        fetch.assert_called_once()
+        call = fetch.call_args.kwargs
+        self.assertEqual(call["target_date"], "2026-07-10")
+        self.assertEqual(call["max_results"], 1000)
+        self.assertIn("(cat:cs.AI OR cat:cs.CV OR cat:cs.LG OR cat:cs.CL)", call["search_expression"])
+        self.assertIn("submittedDate:[202607100000 TO 202607102359]", call["search_expression"])
+
+    def test_empty_target_date_defaults_to_previous_utc_day(self):
+        today = dt.date(2026, 7, 15)
+        self.assertEqual(fetch_papers.resolve_target_date("", today=today), "2026-07-14")
+        self.assertEqual(fetch_papers.resolve_target_date("2026-07-10", today=today), "2026-07-10")
+
+    def test_deepseek_ranking_normalizes_topic_scores(self):
+        topics = {
+            "vision": {"name": "Vision", "description": "Vision pruning", "keywords": ["visual token"]},
+            "grpo": {"name": "GRPO", "description": "Policy optimization", "keywords": ["grpo"]},
+        }
+        papers = [
+            {"id": "paper-1", "title": "Visual tokens", "abstract": "Compress visual tokens."},
+            {"id": "paper-2", "title": "Policy", "abstract": "Group policy optimization."},
+        ]
+        response = {
+            "papers": [
+                {"id": "paper-1", "scores": {"vision": 93, "grpo": -4, "unknown": 100}},
+                {"id": "paper-2", "scores": {"vision": "8", "grpo": 120}},
+            ]
+        }
+        with mock.patch.object(fetch_papers, "TOPICS", topics), mock.patch.dict(
+            fetch_papers.os.environ, {"DEEPSEEK_API_KEY": "sk-test"}
+        ), mock.patch.object(fetch_papers, "call_deepseek_json", return_value=response):
+            scores = fetch_papers.rank_papers_by_topic(papers, model="deepseek-chat", batch_size=20)
+
+        self.assertEqual(scores["paper-1"], {"vision": 93, "grpo": 0})
+        self.assertEqual(scores["paper-2"], {"vision": 8, "grpo": 100})
+
+    def test_per_topic_selection_keeps_overlap_once_with_both_topics(self):
+        topics = {
+            "vision": {"name": "Vision", "description": "", "keywords": ["vision"]},
+            "interpretability": {"name": "Interpretability", "description": "", "keywords": ["explain"]},
+        }
+        papers = [
+            {"id": "shared", "title": "Shared", "published": "2026-07-10"},
+            {"id": "vision-only", "title": "Vision", "published": "2026-07-10"},
+            {"id": "interpret-only", "title": "Interpret", "published": "2026-07-10"},
+        ]
+        scores = {
+            "shared": {"vision": 95, "interpretability": 91},
+            "vision-only": {"vision": 80, "interpretability": 0},
+            "interpret-only": {"vision": 0, "interpretability": 85},
+        }
+        with mock.patch.object(fetch_papers, "TOPICS", topics):
+            selected, counts = fetch_papers.select_per_topic(papers, scores, papers_per_topic=2)
+
+        self.assertEqual(counts, {"vision": 2, "interpretability": 2})
+        self.assertEqual(len(selected), 3)
+        shared = next(paper for paper in selected if paper["id"] == "shared")
+        self.assertEqual(shared["topics"], ["vision", "interpretability"])
+        self.assertEqual(shared["relevance_score"], 95)
+
+    def test_fallback_enrichment_preserves_selected_topics_and_rank_score(self):
+        topics = {
+            "manifold": {"name": "Manifold", "description": "", "keywords": ["manifold"]},
+        }
+        paper = {
+            "id": "paper-1",
+            "title": "A geometric paper",
+            "abstract": "A geometric representation method.",
+            "topics": ["manifold"],
+            "relevance_score": 82,
+        }
+        with mock.patch.object(fetch_papers, "TOPICS", topics):
+            enriched = fetch_papers.fallback_enrichment(paper)
+        self.assertEqual(enriched["topics"], ["manifold"])
+        self.assertEqual(enriched["relevance_score"], 82)
+
+    def test_deepseek_enrichment_cannot_add_unselected_topic(self):
+        topics = {
+            "vision": {"name": "Vision", "description": "Vision pruning", "keywords": ["visual token"]},
+            "grpo": {"name": "GRPO", "description": "Policy optimization", "keywords": ["grpo"]},
+        }
+        paper = {
+            "id": "paper-1",
+            "title": "Visual token pruning",
+            "abstract": "A visual token method.",
+            "topics": ["vision"],
+            "relevance_score": 91,
+        }
+        response = {
+            "paper-1": {
+                "id": "paper-1",
+                "topics": ["vision", "grpo"],
+                "relevance_score": 80,
+                "summary_zh": "summary",
+                "abstract_zh": "abstract",
+                "why_relevant_zh": "relevant",
+            }
+        }
+        with mock.patch.object(fetch_papers, "TOPICS", topics), mock.patch.dict(
+            "os.environ", {"DEEPSEEK_API_KEY": "sk-test"}
+        ), mock.patch.object(fetch_papers, "call_deepseek", return_value=response):
+            enriched = fetch_papers.enrich_papers([paper], model="deepseek-chat")
+
+        self.assertEqual(enriched[0]["topics"], ["vision"])
+        self.assertEqual(enriched[0]["relevance_score"], 91)
+
     def test_http_429_is_retried(self):
         error = urllib.error.HTTPError("https://example.test", 429, "limited", {"Retry-After": "0"}, io.BytesIO())
         with mock.patch.object(
