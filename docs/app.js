@@ -43,6 +43,7 @@ function paperMatches(paper) {
   const haystack = [
     paper.title,
     paper.abstract,
+    paper.abstract_zh,
     paper.summary_zh,
     paper.why_relevant_zh,
     (paper.authors || []).join(" "),
@@ -103,6 +104,25 @@ function paperRow(paper) {
   `;
 }
 
+function groupedPaperRows(papers) {
+  const grouped = papers.reduce((acc, paper) => {
+    const date = paper.published || "Unknown date";
+    if (!acc.has(date)) {
+      acc.set(date, []);
+    }
+    acc.get(date).push(paper);
+    return acc;
+  }, new Map());
+  return Array.from(grouped.entries())
+    .map(([date, items]) => `
+      <div class="date-group">
+        <div class="date-label">${escapeHtml(date)} · ${items.length}</div>
+        ${items.map(paperRow).join("")}
+      </div>
+    `)
+    .join("");
+}
+
 function topicGroup(topic, papers) {
   const open = state.openTopics.has(topic.id);
   const active = papers.some((paper) => paper.id === state.selectedPaperId);
@@ -117,7 +137,7 @@ function topicGroup(topic, papers) {
         <span class="count">${papers.length}</span>
       </button>
       <div class="paper-list">
-        ${papers.length ? papers.map(paperRow).join("") : '<div class="paper-meta">No matches</div>'}
+        ${papers.length ? groupedPaperRows(papers) : '<div class="paper-meta">No matches</div>'}
       </div>
     </section>
   `;
@@ -186,9 +206,13 @@ function renderDetail() {
         </section>
       </div>
       <section class="abstract">
-        <h4>Abstract</h4>
-        <p>${escapeHtml(paper.abstract || "No abstract available.")}</p>
+        <h4>中文 Abstract</h4>
+        <p>${escapeHtml(paper.abstract_zh || paper.abstract || "No abstract available.")}</p>
       </section>
+      <details class="original-abstract">
+        <summary>Original English abstract</summary>
+        <p>${escapeHtml(paper.abstract || "No abstract available.")}</p>
+      </details>
       <div class="links">
         ${linkButton("Abstract", links.abstract, true)}
         ${linkButton("PDF", links.pdf)}

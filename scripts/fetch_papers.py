@@ -163,6 +163,10 @@ def slugify(value: str) -> str:
     return value.strip("-")[:100] or "paper"
 
 
+def arxiv_base_id(arxiv_id: str) -> str:
+    return re.sub(r"v\d+$", "", arxiv_id)
+
+
 def arxiv_query() -> str:
     title_abs = [f"ti:{term} OR abs:{term}" for term in BASE_QUERY_TERMS]
     return " OR ".join(f"({part})" for part in title_abs)
@@ -209,14 +213,14 @@ def fetch_arxiv(days: int, max_results: int) -> list[dict[str, Any]]:
             normalize_text(author.findtext("atom:name", default="", namespaces=ns))
             for author in entry.findall("atom:author", ns)
         ]
-        links = {"abstract": source_id, "pdf": "", "code": ""}
-        for link in entry.findall("atom:link", ns):
-            title_attr = link.attrib.get("title")
-            href = link.attrib.get("href", "")
-            if title_attr == "pdf":
-                links["pdf"] = href
         categories = [cat.attrib.get("term", "") for cat in entry.findall("atom:category", ns)]
         arxiv_id = source_id.rstrip("/").split("/")[-1]
+        base_id = arxiv_base_id(arxiv_id)
+        links = {
+            "abstract": f"https://arxiv.org/abs/{arxiv_id}",
+            "pdf": f"https://arxiv.org/pdf/{base_id}.pdf",
+            "code": "",
+        }
         papers.append(
             {
                 "id": f"arxiv-{arxiv_id}",
@@ -271,6 +275,7 @@ def fallback_enrichment(paper: dict[str, Any]) -> dict[str, Any]:
         "topics": topics,
         "relevance_score": relevance,
         "summary_zh": f"候选论文：{first_sentence[:220]}",
+        "abstract_zh": paper.get("abstract", ""),
         "why_relevant_zh": f"关键词匹配到 {topic_names}；DeepSeek API 未配置时使用本地规则打分。",
         "deepseek_used": False,
     }
@@ -302,6 +307,7 @@ def deepseek_prompt(papers: list[dict[str, Any]]) -> list[dict[str, str]]:
             "Keep only topic ids from topic_catalog.",
             "relevance_score is an integer from 0 to 100.",
             "summary_zh is one concise Chinese sentence.",
+            "abstract_zh is a faithful Chinese translation of the abstract, 1 to 3 concise paragraphs.",
             "why_relevant_zh is one concise Chinese sentence explaining the token-pruning relevance.",
             "If a paper is weakly related, give a low score and explain why.",
         ],
@@ -313,6 +319,7 @@ def deepseek_prompt(papers: list[dict[str, Any]]) -> list[dict[str, str]]:
                     "topics": ["topic-id"],
                     "relevance_score": 0,
                     "summary_zh": "中文一句话总结",
+                    "abstract_zh": "中文摘要翻译",
                     "why_relevant_zh": "中文相关性说明",
                 }
             ]
@@ -373,6 +380,7 @@ def enrich_papers(papers: list[dict[str, Any]], model: str, batch_size: int = 8)
                     "topics": topics or by_id[paper_id].get("topics", []),
                     "relevance_score": int(item.get("relevance_score", by_id[paper_id].get("relevance_score", 0))),
                     "summary_zh": normalize_text(item.get("summary_zh", by_id[paper_id].get("summary_zh", ""))),
+                    "abstract_zh": normalize_text(item.get("abstract_zh", by_id[paper_id].get("abstract_zh", ""))),
                     "why_relevant_zh": normalize_text(
                         item.get("why_relevant_zh", by_id[paper_id].get("why_relevant_zh", ""))
                     ),

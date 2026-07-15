@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-15T04:49:30+00:00",
+  "last_updated": "2026-07-15T04:53:12+00:00",
   "topics": [
     {
       "id": "visual-token-pruning",
@@ -60,17 +60,18 @@
         "cs.RO"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12356v1",
-        "pdf": "https://arxiv.org/pdf/2607.12356v1",
+        "abstract": "https://arxiv.org/abs/2607.12356v1",
+        "pdf": "https://arxiv.org/pdf/2607.12356.pdf",
         "code": ""
       },
       "topics": [
         "token-merging-compression"
       ],
       "relevance_score": 100,
-      "summary_zh": "提出VistaVLA框架，通过Merge-then-Query机制将3D高斯原语压缩为紧凑上下文令牌，实现99%令牌缩减。",
-      "why_relevant_zh": "直接提出令牌合并与压缩方法，显著减少令牌数量，高度相关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Vision-Language-Action (VLA) models have emerged as a powerful end-to-end paradigm for robotic manipulation by mapping language instructions and 2D visual inputs directly to actions.",
+      "abstract_zh": "Vision-Language-Action (VLA) models have emerged as a powerful end-to-end paradigm for robotic manipulation by mapping language instructions and 2D visual inputs directly to actions. However, these models lack an explicit, scene-level 3D representation, limiting their ability to reason over spatial layouts and geometric constraints. While recent efforts incorporate explicit 3D cues, such as depth maps or point clouds, to improve geometric awareness, they primarily capture low-level structures and lack high-level semantic grounding in 3D space. In human cognition, interaction with the physical world relies on a 3D semantic cognitive map - an internal mental model that integrates spatial layouts with semantic context to enable persistent, viewpoint-invariant reasoning. In light of this, we present VistaVLA, a novel two-stage framework that constructs a geometry- and semantics-aware 3D cognitive representation from 3D Gaussian primitives and grounds it as compact context tokens for VLA policy learning. Specifically, VistaVLA lifts multi-view vision-language features into 3D Gaussian primitives, forming geometry-anchored semantic tokens that align view-consistent spatial grounding with 2D visual feature spaces. To make this 3D representation computationally tractable for effective VLA control, we introduce Merge-then-Query (MtQ), a token summarization mechanism. MtQ compresses dense Gaussian primitives into a highly compact set of spatially informative tokens, achieving a 99% token reduction while preserving action-relevant 3D layouts and semantic context. Extensive evaluations in both simulated and real-world environments demonstrate the effectiveness of VistaVLA. Notably, in real-world scenarios, VistaVLA improves success rates by 22.8% across seven real-world tasks and by 30.0% over the VLA-Adapter baseline on challenging out-of-distribution tasks.",
+      "why_relevant_zh": "关键词匹配到 Token Merging / Compression；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12756v1",
@@ -90,19 +91,20 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12756v1",
-        "pdf": "https://arxiv.org/pdf/2607.12756v1",
+        "abstract": "https://arxiv.org/abs/2607.12756v1",
+        "pdf": "https://arxiv.org/pdf/2607.12756.pdf",
         "code": ""
       },
       "topics": [
+        "vlm-acceleration",
         "visual-token-pruning",
-        "token-merging-compression",
-        "vlm-acceleration"
+        "token-merging-compression"
       ],
       "relevance_score": 100,
-      "summary_zh": "提出VisCo，利用预训练VLM自身作为编码器进行视觉token压缩，无需额外训练。",
-      "why_relevant_zh": "直接针对视觉token压缩，训练高效且性能优异，高度相关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Vision-language models (VLMs) process large numbers of visual tokens, resulting in substantial inference latency and memory overhead.",
+      "abstract_zh": "Vision-language models (VLMs) process large numbers of visual tokens, resulting in substantial inference latency and memory overhead. This has motivated extensive research on visual token compression. While training-free strategies rely on heuristic metrics and suffer significant performance degradation under high compression ratios, many training-based methods introduce external compression modules that force the VLM backbone to adapt, incurring substantial retraining cost and compromising VLMs' priors. Effective visual token compression hinges on strong information encoding, a capability already present in pretrained VLMs but underutilized by existing approaches. Motivated by this, we propose VisCo, a training-efficient self-compression framework that reuses the pretrained VLM itself as an intrinsic compressor. VisCo is a parameter-sharing autoencoder that compresses visual information using a small set of memory tokens and transfers hierarchical information from encoding to decoding. Experiments show that VisCo surpasses prior methods across all evaluated compression ratios, with larger gains under more aggressive compression, and remains stable even in the extreme single-token setting. Moreover, when combined with the original visual tokens, the learned memory tokens can even improve the base model, suggesting that VisCo captures complementary representations beyond compression.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Visual Token Pruning, Token Merging / Compression；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12557v1",
@@ -124,8 +126,8 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12557v1",
-        "pdf": "https://arxiv.org/pdf/2607.12557v1",
+        "abstract": "https://arxiv.org/abs/2607.12557v1",
+        "pdf": "https://arxiv.org/pdf/2607.12557.pdf",
         "code": ""
       },
       "topics": [
@@ -133,9 +135,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 100,
-      "summary_zh": "提出基于高斯混合模型的事件感知视觉分配方法，通过差异化分配高/低分辨率关键帧来优化令牌预算。",
-      "why_relevant_zh": "直接针对视觉令牌预算优化，属于VLM加速和令牌选择，且方法即插即用，高度相关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Large Vision-Language Models (LVLMs) face significant challenges in long video understanding due to the excessive computational cost and information loss associated with uniform sampling.",
+      "abstract_zh": "Large Vision-Language Models (LVLMs) face significant challenges in long video understanding due to the excessive computational cost and information loss associated with uniform sampling. Existing keyframe selection methods often treat video frames as atomic entities and allocate visual budgets equally, thereby overlooking high-level semantic structures and introducing substantial redundancy. To address these limitations, we propose GMM-EVA (Gaussian Mixture Modeling for Event-Aware Visual Allocation), which leverages Gaussian Mixture Models to model event-level structure from discrete frame-wise observations. A differentiated allocation strategy is then applied to preserve one primary high-resolution keyframe per event for high-fidelity detail, while utilizing lower-resolution secondary keyframes to maintain temporal context and optimize token budgets. GMM-EVA is a training-free, plug-and-play framework that generalizes robustly across various relevance measures and downstream LVLMs. Extensive experiments on multiple long video benchmarks demonstrate that our method significantly outperforms uniform sampling. Notably, GMM-EVA achieves comparable performance to baseline selection methods while utilizing only approximately half of the visual token budget, highlighting its superior efficiency and effectiveness.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12550v1",
@@ -155,17 +158,18 @@
         "math.OC"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12550v1",
-        "pdf": "https://arxiv.org/pdf/2607.12550v1",
+        "abstract": "https://arxiv.org/abs/2607.12550v1",
+        "pdf": "https://arxiv.org/pdf/2607.12550.pdf",
         "code": ""
       },
       "topics": [
         "llm-context-kv-pruning"
       ],
       "relevance_score": 100,
-      "summary_zh": "提出联合Tucker分解和JL残差分配的KV缓存压缩方法，实现近无损的2-3倍压缩。",
-      "why_relevant_zh": "直接针对KV缓存压缩，属于LLM上下文/KV剪枝范畴，方法新颖且效果显著。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：The key-value (KV) cache has become the dominant memory cost of transformer inference.",
+      "abstract_zh": "The key-value (KV) cache has become the dominant memory cost of transformer inference. It grows with batch size, context length, and depth, and at long context it, rather than the model weights, sets the ceiling on throughput. Two families of methods reduce it. Low-rank methods factor two-dimensional slices of the cache, either per-head matrices or cross-layer feature blocks, and quantization methods lower the bit-width of every entry. Neither family exploits the fact that the cache at a layer is naturally a third-order tensor whose three axes, the heads, the tokens, and the features, carry very different amounts of redundancy. We take this tensor view directly. Our method, JoLT, applies a partial Tucker decomposition that compresses only the token and feature axes while leaving the head and layer axes intact, and then restores the energy that truncation discards with a Johnson-Lindenstrauss (JL) rotated low-bit residual. A single Lagrangian dual allocates the Tucker ranks and the residual bit-widths together, per layer group and separately for keys and values, under one byte budget. The result is a near-lossless 2-3x compression: perplexity, GSM8K accuracy, and RULER needle-in-a-haystack retrieval all stay at or within statistical noise of the uncompressed baseline on both a grouped-query-attention model (Mistral-7B-v0.3) and a multi-head-attention model (LLaMA-2-13B). At 2x, JoLT reconstructs the cache to relative Frobenius error 0.009 (K) and 0.006 (V) on both architectures, roughly an order of magnitude below cross-layer SVD and 4-bit quantization. A randomized-SVD variant, FlashJoLT, delivers a 5-13x compression-time speedup at matched quality.",
+      "why_relevant_zh": "关键词匹配到 LLM Context / KV Pruning；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12656v1",
@@ -187,17 +191,18 @@
         "eess.SP"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12656v1",
-        "pdf": "https://arxiv.org/pdf/2607.12656v1",
+        "abstract": "https://arxiv.org/abs/2607.12656v1",
+        "pdf": "https://arxiv.org/pdf/2607.12656.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 80,
-      "summary_zh": "提出内容感知的3D高斯泼溅压缩方法，通过自适应量化和剪枝优化结构，并将几何转换为稀疏八叉树令牌进行编码。",
-      "why_relevant_zh": "涉及令牌剪枝和自适应令牌选择，属于动态令牌选择范畴，但主要针对3DGS压缩，与视觉令牌剪枝直接相关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Recent progress in compressing large-scale 3D Gaussian Splatting (3DGS) data has substantially reduced storage footprint, network transmission bandwidth, and memory traffic to GPU caches before rendering.",
+      "abstract_zh": "Recent progress in compressing large-scale 3D Gaussian Splatting (3DGS) data has substantially reduced storage footprint, network transmission bandwidth, and memory traffic to GPU caches before rendering. Yet decoding with advanced 3DGS codecs still takes seconds, making them unsuitable for interactive applications. To systematically address this challenge, we propose SpeedyGS, a Content-Aware 3DGS Compressor that separately optimizes the structural formation and statistical coding. First, in structural formation, we jointly optimize adaptive quantization and pruning under a unified rate-distortion objective, where the rate term is replaced by a lightweight rate proxy that estimates entropy coding cost of the next stage, thereby efficiently regulating Gaussian density and precision to yield a compact scene representation. Then, in the statistical coding phase, Gaussian geometry is converted into sparse octree tokens and subsequently undergoes multi-stage coding, while Gaussian attributes are serialized into a 1D token stream for entropy coding via a complexity-controllable local autoregressive model. SpeedyGS achieves a favorable balance among optimization efficiency, compression performance, decoding latency, and rendering speed. Compared to vanilla 3DGS, SpeedyGS achieves up to 160$\\times$ model size reduction with negligible quality degradation across common datasets. Compared to state-of-the-art compression methods, it also offers significantly faster decoding and accelerates optimization by 9$\\times$ on consumer-grade hardware. To further reduce decoding overhead, the statistical coding stage also supports channel-wise, fixed-length coding for Gaussian as a simpler alternative, enabling SpeedyGS to better adapt to the underlying application and reduce decoding latency to nearly zero.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12725v1",
@@ -214,17 +219,18 @@
         "cs.SD"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12725v1",
-        "pdf": "https://arxiv.org/pdf/2607.12725v1",
+        "abstract": "https://arxiv.org/abs/2607.12725v1",
+        "pdf": "https://arxiv.org/pdf/2607.12725.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 72,
-      "summary_zh": "提出神经变形方法，在神经音频编解码器中进行token级变形。",
-      "why_relevant_zh": "涉及token选择与编辑，但应用于音频领域，与视觉token剪枝间接相关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Neural audio codecs were originally developed for high-fidelity compression; however, their latent token representations and expressive decoders also constitute a powerful substrate for controllable audio transformation.",
+      "abstract_zh": "Neural audio codecs were originally developed for high-fidelity compression; however, their latent token representations and expressive decoders also constitute a powerful substrate for controllable audio transformation. This work introduces Neural Morphing, a training-free token-domain audio effect that selects residual-vector-quantized (RVQ) token grains from a user palette and decodes the edited stream through a pretrained codec. The method combines an RVQ-group transfer policy that separates coarse, middle, and fine codebook groups with a continuity-constrained sequence matcher that replaces independent greedy selection with bounded beam search. The intended output is a controlled hybrid: the source preserves rhythmic organization while the palette contributes timbral color and residual detail. We focus on the implementation and realtime behavior of a deployable VST3/AU system, including chunked rendering, palette-size scaling, and backend health checks.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12696v1",
@@ -249,17 +255,18 @@
         "cs.DC"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12696v1",
-        "pdf": "https://arxiv.org/pdf/2607.12696v1",
+        "abstract": "https://arxiv.org/abs/2607.12696v1",
+        "pdf": "https://arxiv.org/pdf/2607.12696.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 68,
-      "summary_zh": "提出成本感知的推测解码框架EcoSpec，优化MoE模型专家激活。",
-      "why_relevant_zh": "虽涉及解码效率，但核心是专家路由而非token剪枝，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Sparse Mixture-of-Experts (MoE) models have become an important approach for scaling Large Language Models (LLMs), but their inference efficiency depends strongly on expert activation patterns.",
+      "abstract_zh": "Sparse Mixture-of-Experts (MoE) models have become an important approach for scaling Large Language Models (LLMs), but their inference efficiency depends strongly on expert activation patterns. Speculative decoding (SD) accelerates autoregressive generation by verifying multiple draft tokens in parallel, yet existing draft selection strategies primarily optimize acceptance likelihood. In large-scale MoE models, however, selecting draft tokens also determines the union of experts activated during verification. We observe that confidence-driven SD can introduce \\textit{expert scattering}: high-probability draft tokens may route to disjoint experts, increasing expert-weight memory traffic and reducing the speedup from speculation. Motivated by this observation, we revisit draft-tree selection under the non-uniform memory-cost structure of MoE inference. We propose \\textsc{EcoSpec}, a cost-aware speculative decoding framework that incorporates predicted marginal expert activation cost into draft selection. With a lightweight expert predictor and a dynamic expert buffer, \\textsc{EcoSpec} favors draft paths that preserve high acceptance likelihood while reusing experts already covered by the current verification set, without modifying the target-model verification rule. We evaluate \\textsc{EcoSpec} on three large-scale MoE models, including DeepSeek-V3.1 (671B), Qwen3-235B-A22B, and GPT-OSS-120B, across reasoning, coding, question-answering, and dialogue benchmarks. \\textsc{EcoSpec} consistently reduces active expert footprints and improves end-to-end decoding speed, achieving up to $1.62\\times$ speedup. These results show that accounting for expert activation cost is important for efficient speculative decoding in large-scale MoE models.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12815v1",
@@ -281,8 +288,8 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12815v1",
-        "pdf": "https://arxiv.org/pdf/2607.12815v1",
+        "abstract": "https://arxiv.org/abs/2607.12815v1",
+        "pdf": "https://arxiv.org/pdf/2607.12815.pdf",
         "code": ""
       },
       "topics": [
@@ -290,9 +297,10 @@
         "visual-token-pruning"
       ],
       "relevance_score": 64,
-      "summary_zh": "通过视觉访问扫描干预，发现CoT推理主要依赖语言侧计算而非持续图像token访问。",
-      "why_relevant_zh": "直接研究图像token访问边界，揭示token冗余，对视觉token剪枝有指导意义。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Chain-of-Thought (CoT) prompting is widely used as a test-time scaling strategy for Vision-Language Models (VLMs), but it remains unclear what is extended when VLMs generate longer reasoning traces.",
+      "abstract_zh": "Chain-of-Thought (CoT) prompting is widely used as a test-time scaling strategy for Vision-Language Models (VLMs), but it remains unclear what is extended when VLMs generate longer reasoning traces. We ask whether CoT requires continued access to image tokens, or whether it mainly operates over visual information already made available earlier in the forward pass. We introduce Visual Access Sweep, a causal intervention that masks attention from generated-token queries to image-token keys along layer depth and generation time, and define the Visual Access Boundary (VAB) as the minimal access region that preserves task accuracy. Across six model configurations from Qwen2.5-VL and InternVL3, both no-CoT direct answering and CoT prompting exhibit finite VABs. In Qwen2.5-VL-32B and InternVL3 at 14B and 38B scales, when CoT is evaluated against the no-CoT full-access target, its VAB layer differs from the no-CoT boundary by at most two layers, despite substantially longer generations. This suggests that CoT does not primarily improve performance by prolonging direct image-token access throughout the reasoning trace, but by extending language-side computation over image-derived hidden-state information. We further show that CoT gains are constrained by perceptual readout. CoT helps when the queried visual attribute can be reliably read out by the model, but not when that readout is unreliable. A symbolic-attribute oracle shows that CoT can improve counting once ground-truth attributes are supplied as text, while a single-object probe-vs-decode check shows that hard attributes can be linearly recoverable from hidden states yet difficult for the model itself to output. Together, these analyses place the bottleneck at readout rather than counting.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Visual Token Pruning；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12334v1",
@@ -311,17 +319,18 @@
         "cs.ET"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12334v1",
-        "pdf": "https://arxiv.org/pdf/2607.12334v1",
+        "abstract": "https://arxiv.org/abs/2607.12334v1",
+        "pdf": "https://arxiv.org/pdf/2607.12334.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "将证据选择建模为QUBO优化问题，通过离散优化选择紧凑证据子集。",
-      "why_relevant_zh": "涉及动态选择证据子集，与动态token选择相关，但主要针对检索增强问答，非典型token剪枝。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Retrieval-augmented question answering depends on selecting evidence passages that jointly support answer generation.",
+      "abstract_zh": "Retrieval-augmented question answering depends on selecting evidence passages that jointly support answer generation. However, many RAG pipelines rely on top-\\(k\\) ranking, where passages are selected mainly by individual relevance scores, even though multi-hop questions often require complementary evidence satisfying multiple information requirements. Recent LLM-based selectors address this by treating retrieval as set selection, but using an LLM for this intermediate stage can be costly and difficult to scale. In this work, we formulate evidence selection as a Quadratic Unconstrained Binary Optimization (QUBO) problem. Given a question, candidate passages, and decomposed information requirements, our method constructs an energy function that balances relevance, requirement coverage, support strength, redundancy, complementarity, and compactness. Low-energy solutions correspond to compact evidence subsets that cover the needed requirements while avoiding unnecessary or repetitive context. The selected passages are then passed to a downstream language model for answer generation, separating combinatorial evidence selection from semantic answer generation. We evaluate the proposed QUBO selector on HotpotQA and compare it with LLM-based set selectors and non-LLM baselines including BM25, relevance top-\\(k\\), maximal marginal relevance, hybrid lexical--semantic ranking, greedy coverage, and random selection. The QUBO selector achieves competitive exact-match and token-F1 performance relative to LLM-based selectors while providing a solver-compatible formulation for structured evidence selection. These results suggest that multi-hop evidence selection can be cast as discrete optimization, opening a path toward RAG pipelines where LLMs are reserved for semantic processing and answer generation, while context selection is handled by Ising/QUBO-compatible solvers.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12968v1",
@@ -339,17 +348,18 @@
         "math-ph"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12968v1",
-        "pdf": "https://arxiv.org/pdf/2607.12968v1",
+        "abstract": "https://arxiv.org/abs/2607.12968v1",
+        "pdf": "https://arxiv.org/pdf/2607.12968.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "研究量子参考系噪声的经典化条件，涉及动态选择与token效率。",
-      "why_relevant_zh": "论文讨论动态选择机制，但属于量子信息领域，与视觉/语言token剪枝间接相关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：A finite quantum reference token with group-valued misalignment induces a random-unitary channel, but optimal degradation is generally an optimization over all quantum post-processings.",
+      "abstract_zh": "A finite quantum reference token with group-valued misalignment induces a random-unitary channel, but optimal degradation is generally an optimization over all quantum post-processings. For a unitary representation U of a finite group G, we prove that the following conditions are equivalent: U contains every irreducible type; one ancilla-assisted input has an orthonormal G-orbit; signed group measures embed isometrically into channels in diamond norm; and, for every pair of noise laws p,q, $\\inf_{Λ\\in\\mathrm{CPTP}} \\frac{1}{2}\\|Φ_q^U-Λ\\circΦ_p^U\\|_\\diamond =\\min_{r\\in\\mathcal{P}(G)}\\frac{1}{2}\\|q-r*p\\|_1$. Thus representation completeness is the exact carrier condition for universal reduction of quantum post-processing to classical convolution. We determine the minimum ancilla dimensions for an orthogonal orbit and for an invariant calibration seed. For an incomplete carrier, with visible Plancherel dimension S(U), we derive the exact conditional-expectation distance $\\frac{1}{2}\\|\\operatorname{id}-Φ_u^U\\|_\\diamond=1-1/S(U)$ and an explicit quantum--classical deficiency gap. For irreducible carriers the deficiency is obtained in closed form; the faithful two-dimensional representation of $S_3$ yields an exact ten-percent reduction relative to classical convolution. We also characterize law identifiability through the conjugation representation, provide finite linear programs and decision witnesses, and establish both a finite-dimensional obstruction and stable visible-band reconstruction for infinite compact groups. Deterministic ancillary code reproduces the finite-group examples and numerical regression checks.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12250v1",
@@ -379,17 +389,18 @@
         "quant-ph"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12250v1",
-        "pdf": "https://arxiv.org/pdf/2607.12250v1",
+        "abstract": "https://arxiv.org/abs/2607.12250v1",
+        "pdf": "https://arxiv.org/pdf/2607.12250.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "实验演示可扩展量子区块链，实现指数级量子通信复杂度降低。",
-      "why_relevant_zh": "涉及token交换应用，但量子区块链与视觉/语言token剪枝无关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：To secure modern distributed digital infrastructures, quantum blockchains exploit quantum resources to achieve information-theoretic security and surpass the classical one-third fault-tolerance bound.",
+      "abstract_zh": "To secure modern distributed digital infrastructures, quantum blockchains exploit quantum resources to achieve information-theoretic security and surpass the classical one-third fault-tolerance bound. However, existing high-fault-tolerant protocols face a fundamental scalability challenge: the blockchain trilemma imposes either exponential communication complexity or experimentally demanding multipartite entanglement. Here, we experimentally demonstrate a scalable quantum blockchain protocol based on weak coherent states that achieves an exponential reduction in quantum communication complexity. The protocol employs a circular quantum Byzantine agreement mechanism that preserves information-theoretic security while avoiding multipartite entanglement. We implement this protocol on a photonic integrated circuit platform, realizing a six-node network over commercially available telecommunication infrastructure. Compared with previous schemes, the protocol requires less than 4% of the quantum communication resources. Leveraging this advantage, we further demonstrate a quantum-secured token exchange application achieving a throughput of 805.3 transactions per second with zero failures. These results establish a practical pathway toward scalable quantum blockchain.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12634v1",
@@ -408,17 +419,18 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12634v1",
-        "pdf": "https://arxiv.org/pdf/2607.12634v1",
+        "abstract": "https://arxiv.org/abs/2607.12634v1",
+        "pdf": "https://arxiv.org/pdf/2607.12634.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "提出智能是原子压缩与组合复用的理论框架，强调将复杂现象分解为可复用的原子单元。",
-      "why_relevant_zh": "讨论令牌级处理与原子结构，与动态令牌选择概念相关，但偏理论且不涉及具体剪枝方法。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：This paper proposes a theoretical framework for understanding intelligence as a process of atomic compression and compositional reuse.",
+      "abstract_zh": "This paper proposes a theoretical framework for understanding intelligence as a process of atomic compression and compositional reuse. We argue that cognitive, biological, computational, and organizational systems achieve scalable intelligence by decomposing complex phenomena into reusable atomic units that can be recombined into higher-order structures. Drawing on evidence from cognitive science, information theory, evolutionary biology, software engineering, medicine, legal reasoning, education, music, and artificial intelligence, the paper develops the concept of atomic units as fundamental compression layers that support efficiency, transfer, interpretability, and evolvability. The central contribution is the Compression Calculus, a formal framework for comparing surface-level representations with atomic representations and for describing how compression gains compound across abstraction layers. We introduce the Compounding Cascade thesis, according to which each additional layer of abstraction multiplicatively increases representational efficiency rather than merely adding incremental savings. The paper further argues that contemporary AI systems often operate at suboptimal levels of representation, relying on token-level processing or document-level retrieval rather than stable, concept-level atomic structures. In this view, large language models are best understood not as complete knowledge architectures, but as dynamic fusion engines capable of navigating, sequencing, and recombining atomic units. The framework provides a foundation for designing self-evolving knowledge systems that can discover, refine, and compose new primitives over time. By reframing intelligence as compression through compositional abstraction, the paper offers a unifying perspective on expertise, knowledge representation, explainable AI, and the future architecture of adaptive intelligent systems.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12503v1",
@@ -445,17 +457,18 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12503v1",
-        "pdf": "https://arxiv.org/pdf/2607.12503v1",
+        "abstract": "https://arxiv.org/abs/2607.12503v1",
+        "pdf": "https://arxiv.org/pdf/2607.12503.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 52,
-      "summary_zh": "提出无训练框架DynTrace，通过动态轨迹令牌跟踪物体证据以增强4D时空推理。",
-      "why_relevant_zh": "引入动态轨迹令牌，属于令牌级操作，但主要关注推理增强而非加速，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：4D spatio-temporal reasoning, jointly modeling 3D spatial structure and temporal evolution, is essential for understanding dynamic worlds and enabling embodied interaction.",
+      "abstract_zh": "4D spatio-temporal reasoning, jointly modeling 3D spatial structure and temporal evolution, is essential for understanding dynamic worlds and enabling embodied interaction. While current Multimodal Large Language Models (MLLMs) show strong capabilities in static scene understanding and coarse-grained 4D tasks, they still have notable limitations in continuous dynamic scene perception, especially in tracking dynamic object evidence for coherent 4D spatio-temporal reasoning. This shortcoming stems mainly from relying on sparse frame-level observations, fragmenting continuous dynamic cues and leaving models unable to disentangle genuine object dynamics from camera-induced apparent motion. Inspired by humans tracking dynamic cues while compensating for viewpoint changes, we propose DynTrace, a training-free framework for 4D spatio-temporal reasoning with two complementary components. Dynamic Trajectory Visualization (DTV) reprojects world-coordinate trajectories onto the image plane, providing geometry-informed visual priors that disentangle genuine object dynamics from camera-induced apparent motion. Meanwhile, the Dynamic Trace Token (DT-Token), organized into a Dynamic Trace Graph (DTG), tracks object-level dynamic cues, trace evolution, and key moments, maintaining continuous dynamic object evidence for coherent 4D reasoning. Together, these two components equip MLLMs with continuously tracked dynamic object evidence, grounded in geometry-informed visual priors and structured spatio-temporal traces. DynTrace consistently improves open-source MLLMs, achieving state-of-the-art results on Dyn-Bench, VLM4D, and DSI-Bench, validating the importance of tracking dynamic object evidence for robust 4D spatio-temporal reasoning.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12786v1",
@@ -476,17 +489,19 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12786v1",
-        "pdf": "https://arxiv.org/pdf/2607.12786v1",
+        "abstract": "https://arxiv.org/abs/2607.12786v1",
+        "pdf": "https://arxiv.org/pdf/2607.12786.pdf",
         "code": ""
       },
       "topics": [
-        "vlm-acceleration"
+        "vlm-acceleration",
+        "survey-benchmark"
       ],
       "relevance_score": 52,
-      "summary_zh": "提出跨图像比较推理框架CoRe，包含数据集、奖励机制和基准。",
-      "why_relevant_zh": "涉及VLM推理效率，但核心是推理能力而非token剪枝，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Cross-image comparative reasoning remains challenging for vision-language models (VLMs), especially when correct prediction requires fine-grained attribute grounding and globally consistent reasoning.",
+      "abstract_zh": "Cross-image comparative reasoning remains challenging for vision-language models (VLMs), especially when correct prediction requires fine-grained attribute grounding and globally consistent reasoning. We present CoRe, a unified framework for this problem. CoRe includes: (i) CoRe-20K, a large-scale triplet-based training set automatically constructed from structured visual metadata through a multi-expert collaborative pipeline, covering counting, depth, distance, and spatial relations; (ii) TriSR, a structured reward framework that jointly supervises attribute grounding, judgment alignment, and triplet consistency under GRPO optimization; and (iii) CoRe-Bench, the first benchmark dedicated to fine-grained cross-image comparative reasoning. Experiments show that CoRe substantially outperforms existing VLMs on CoRe-Bench while remaining competitive on standard multimodal benchmarks, achieving a 28.2-point gain in partial accuracy over the strongest baseline.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12278v1",
@@ -507,8 +522,8 @@
         "cs.LG"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12278v1",
-        "pdf": "https://arxiv.org/pdf/2607.12278v1",
+        "abstract": "https://arxiv.org/abs/2607.12278v1",
+        "pdf": "https://arxiv.org/pdf/2607.12278.pdf",
         "code": ""
       },
       "topics": [
@@ -516,9 +531,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 52,
-      "summary_zh": "审计病理学VLM基准中的数据泄露问题，提出评估建议。",
-      "why_relevant_zh": "作为基准分析论文，与VLM加速评估相关，但非直接token剪枝方法。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Recent vision-language models (VLMs) for computational pathology report striking zero-shot performance on whole-slide image (WSI) visual question answering (VQA) benchmarks.",
+      "abstract_zh": "Recent vision-language models (VLMs) for computational pathology report striking zero-shot performance on whole-slide image (WSI) visual question answering (VQA) benchmarks. We audit these claims and find them fundamentally compromised by data leakage at two hierarchical levels: patient-level leakage, where slides from the same case appear in both training and test folds, and institutional-level leakage, where different cases nonetheless share staining-batch and scanner signatures through a common Tissue Source Site (TSS). By tracing canonical slide, case, and TSS identifiers across major public resources, we document case level train test overlaps of 92.3~100% on TCGA-derived benchmarks, together with near-complete TSS overlap. We further demonstrate that both leakage levels are linearly decodable from foundation-model feature space, that they induce a measurable accuracy gap between leaked and audit-clean cases on a published checkpoint, and that across multiple published WSI VLMs, peak reported accuracies concentrate on the most heavily contaminated benchmarks. Therefore, the current WSI VQA evaluation cannot distinguish genuine multimodal reasoning from nearest-neighbor retrieval over memorized institutional and patient-specific artifacts. Finally, we outline concrete recommendations for contamination-free evaluation. By addressing benchmark construction, provenance disclosure, and automated overlap auditing, we aim to guide future research toward verifiable claims of progress.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12477v1",
@@ -541,8 +557,8 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12477v1",
-        "pdf": "https://arxiv.org/pdf/2607.12477v1",
+        "abstract": "https://arxiv.org/abs/2607.12477v1",
+        "pdf": "https://arxiv.org/pdf/2607.12477.pdf",
         "code": ""
       },
       "topics": [
@@ -550,9 +566,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "提出SIS-Bench基准评估无人机具身智能中MLLM的空间认知与自我意识，并探索运动感知表示。",
-      "why_relevant_zh": "涉及MLLM效率评估，但主要关注基准测试而非直接加速或剪枝方法，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Autonomous UAV systems increasingly rely on multimodal large language models (MLLMs) to operate in complex real-world environments.",
+      "abstract_zh": "Autonomous UAV systems increasingly rely on multimodal large language models (MLLMs) to operate in complex real-world environments. Such embodied scenarios require not only understanding the surrounding space but also maintaining a coherent representation of the agent itself. However, existing UAV-oriented approaches and benchmarks remain largely environment-centric, primarily focusing on spatial understanding tasks, with the agent's self-awareness remaining implicit. To address this gap, we introduce SIS-Bench, a benchmark for evaluating embodied spatial intelligence in UAV scenarios under a unified self-in-space formulation. SIS-Bench organizes evaluation along two complementary dimensions, space and self, and a three-level hierarchy of perception, memory, and reasoning. It contains 4,856 question--answer pairs across 13 tasks derived from 1,646 real-world UAV videos through a task-conditioned construction pipeline with expert verification.Extensive evaluations reveal that current MLLMs exhibit fundamental limitations in modeling dynamic and agent-centered processes. In particular, we observe a clear imbalance between spatial cognition and self-awareness, as well as a progressive performance degradation across cognitive levels.Motivated by these findings, we further explore a motion-aware representation that incorporates self-related dynamics through optical flow and visual feature fusion. Experimental results show that modeling agent motion consistently improves perception and memory performance, not only in spatial cognition but also in self-awareness, and generalizes to downstream UAV decision-making tasks.Our results highlight the importance of self-awareness for advancing embodied spatial intelligence, and provide both a new benchmark and empirical evidence for motion-aware self-in-space modeling.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12375v1",
@@ -578,8 +595,8 @@
         "eess.IV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12375v1",
-        "pdf": "https://arxiv.org/pdf/2607.12375v1",
+        "abstract": "https://arxiv.org/abs/2607.12375v1",
+        "pdf": "https://arxiv.org/pdf/2607.12375.pdf",
         "code": ""
       },
       "topics": [
@@ -587,9 +604,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "提出IQA-T1框架，通过工具生成视觉证据增强MLLM在图像质量评估中的推理能力。",
-      "why_relevant_zh": "涉及MLLM推理增强，但核心是工具集成而非token效率，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Image Quality Assessment (IQA) in open-world environments remains challenging due to limited generalization and interpretability.",
+      "abstract_zh": "Image Quality Assessment (IQA) in open-world environments remains challenging due to limited generalization and interpretability. Recent approaches based on multimodal large language models (MLLMs) introduce textual reasoning for quality prediction, yet their judgments rely heavily on semantically biased internal representations, making them insensitive to low-level perceptual degradations. We propose IQA-T1, a tool-based visual evidence reasoning framework that augments MLLM reasoning with explicit perceptual observations. During inference, the model autonomously invokes specialized analysis tools to generate structured visual evidence, such as noise residual maps, gradient statistics, and frequency spectra, which are progressively integrated into the reasoning process. To support this paradigm, we construct Q-Tool, a dataset containing 11k multimodal reasoning chains grounded in tool-generated evidence. Extensive experiments on seven IQA benchmarks show that IQA-T1 achieves the best overall performance across datasets while producing interpretable and evidence-grounded quality assessments. Code and dataset are available at https://github.com/zibuyu-02/IQA-T1.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12764v1",
@@ -620,17 +638,19 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12764v1",
-        "pdf": "https://arxiv.org/pdf/2607.12764v1",
+        "abstract": "https://arxiv.org/abs/2607.12764v1",
+        "pdf": "https://arxiv.org/pdf/2607.12764.pdf",
         "code": ""
       },
       "topics": [
-        "vlm-acceleration"
+        "vlm-acceleration",
+        "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "提出自演化多模态知识超图框架EvoGraph-R1，用于代理检索。",
-      "why_relevant_zh": "涉及多模态检索效率，但未直接处理token剪枝或压缩。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Retrieval-augmented generation (RAG) has emerged as a critical paradigm for grounding Multimodal Large Language Models (MLLMs) in external knowledge.",
+      "abstract_zh": "Retrieval-augmented generation (RAG) has emerged as a critical paradigm for grounding Multimodal Large Language Models (MLLMs) in external knowledge. Recent GraphRAG methods introduce structured entity-relation graphs to improve retrieval and reasoning. However, they remain limited by treating knowledge graphs as static data structures built offline and queried in a single pass. This static paradigm misaligns with the interactive, iterative nature of knowledge-intensive reasoning, creating three bottlenecks: (i) text-centric fragmentation that impedes cross-modal reasoning, (ii) frozen structures unable to incorporate new evidence or correct errors, and (iii) rigid single-pass retrieval without adaptive refinement. To overcome these limitations, we introduce EvoGraph-R1, a self-evolving GraphRAG framework that reconceptualizes knowledge graphs as dynamic environments shaped through agent interactions. We formulate retrieval as a Markov Decision Process (MDP) where the agent observes the graph state and executes actions to query (GraphRetrieve), expand (WebSearch), refine (GraphEdit), or terminate (Answer) the reasoning. These actions reshape the hypergraph structure and generate feedback signals that guide subsequent evolution. Through this closed loop, the hypergraph evolves by integrating new evidence, correcting errors, and refining structure to support multi-hop reasoning. Experiments on multimodal VQA and text QA benchmarks demonstrate substantial improvements over existing RAG baselines in accuracy, coverage, and traceability, establishing self-evolving knowledge graphs as a fundamental paradigm across modalities.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12787v1",
@@ -655,17 +675,19 @@
         "cs.MM"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12787v1",
-        "pdf": "https://arxiv.org/pdf/2607.12787v1",
+        "abstract": "https://arxiv.org/abs/2607.12787v1",
+        "pdf": "https://arxiv.org/pdf/2607.12787.pdf",
         "code": ""
       },
       "topics": [
-        "vlm-acceleration"
+        "vlm-acceleration",
+        "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "提出轻量级多模态情感识别框架Light-MER，通过知识蒸馏实现高效推理。",
-      "why_relevant_zh": "通过知识蒸馏压缩模型，间接涉及token处理效率，但未直接讨论token剪枝或选择。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Recent advances in multimodal large language models (MLLMs) have significantly improved the performance of multimodal emotion recognition (MER) and enabled interpretable description generation by jointly modeling video, ",
+      "abstract_zh": "Recent advances in multimodal large language models (MLLMs) have significantly improved the performance of multimodal emotion recognition (MER) and enabled interpretable description generation by jointly modeling video, audio, and language, etc. However, these performance improvements are often accompanied by an increase in model parameter size (e.g, at least 7B), which simultaneously incurs high computational costs and reduces inference efficiency, thereby hindering real-time deployment on resource-constrained platforms such as robots and mobile devices. This raises a fundamental question: do we really need the multimodal MER model larger than 1B parameters for high-quality MER? In this paper, we challenge the assumption that larger models are inherently necessary and proposes a lightweight MER framework (called Light-MER), which achieves better and faster multimodal sentiment understanding and recognition through knowledge distillation. It can transfer knowledge from a strong, large-scale teacher model to a lightweight sub-billion-parameter student model, aiming to preserve rich multimodal emotion reasoning and recognition while substantially improving deployment efficiency. Specifically, we introduce two new optimization strategies to enhance knowledge transfer: (1) a new optimal transport loss that combines Sliced Wasserstein Distance with hidden-state alignment, and (2) a new multi-reward optimization strategy based on GRPO that balances MER performance and efficiency, aimed at further enhancing the learning capabilities of student models. Extensive experiments on nine benchmark datasets demonstrate that Light-MER achieves state-of-the-art performance while significantly improving inference efficiency. This highlights the strong potential of small multimodal emotion language models for future research. Code is available at https://github.com/GAIR-Lab/Light-MER.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12319v1",
@@ -689,8 +711,8 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12319v1",
-        "pdf": "https://arxiv.org/pdf/2607.12319v1",
+        "abstract": "https://arxiv.org/abs/2607.12319v1",
+        "pdf": "https://arxiv.org/pdf/2607.12319.pdf",
         "code": ""
       },
       "topics": [
@@ -698,9 +720,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "提出DM-KG框架，通过知识图谱增强VLM空间推理能力。",
-      "why_relevant_zh": "虽涉及VLM加速，但核心是空间推理增强，非直接token剪枝或加速方法。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：As vision-language models (VLMs) are increasingly deployed in geospatial question answering and visual scene understanding, improving their spatial cognition capability on street view imagery for complex logical reasonin",
+      "abstract_zh": "As vision-language models (VLMs) are increasingly deployed in geospatial question answering and visual scene understanding, improving their spatial cognition capability on street view imagery for complex logical reasoning has emerged as a key research priority. However, existing VLMs frequently suffer from \"spatial semantic hallucinations\" when perceiving object locations, distances, and directions in real-world street view scenes. Furthermore, such errors are often recalcitrant to tracing and calibration, posing a critical bottleneck for their practical deployment in geospatial tasks. To address this pressing challenge, this study proposes DM-KG (Direction-Metric Knowledge Graph), a structurally grounded spatial representation framework for street view imagery. By explicitly extracting directional and metric relationships between entities from a single 2D image, this framework enhances the spatial reasoning accuracy of VLMs through a structured knowledge graph. Specifically, we integrate panoptic segmentation with metric depth estimation to robustly compute entity-level 3D spatial coordinates. Subsequently, we encode the clock azimuths and Euclidean distances of entity pairs into a JSON-formatted knowledge graph, which is injected into the VLM as an explicit geometric prior to guide spatial reasoning. Experimental results on public spatial question-answering (QA) benchmarks demonstrate that DM-KG reduces the mean absolute error (MAE) in distance estimation by 31.1% and the mean angular error in direction judgment by 65.8%, while simultaneously maintaining a high QA success rate. By establishing a complete, augmented reasoning pipeline, this research significantly improves the spatial cognitive capabilities of VLMs in street view scenarios, thereby providing a flexible, generalized, and interpretable framework for geographic visual question answering (GeoVQA) in open environments.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12818v1",
@@ -720,8 +743,8 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12818v1",
-        "pdf": "https://arxiv.org/pdf/2607.12818v1",
+        "abstract": "https://arxiv.org/abs/2607.12818v1",
+        "pdf": "https://arxiv.org/pdf/2607.12818.pdf",
         "code": ""
       },
       "topics": [
@@ -729,9 +752,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "提出VLM审计框架，独立验证视觉地点识别结果，提升召回率并降低误接受率。",
-      "why_relevant_zh": "使用VLM进行后验证，涉及推理效率，但核心是验证而非token剪枝。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Visual place recognition (VPR) is a key enabler of accurate localization and long-term autonomous navigation in robotics applications, such as loop closure detection for simultaneous localisation and mapping (SLAM).",
+      "abstract_zh": "Visual place recognition (VPR) is a key enabler of accurate localization and long-term autonomous navigation in robotics applications, such as loop closure detection for simultaneous localisation and mapping (SLAM). However, real-world VPR deployment relies on selecting an image matching threshold that balances precision and recall. These thresholds are typically tuned using labeled validation data and fixed during deployment, making them unreliable under environmental changes where ground truth is unavailable. This is particularly problematic in safety-critical robotics, where accepting a false loop closure can corrupt the estimated trajectory and map. In this work, we introduce Visual Place Recognition Auditing, an independent post-retrieval verification framework that leverages Vision-Language Models (VLMs) to assess retrieved matches by reasoning jointly over query and candidate images. Unlike conventional verification methods, our approach performs instance-level verification without requiring architecture-specific confidence measures, dataset-dependent thresholds, or prior knowledge of the deployment environment. We evaluate our method on six benchmark datasets using five state-of-the-art VPR methods and four VLMs. Results show that VLM-based auditing improves recall@1 by 13.6% on average as compared to state-of-the-art methods while reducing false acceptance rates to 12%, maintaining precision above 95% and coverage above 75%.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12911v1",
@@ -753,17 +777,18 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12911v1",
-        "pdf": "https://arxiv.org/pdf/2607.12911v1",
+        "abstract": "https://arxiv.org/abs/2607.12911v1",
+        "pdf": "https://arxiv.org/pdf/2607.12911.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "提出Open-KNEAD框架，通过知识检索和agent分解实现营养估计，无需训练且本地部署。",
-      "why_relevant_zh": "涉及MLLM推理效率，但主要贡献在检索增强和分解，非直接token剪枝。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Multimodal Large Language Models (MLLMs) are increasingly used for dietary assessment from meal images, where retrieval-augmented grounding was shown to sharpen nutrition estimates.",
+      "abstract_zh": "Multimodal Large Language Models (MLLMs) are increasingly used for dietary assessment from meal images, where retrieval-augmented grounding was shown to sharpen nutrition estimates. However, we find this premise no longer holds for current MLLMs. A modern MLLM's direct estimate now matches or surpasses the full retrieval pipeline. This raises a question: if retrieval no longer improves the overall estimate, can it still deliver the two things clinicians value, accurate portions and a traceable, item-by-item record? We pursue this while preserving what matters for clinical adoption: minimal user burden (a single, unannotated meal image), explainability (an auditable record), and privacy (locally hosted inference). We introduce Open-KNEAD, a knowledge-grounded agentic framework for meal nutrition estimation that is training-free and locally deployable. Each decomposed food item is grounded to a Food and Nutrient Database for Dietary Studies (FNDDS) code via selective, nutrient-aware retrieval, composing an auditable per-item record. Across two open MLLM families and three cuisines, Open-KNEAD improves portion estimates over both prior grounding methods and direct estimation in most backbone-dataset settings. An agent-internal recipe-prior step further recovers the invisible cooking-added energy that biases estimates on non-US cuisine. The advantage is largest on the dietitian-verified ACETADA dataset, where the local open agent surpasses the direct portion estimates of two frontier closed models by roughly $30\\%$ and $53\\%$, all while keeping every meal image on local hardware. We release the Open-KNEAD framework and its agent-ready FNDDS knowledge base.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12711v1",
@@ -783,17 +808,18 @@
         "cs.LO"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12711v1",
-        "pdf": "https://arxiv.org/pdf/2607.12711v1",
+        "abstract": "https://arxiv.org/abs/2607.12711v1",
+        "pdf": "https://arxiv.org/pdf/2607.12711.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "提出神经符号方法，利用MaxSAT优化VLM在数独任务中的逻辑一致性。",
-      "why_relevant_zh": "通过外部推理提升VLM性能，但未涉及token效率，相关性一般。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Vision--Language Models (VLMs) have recently demonstrated promising performance on structured visual reasoning tasks, including grid-based puzzles.",
+      "abstract_zh": "Vision--Language Models (VLMs) have recently demonstrated promising performance on structured visual reasoning tasks, including grid-based puzzles. However, despite strong perceptual capabilities, these models lack explicit mechanisms for enforcing logical consistency and frequently generate assignments that violate underlying constraints. In this paper, we propose a neuro-symbolic approach that integrates formal constraint reasoning into the VLM solving process via a Maximum Satisfiability (MaxSAT) oracle. Rather than computing solutions directly, the symbolic component acts as a consistency validator and refinement engine. Candidate placements generated by the VLM are encoded as soft clauses in a partial MaxSAT formulation, while Sudoku constraints remain hard clauses. When inconsistencies arise, the MaxSAT solver identifies a largest mutually consistent subset of assignments, which is then translated into structured textual and visual feedback to guide subsequent refinements. We evaluate our approach on a Sudoku dataset across multiple open-source and closed-access VLMs. Results show that MaxSAT-based feedback improves logical consistency and increases the number of solved instances, particularly in full-board refinement mode. These findings demonstrate that symbolic optimisation can enhance the reliability of vision-language reasoning.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12418v1",
@@ -814,17 +840,18 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12418v1",
-        "pdf": "https://arxiv.org/pdf/2607.12418v1",
+        "abstract": "https://arxiv.org/abs/2607.12418v1",
+        "pdf": "https://arxiv.org/pdf/2607.12418.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "提出多模态量子适配器MQAdapter，通过粗到细的量子学习提升VLM少样本分类的细粒度判别能力。",
-      "why_relevant_zh": "虽涉及VLM微调效率，但核心是量子特征增强而非token剪枝或加速，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Large-scale Vision-Language Models have demonstrated impressive transfer learning capabilities across a wide range of tasks.",
+      "abstract_zh": "Large-scale Vision-Language Models have demonstrated impressive transfer learning capabilities across a wide range of tasks. For few-shot classification, we observe that VLMs exhibit a notable ability to filter candidate categories and thus achieve high Top-K accuracy. However, they often struggle with fine-grained discrimination among visually similar categories, resulting in unsatisfactory Top-1 performance, as shown in Figure 1. Existing studies on VLM adapters generally focus on global alignment between visual and textual representations in the feature space, but fail to exploit semantically similar categories to refine fine-grained visual representations. Based on these observations, we propose a novel coarse-to-fine VLM fine-tuning approach for few-shot learning that leverages quantum computation, termed the Multi-Modal Quantum Adapter (MQAdapter). Specifically, MQAdapter first retrieves the Top-K category candidates most similar to the input image and uses them as semantic anchors. It then employs a cross-modal quantum learning mechanism to refine visual features under the guidance of these anchors. The core of this mechanism is the encoding of visual and textual features into quantum states. By leveraging quantum entanglement and superposition in a high-dimensional Hilbert space, MQAdapter effectively models higher-order cross-modal interactions, producing more discriminative representations than traditional Euclidean adapters. MQAdapter is parameter-efficient and can be integrated with various existing fine-tuning algorithms to achieve further performance gains. Evaluations on 15 datasets demonstrate the effectiveness of MQAdapter while requiring fewer trainable parameters.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12982v1",
@@ -845,17 +872,18 @@
         "cs.SC"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12982v1",
-        "pdf": "https://arxiv.org/pdf/2607.12982v1",
+        "abstract": "https://arxiv.org/abs/2607.12982v1",
+        "pdf": "https://arxiv.org/pdf/2607.12982.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "提出FormalAnalyticGeo框架，利用形式语言和MLLM自动生成解析几何问题。",
-      "why_relevant_zh": "涉及MLLM加速生成，但主要贡献在数据集生成而非token效率优化，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Math reasoning has achieved significant progress with the rapid advancement of Multimodal Large Language Models (MLLMs), however analytic geometry remains largely underexplored, primarily due to the scarcity of annotated",
+      "abstract_zh": "Math reasoning has achieved significant progress with the rapid advancement of Multimodal Large Language Models (MLLMs), however analytic geometry remains largely underexplored, primarily due to the scarcity of annotated samples. Existing diagram generation approaches struggle with analytic geometry: template methods cannot handle constraint-driven layouts, and generative models lack the geometric precision to render annotated conic curves correctly. We present FormalAnalyticGeo, a scalable framework for fully automatic generation of multimodal analytic geometry problems. Leveraging the rigor of formal languages, we design the framework around CDL (Condition Description Language), a formal intermediate representation that bridges free-form problem text with precise diagram rendering via a Signed Distance Field (SDF) engine. The framework employs four specialized LLM components in sequence: a Generator that produces diverse analytic geometry problems, a Formalizer that converts each problem into CDL for SDF-based rendering, a Measurer that extracts ground-truth answers through vision-based measurement on the rendered diagrams, and a Quality Verifier that checks outputs at three stages. Structured feedback from the Quality Verifier drives automatic retry, forming a closed loop that eliminates any need for human annotation. Applying FormalAnalyticGeo at scale yields AnalyticGeo7K, a dataset of over 7K verified multimodal problems, each with aligned text, diagram, formal annotation, and ground truth.Experiments show that the generated problems achieve a median ground-truth relative error of 0.70\\%, with 82.3\\% of answers falling within 5\\% of the exact symbolic solution. Our framework and dataset will be publicly released.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12287v1",
@@ -880,17 +908,18 @@
         "cs.RO"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12287v1",
-        "pdf": "https://arxiv.org/pdf/2607.12287v1",
+        "abstract": "https://arxiv.org/abs/2607.12287v1",
+        "pdf": "https://arxiv.org/pdf/2607.12287.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 36,
-      "summary_zh": "通过减少视觉编码和扩散采样的时间冗余加速VLA模型推理。",
-      "why_relevant_zh": "涉及减少冗余，但主要针对VLA系统级加速，非通用token剪枝方法。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Vision-Language-Action (VLA) models exhibit strong generalization for robotic manipulation, yet their high inference latency limits real time deployment.",
+      "abstract_zh": "Vision-Language-Action (VLA) models exhibit strong generalization for robotic manipulation, yet their high inference latency limits real time deployment. We identify two primary sources of temporal redundancy in existing VLA pipelines: repeated visual encoding of highly similar consecutive frames and multi step iterative sampling in diffusion based policies. To address this, we propose a system level acceleration strategy that reduces computation in both perception and action generation. On the perception side, we incrementally update only tokens corresponding to dynamic scene regions instead of re-encoding entire frames. On the policy side, we compress diffusion sampling into a compact 2-step schedule through efficiency oriented training while preserving action precision. Experiments on Libero, RobotWin, and Real Robot Platforms demonstrate over 2 times speedup while maintaining high performance, achieving up to 98% success rate on general manipulation benchmarks. Our codes will be released on Github.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12640v1",
@@ -913,17 +942,18 @@
         "cs.CL"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12640v1",
-        "pdf": "https://arxiv.org/pdf/2607.12640v1",
+        "abstract": "https://arxiv.org/abs/2607.12640v1",
+        "pdf": "https://arxiv.org/pdf/2607.12640.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 36,
-      "summary_zh": "研究GRPO强化学习在小规模视觉语言模型智能体上的失败机制，发现仅在存在提升空间时有效。",
-      "why_relevant_zh": "涉及视觉语言模型加速，但主要关注强化学习训练而非令牌剪枝，相关性较弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Reinforcement learning with verifiable rewards, and Group Relative Policy Optimization (GRPO) in particular, is now run routinely on a supervised checkpoint in the hope of producing a stronger agent.",
+      "abstract_zh": "Reinforcement learning with verifiable rewards, and Group Relative Policy Optimization (GRPO) in particular, is now run routinely on a supervised checkpoint in the hope of producing a stronger agent. We ask whether it adds skill to a small language and vision-language model web agent at the 4B to 8B scale, or whether it mostly reshapes behavior the supervised model already has. Across a control grid of 18 runs that varies learning rate, KL weight, seed, initialization, and clipping, no configuration credibly improves the success rate of a strong supervised baseline on tasks the agent has largely mastered. On the text track, moderate to high learning rates make it credibly worse. The null holds under paired testing, 25 evaluation seeds, 6 training seeds, changes to the recipe, both text and Set-of-Marks screenshot observations, and scaling the backbone to 8B; the credible harm is a text-track finding and is only nominal under Set-of-Marks. To show that the null reflects the setting and not a broken pipeline, we run the identical harness, reward, and recipe on tasks whose reward is reachable by sampling, and there the success rate rises by 22 points with a paired interval that excludes zero. GRPO therefore helps only when there is headroom to climb, meaning the sampled policy already succeeds more often than the greedy one. We then explain the failure. A middle learning rate degrades the agent and a high one collapses it, and the two regimes form a double dissociation: grafting localizes the degrade regime to the attention and MLP blocks, while the collapse regime cannot be traced to any single group, and the embedding change that dominates the weight movement is causally inert. At 4B, effective rank in the late layers tracks capability in both directions; at 8B the two come apart. This coupling is specific to the smaller model, so we report it as scale-dependent.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12571v1",
@@ -947,17 +977,18 @@
         "cs.RO"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12571v1",
-        "pdf": "https://arxiv.org/pdf/2607.12571v1",
+        "abstract": "https://arxiv.org/abs/2607.12571v1",
+        "pdf": "https://arxiv.org/pdf/2607.12571.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 32,
-      "summary_zh": "提出推理时防御机制，通过监测令牌级不确定性检测并恢复视觉语言动作模型的后门攻击。",
-      "why_relevant_zh": "涉及令牌级不确定性监测，但主要关注安全防御而非令牌剪枝或加速，相关性较低。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Vision-Language-Action (VLA) models are deployed through pipelines that end users cannot audit, and a poisoned VLA can behave normally on clean observations while a small visual trigger redirects a long-horizon robot pol",
+      "abstract_zh": "Vision-Language-Action (VLA) models are deployed through pipelines that end users cannot audit, and a poisoned VLA can behave normally on clean observations while a small visual trigger redirects a long-horizon robot policy before any failure becomes observable. Existing vision or language defenses rarely explain what a triggered VLA representation looks like or how to recover behavior without retraining. We study this gap through two independently proposed VLA attacks from groups with distinct injection strategies, BadVLA and INFUSE; the latter persists after downstream clean adaptation. Across the evaluated poisoned models, we identify a recurring internal mechanism: a \\emph{compact causal footprint}, namely a small visual support that is attention-seeded, spatially compact, and \\emph{causal} in a precise sense -- masking it returns a clean-calibrated evidence-evolution score to the normal operating region. This footprint motivates TrustVLA, a mechanism-guided inference-time defense that adapts the Dirichlet evidence framework from trusted classification to monitor per-token, per-layer epistemic uncertainty in VLA policies. With only a small clean calibration set, TrustVLA (i)~detects abnormal evidence evolution, (ii)~localizes the compact support by counterfactual mechanism-score drop, and (iii)~recovers the observation by localized inpainting. Across OpenVLA/LIBERO and $π_{0.5}$ transfer evaluations, TrustVLA reduces attack success while preserving clean-task performance, providing a retraining-free, mechanism-guided defense for visual-triggered VLA backdoors.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12931v1",
@@ -980,17 +1011,18 @@
         "cs.RO"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12931v1",
-        "pdf": "https://arxiv.org/pdf/2607.12931v1",
+        "abstract": "https://arxiv.org/abs/2607.12931v1",
+        "pdf": "https://arxiv.org/pdf/2607.12931.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 32,
-      "summary_zh": "提出ExToken框架，通过离散行为先验token实现结构化探索，加速VLA模型强化学习。",
-      "why_relevant_zh": "使用token进行行为选择，但核心是强化学习探索效率，非传统token剪枝。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Reinforcement Learning (RL) has demonstrated significant potential for improving Vision-Language-Action (VLA) models on complex manipulation tasks.",
+      "abstract_zh": "Reinforcement Learning (RL) has demonstrated significant potential for improving Vision-Language-Action (VLA) models on complex manipulation tasks. However, its practical scalability remains severely limited by the substantial cost of environmental interactions. In this work, we first investigate the exploration stagnation bottleneck in current VLA-RL frameworks and reveal that trajectory diversity is fundamentally more important to sample efficiency than the sheer quantity of collected rollouts. Motivated by these insights, we introduce RL Exploration Token (ExToken), a simple yet general framework that condition VLA policies on discrete behavioral priors derived from offline demonstrations for structured exploration. By conditioning the policy on different tokens during rollout collection, ExToken encourages the agent to explore diverse behavioral modes, substantially improving state-action coverage and exploration efficiency. To bridge exploration during training with deterministic inference at deployment, ExToken further incorporates a state-conditioned token selector that adaptively predicts effective behavioral modes for unseen scenarios. Extensive experiments across simulated and real-world robotic manipulation tasks demonstrate that ExToken consistently accelerates convergence, improves task performance, and exhibits strong robustness under highly constrained interaction budgets.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12541v1",
@@ -1011,17 +1043,18 @@
         "cs.SE"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12541v1",
-        "pdf": "https://arxiv.org/pdf/2607.12541v1",
+        "abstract": "https://arxiv.org/abs/2607.12541v1",
+        "pdf": "https://arxiv.org/pdf/2607.12541.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出上下文感知的Dockerfile漂移修复框架，使用依赖图指导补丁生成。",
-      "why_relevant_zh": "与令牌剪枝无关，仅因涉及令牌预算控制（提示长度）而弱相关，但主题是软件工程。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Docker is widely used to create reproducible build environments, but Dockerfile drift, the divergence between a Dockerfile and its evolving source code, can cause CI/CD builds to fail.",
+      "abstract_zh": "Docker is widely used to create reproducible build environments, but Dockerfile drift, the divergence between a Dockerfile and its evolving source code, can cause CI/CD builds to fail. Existing rule-based and retrieval-based repair approaches analyze Dockerfiles in isolation and therefore struggle with context-dependent failures. We present Cadre, a context-aware framework for automated Dockerfile drift repair. Cadre uses static analysis to construct a Context-aware Dependency Graph (CDG), which maps each Dockerfile instruction to its file-level and inter-instruction dependencies. Guided by the CDG, Cadre first selects the context causally relevant to a failure and then generates a targeted patch from that context. We also introduce DodeX, a pipeline that mines real-world Dockerfile drift instances from GitHub Actions CI logs while preserving the complete build configurations omitted by static-snapshot datasets. Using DodeX, we construct $D^3$, a benchmark of 1,040 drift instances reproducible locally with the original CI parameters. Across $D^3$, Cadre achieves a 35.22\\% repair rate, 2.78$\\times$ that of the rule-based baseline and 1.24$\\times$ that of the best LLM-based baseline. Its two-step workflow keeps 95.25\\% of prompts below 30k tokens and avoids the prompt-overflow failures that prevent competing LLM-based methods from producing patches in 41 to 58 cases per method. Ablation results confirm that both the CDG and the two-step workflow improve repair performance. Cadre's advantage over diff-only approaches also increases as drift ages across commits, supporting explicit dependency modeling for context-aware infrastructure-as-code maintenance. Code and data are available at https://github.com/dw763j/Cadre.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12380v1",
@@ -1041,17 +1074,18 @@
         "cs.LG"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12380v1",
-        "pdf": "https://arxiv.org/pdf/2607.12380v1",
+        "abstract": "https://arxiv.org/abs/2607.12380v1",
+        "pdf": "https://arxiv.org/pdf/2607.12380.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出单一架构流匹配自编码器SinAE，用于跨域原子系统的近无损重建与生成。",
-      "why_relevant_zh": "不涉及token剪枝或效率，属于生成模型架构，相关性弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Small molecules, crystals, and proteins all reduce to atoms in 3D space, yet their generative pipelines remain fragmented across domains, each with its Small molecules, crystals, and proteins all reduce to atoms in 3D sp",
+      "abstract_zh": "Small molecules, crystals, and proteins all reduce to atoms in 3D space, yet their generative pipelines remain fragmented across domains, each with its Small molecules, crystals, and proteins all reduce to atoms in 3D space, yet their generative pipelines remain fragmented across domains, each with its own graph, equivariant, or frame-based architecture. Cross-domain training would mitigate per-domain data scarcity, but direct generation in 3D coordinate space cannot easily handle the heterogeneous structural priors of all three domains, and no prior latent autoencoder is simultaneously lossless and architecturally general across all three. We introduce SinAE, a single-architecture flow-matching autoencoder for molecules, crystals, and proteins, with vanilla Transformer encoder and decoder and no equivariant, graph, or domain-specific operators. Rather than requiring the encoder to capture fine-grained geometry, SinAE shifts the reconstruction burden into an iterative flow-matching decoder, achieving near-lossless reconstruction across domains and reducing reconstruction errors by orders of magnitude relative to prior latent baselines. The same per-token latent supports a standard Diffusion Transformer prior that reaches strong performance on molecular, crystal, and protein generation benchmarks. Joint molecule--crystal training strictly improves both domains, providing direct evidence of cross-domain transfer through a shared atomic latent. Code is available at https://github.com/BlueWhaleLab/SinAE .",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12792v1",
@@ -1072,17 +1106,18 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12792v1",
-        "pdf": "https://arxiv.org/pdf/2607.12792v1",
+        "abstract": "https://arxiv.org/abs/2607.12792v1",
+        "pdf": "https://arxiv.org/pdf/2607.12792.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出JADR协议，通过Jacobian空间评估模型内部危险识别能力，比较不同量化级别。",
-      "why_relevant_zh": "涉及模型内部表示分析，但与token剪枝无直接关联，相关性弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Jailbreak-robustness research typically evaluates safety through generated responses using an LLM-as-judge approach.",
+      "abstract_zh": "Jailbreak-robustness research typically evaluates safety through generated responses using an LLM-as-judge approach. Such evaluations, however, are sensitive to the benchmark's grading procedure and capture only observed behavior on a given set of attacks, without directly revealing the hidden fragility of the underlying safety mechanisms. This work proposes JADR (Jacobian Assessment of Danger Recognition), a protocol that measures a model's internal representation through Jacobian space (J-space, a recently proposed workspace of verbalizable concepts) before the first response token is generated. For every prompt and layer we record the top-k J-space tokens; these are grouped into six behavioral scenario axes and compared between a danger sample based on StrongREJECT and a safe control drawn from XSTest and OKTest. The method does not call on an external judge model: the computation runs entirely locally, on the activations of the model under evaluation, which lets us compare both different models against each other and modifications of a single model -- quantization and fine-tuning in particular -- on the same terms. The final comparison rests on the proposed SafetyAUC metric, complemented with bootstrap confidence intervals. The protocol is applied to six models (Qwen3-1.7B, Qwen3-4B, Qwen3-8B, Qwen3-Uncensored-4B, Qwen3-SafeRL-4B, Gemma 2 9B) across three weight-representation regimes -- BF16, INT8, and INT4 -- and checked against an independent behavioral evaluation with the StrongREJECT grader. The metric separates models with a strong versus a weak internal safety mechanism with statistical significance and captures substantively different effects across quantization regimes.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12395v1",
@@ -1114,17 +1149,18 @@
         "cs.CL"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12395v1",
-        "pdf": "https://arxiv.org/pdf/2607.12395v1",
+        "abstract": "https://arxiv.org/abs/2607.12395v1",
+        "pdf": "https://arxiv.org/pdf/2607.12395.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "探索零强化学习扩展到万亿参数模型，发现涌现推理行为并提出评估框架。",
-      "why_relevant_zh": "关注大规模RL训练而非token效率，仅作为基准或分析提及，相关性弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Reinforcement learning with verifiable rewards without human-annotated data, often referred to as zero RL, has emerged as a powerful paradigm for eliciting chain-of-thought reasoning.",
+      "abstract_zh": "Reinforcement learning with verifiable rewards without human-annotated data, often referred to as zero RL, has emerged as a powerful paradigm for eliciting chain-of-thought reasoning. However, due to computational constraints, existing studies are largely restricted to small models, leaving the training dynamics and emergent capabilities at a large scale unexplored. To meaningfully explore this frontier, we aim to elicit high-quality reasoning behaviors from the model. However, we find that naive scaling often suffers from poor readability, token redundancy, and a lack of adaptive reasoning depth. To address these challenges, we present a stable and efficient training pipeline, incorporating algorithmic and system optimizations such as clipped importance sampling, training-inference ratio correction, and mixed-precision control. Our experiments offer three key findings that validate the \"bitter lesson\" of scaling: (1) scaling to 1T parameters significantly enhances sample efficiency and performance ceilings; (2) the training process progresses sequentially through an initial discovery phase followed by a sharpening phase; and (3) the model spontaneously develops advanced cognitive behaviors, including anthropomorphism, structured formatting, self-verification, parallel reasoning, and context anxiety, rendering hand-crafted heuristics redundant. Evaluated on seven mathematical benchmarks, Ring-2.5-1T-Zero achieves competitive performance. Additionally, to assess CoT quality beyond final-answer correctness, we propose a structured evaluation framework across three dimensions: comprehensibility, reproducibility, and efficiency, where our model demonstrates clear advantages in producing structured and concise reasoning traces. By sharing our observed emergent phenomena, we hope to provide the community with deeper insights into scaling behaviors, particularly at the 1-trillion scale.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12341v1",
@@ -1145,17 +1181,18 @@
         "cs.DB"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12341v1",
-        "pdf": "https://arxiv.org/pdf/2607.12341v1",
+        "abstract": "https://arxiv.org/abs/2607.12341v1",
+        "pdf": "https://arxiv.org/pdf/2607.12341.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出策略条件约束解码PCC-SQL，实现Text-to-SQL中的列级访问控制。",
-      "why_relevant_zh": "不涉及token剪枝或效率，属于SQL安全领域，相关性弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Text-to-SQL is increasingly deployed across trust boundaries between data providers and users.",
+      "abstract_zh": "Text-to-SQL is increasingly deployed across trust boundaries between data providers and users. Such deployment must balance three competing requirements: policy compliance, answer coverage, and bounded cost. Existing approaches typically decide refusal based on which columns a query mentions and enforce it stochastically. Whether a query is compliant, however, depends not only on which columns appear but on how they are used, and stochastic enforcement cannot deterministically rule out violations. We formalize this requirement as a column-use policy over semantic use: output, filter condition, and aggregation argument. We integrate the policy by aligning each role with grammar productions tracked by the decoder. The resulting system, PCC-SQL, applies a per-token logits mask that deterministically eliminates single-query column-use violations on the supported SQL fragment in a single decoding pass. Across three benchmarks and three open-source models, PCC-SQL achieves 0% Leakage Rate and Coverage up to 88.7% on Spider-CU, while staying within +10% tokens of direct prompting. We additionally assess semantic alignment with execution accuracy.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12277v1",
@@ -1180,17 +1217,18 @@
         "cs.IR"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12277v1",
-        "pdf": "https://arxiv.org/pdf/2607.12277v1",
+        "abstract": "https://arxiv.org/abs/2607.12277v1",
+        "pdf": "https://arxiv.org/pdf/2607.12277.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出NONTP扩展生成式推荐中的训练信号覆盖。",
-      "why_relevant_zh": "与token剪枝无关，属于推荐系统训练方法。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Next-Token Prediction (NTP) carries two structural training signal limitations.",
+      "abstract_zh": "Next-Token Prediction (NTP) carries two structural training signal limitations. First, NTP optimizes for single-step prediction only, placing no supervised pressure on learning longer-range behavioral structure -- we term this \\textbf{temporal locality}. Second, in multi-domain sequences, each target item embedding receives gradient updates exclusively from the immediately preceding hidden state, with no explicit gradient pathway from cross-domain context -- we term this \\textbf{spatial locality}. We propose \\textbf{NONTP}, extending NTP's signal coverage along both dimensions through two auxiliary objectives. \\textbf{TCL (Temporal Contrastive Learning)} uses a BYOL-style EMA teacher with InfoNCE to align hidden states against a $K$-step future trajectory in representation space. \\textbf{TDL (Trans-Domain Learning)} mean-pools cross-domain hidden states and predicts through the shared prediction head, opening a second gradient pathway with no additional parameters. Both are discarded at inference: zero overhead. On a four-domain Meituan industrial dataset (full ranking), NONTP achieves HR@10 +34.3\\% over NTP and +18.3\\% over MBGR. On the public Amazon Movie-Book-CDs benchmark, HR@10 +2.8\\% and NDCG@10 +3.7\\%. Online A/B tests confirm CTR +1.8\\% and GMV +2.1\\% (both $p < 0.01$). Ablation studies confirm each component contributes independently, with gradient conflict analyzed as a direction for future work.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12463v1",
@@ -1215,17 +1253,18 @@
         "cs.CL"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12463v1",
-        "pdf": "https://arxiv.org/pdf/2607.12463v1",
+        "abstract": "https://arxiv.org/abs/2607.12463v1",
+        "pdf": "https://arxiv.org/pdf/2607.12463.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出函数感知的填充中间训练方法，提升编码代理模型在工具使用和代码生成上的性能。",
-      "why_relevant_zh": "不涉及token剪枝或效率优化，仅作为基准方法提及，相关性弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Coding agents must integrate external tool returns into ongoing reasoning - a capability that standard left-to-right pretraining on code exposes only in its forward direction.",
+      "abstract_zh": "Coding agents must integrate external tool returns into ongoing reasoning - a capability that standard left-to-right pretraining on code exposes only in its forward direction. We observe that the action-observation-continuation loop of a coding agent is structurally isomorphic to a function call site, where a caller binds arguments, a callee returns a value computed elsewhere, and downstream code consumes that value. This conditioning structure exists at internet scale in ordinary code. We exploit it through function-aware fill-in-the-middle (FIM) mid-training: a self-supervised objective that masks functions selected via program dependency graph analysis and a complexity-inferability double criterion. We mid-train Qwen2.5-Coder-Instruct (7B/14B) and Qwen3-8B on a 2.6B-token decontaminated corpus drawn from 968 GitHub repositories, then apply existing agentic post-training pipelines. Mid-training improves SWE-Bench-Verified by +2.8/+3.0 at 7B/14B and by +3.2 on Qwen3-8B; SWE-Bench-Lite gains are +3.7/+4.0/+5.4 on the same models. The improvement holds across two post-training pipelines (R2E-Gym, SWE-Smith) and on a non-Qwen2.5 base (Qwen3-8B with SWE-Lego). Beyond in-domain gains, mid-training also mitigates the capability erosion that agentic post-training otherwise inflicts on non-agent coding (e.g., LiveCodeBench) and non-coding tool-use benchmarks (tau-bench, BFCL): although the mid-training corpus contains Python code only, the function-call inductive bias survives post-training and yields consistent gains.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.13034v1",
@@ -1246,17 +1285,18 @@
         "eess.SY"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.13034v1",
-        "pdf": "https://arxiv.org/pdf/2607.13034v1",
+        "abstract": "https://arxiv.org/abs/2607.13034v1",
+        "pdf": "https://arxiv.org/pdf/2607.13034.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出任务感知执行范围估计方法E3，通过最小充分执行减少冗余token消耗。",
-      "why_relevant_zh": "论文关注token冗余和成本削减，但核心是任务复杂度估计而非通用token剪枝方法，相关性较弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Large language model (LLM) agents increasingly automate multi-step engineering and informatics workflows, yet they rarely ask how much effort a task actually requires.",
+      "abstract_zh": "Large language model (LLM) agents increasingly automate multi-step engineering and informatics workflows, yet they rarely ask how much effort a task actually requires. They often follow a maximum-context-first strategy--re-reading files and dependencies they have already seen--turning a one-line edit into a small code-base audit. We argue the missing capability is task-aware execution-scope estimation: judging a task's difficulty, the information it truly needs, and the shortest reliable path before committing budget. We formalize minimum-sufficient execution and the Agent Cognitive Redundancy Ratio (ACRR), and propose E3 (Estimate, Execute, Expand): the agent estimates an initial operating point, executes a minimum viable path, and expands scope only when verification fails. On MSE-Bench--a deterministic benchmark of 121 edits in a capability-controlled simulator--E3 matches the strongest baseline's 100% success while cutting cost by 85%, tokens by 91%, and inspected files by 92%, and further beats a strong adaptive retrieval baseline by 16%; the gains survive held-out instruction wording and essentially every cost weighting. A companion real-model harness (LLM-Case) corroborates the effect on a live gpt-4o agent editing a real open-source library, with every candidate patch graded by actually running the project's real pytest suite against a measured oracle: the over-reading is milder but real, and E3 is the leanest and fastest policy at comparable task success--its one shortfall a provider rate-limit, not a wrong edit. We frame this as a controlled probe of execution redundancy, not a measurement of any deployed agent, and position task-aware execution as a step toward engineering-grounded AI (EGAI)--agents whose effort is anchored in the engineering reality of the task. We release the framework and benchmark.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12767v1",
@@ -1273,17 +1313,18 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12767v1",
-        "pdf": "https://arxiv.org/pdf/2607.12767v1",
+        "abstract": "https://arxiv.org/abs/2607.12767v1",
+        "pdf": "https://arxiv.org/pdf/2607.12767.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "分析长度偏差对多项选择基准的影响，提出贝叶斯准确率评分规则。",
-      "why_relevant_zh": "关注评估方法而非token效率，与token剪枝弱相关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Multiple-choice benchmarks that rank candidate completions by conditional log-probability suffer from a length bias: because log-probabilities sum over tokens, longer answers tend to be penalized relative to shorter ones",
+      "abstract_zh": "Multiple-choice benchmarks that rank candidate completions by conditional log-probability suffer from a length bias: because log-probabilities sum over tokens, longer answers tend to be penalized relative to shorter ones in practice. A common mitigation is to normalize scores by completion length, but we show empirically that this heuristic frequently over-corrects, introducing a bias toward longer answers instead. We first analyze these scoring rules, characterizing when standard and length-normalized accuracy are appropriate and how their length biases depend on the distribution of completion lengths. Motivated by this analysis, we introduce \\emph{Bayesian accuracy}, a scoring rule that computes the posterior probability of each candidate under an explicit prior over answer length, thereby removing linear length effects. Bayesian accuracy is a drop-in replacement for likelihood-based multiple-choice evaluation, requires no additional forward passes, and consistently exhibits lower empirical length bias than both standard and length-normalized accuracy across benchmarks and few-shot settings.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12161v1",
@@ -1301,17 +1342,18 @@
         "cs.CL"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12161v1",
-        "pdf": "https://arxiv.org/pdf/2607.12161v1",
+        "abstract": "https://arxiv.org/abs/2607.12161v1",
+        "pdf": "https://arxiv.org/pdf/2607.12161.pdf",
         "code": ""
       },
       "topics": [
         "token-merging-compression"
       ],
       "relevance_score": 84,
-      "summary_zh": "本文研究了API编码代理中上下文缩减层的实际成本效益，发现令牌减少并不总能降低计费成本。",
-      "why_relevant_zh": "直接探讨令牌缩减（压缩）对成本和任务成功率的影响，属于令牌合并/压缩范畴。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Context-reduction layers for API-based coding agents, including command-output compressors, retrieval rankers, and payload-optimizing proxies, are usually evaluated by how much text they remove.",
+      "abstract_zh": "Context-reduction layers for API-based coding agents, including command-output compressors, retrieval rankers, and payload-optimizing proxies, are usually evaluated by how much text they remove. We ask instead: when does reducing retrieved context or tool output lower the actual billed cost of a coding agent without reducing task success or lengthening its trajectory? Our primary evidence is a pre-specified, hash-frozen, paired campaign of 2,908 provider-billed Claude Code runs, of which 2,848 were analyzed, covering 103 tasks, seven repositories, and three models. The campaign compared a baseline with two generations of hook-based compression and an API-boundary proxy, within a broader measured program of roughly 5,500 billed executions. Three findings emerge. First, prompt-cache traffic dominated cost composition. Cache creation and reads accounted for about 87% of reconstructed four-component cost, or about 80% of the actual bill, with an 8.7% dollar-weighted residual that retained telemetry could not attribute. On Haiku 4.5, this residual scaled with thinking effort. Second, tool-output reduction did not reliably predict billed-cost reduction. An arm that removed 38% of estimated raw tool-output tokens had 6.8% higher paired cost (95% CI: +2.8% to +11.3%), while per-task reduction was only weakly associated with cost change (Pearson r = 0.15, CI crossing zero). Third, compression can harm task completion by removing action-critical evidence. In a small single-shot study on SWE-bench-derived Go tasks, compression reduced patch application from 27/40 to 15/40 by corrupting verbatim edit anchors, and the compressed grounded arm produced fewer solves at higher observed cost per solve. We propose a layered evidence standard centered on success-adjusted billed cost rather than token reduction alone.",
+      "why_relevant_zh": "关键词匹配到 Token Merging / Compression；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11266v1",
@@ -1329,17 +1371,18 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11266v1",
-        "pdf": "https://arxiv.org/pdf/2607.11266v1",
+        "abstract": "https://arxiv.org/abs/2607.11266v1",
+        "pdf": "https://arxiv.org/pdf/2607.11266.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 76,
-      "summary_zh": "提出RIV-GSM8K基准和CAID指标，诊断并压缩CoT中的低效推理步骤，减少token消耗。",
-      "why_relevant_zh": "论文聚焦于推理步骤的token效率诊断和压缩，属于token剪枝/压缩的评估与优化。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Chain-of-Thought (CoT) prompting has significantly advanced the reasoning capabilities of Large Language Models (LLMs), yet it often incurs substantial computational costs due to over-reasoning: the generation of redunda",
+      "abstract_zh": "Chain-of-Thought (CoT) prompting has significantly advanced the reasoning capabilities of Large Language Models (LLMs), yet it often incurs substantial computational costs due to over-reasoning: the generation of redundant, verbose, or irrelevant steps. While existing reasoning step evaluators effectively detect logical fallacies and factual errors, our analysis reveals a critical blind spot: they fail to penalize valid but inefficient reasoning steps that inflate token usage without contributing to the solution. To systematically diagnose this limitation, we introduce RIV-GSM8K, a diagnostic benchmark injected with five distinct types of inefficiencies, including circular reasoning and excessive decomposition. Diagnostic experiments reveal that state-of-the-art evaluators struggle to distinguish these inefficiencies from necessary reasoning. To address this gap, we propose CAID (Context-Aware Information Density), a training-free metric grounded in information theory that identifies low-utility steps. To validate the metric's practical utility, we apply it within PACE, a post-hoc compression strategy. Additional control experiments show that the gains of PACE are not explained by trivial pruning: compared with random step removal and PRM-based compression baselines, it preserves accuracy at substantially higher compression rates. Empirical results on GSM8K, StrategyQA, and ARC-Challenge demonstrate that PACE reduces token consumption by 31-53% while maintaining accuracy, confirming that CAID successfully distills informational froth from reasoning chains without compromising deductive validity.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11326v1",
@@ -1383,17 +1426,18 @@
         "cs.IR"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11326v1",
-        "pdf": "https://arxiv.org/pdf/2607.11326v1",
+        "abstract": "https://arxiv.org/abs/2607.11326v1",
+        "pdf": "https://arxiv.org/pdf/2607.11326.pdf",
         "code": ""
       },
       "topics": [
         "token-merging-compression"
       ],
       "relevance_score": 76,
-      "summary_zh": "提出Prompt Generation框架，通过配置驱动和token压缩解耦特征处理与模型架构，加速训练、部署和推理。",
-      "why_relevant_zh": "论文明确提到内置token压缩处理超长序列，属于token压缩/合并范畴。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Generative retrieval has become an increasingly adopted paradigm for industrial search, recommendation, and advertising systems, delivering significant online gains.",
+      "abstract_zh": "Generative retrieval has become an increasingly adopted paradigm for industrial search, recommendation, and advertising systems, delivering significant online gains. Most existing work combines user behavior sequences with large language models (LLMs) to model user preferences. In practice, feature engineering remains critical to model effectiveness, yet its complexity slows offline iteration and makes online deployment heavy and hard to reuse, all under tight online latency budgets. The root cause is a tight coupling between feature-processing logic and model architecture, where every feature change touches the training and serving code and resists reuse across scenarios. To break this coupling, we present Prompt Generation (PG), a high-level tokenizer and configuration-driven framework that decouples feature-processing logic from model architecture through two declarative JSON files, which serve as the single source of truth for both offline training and online serving, ensuring feature consistency across the two stages. Organizing features under four types with three composable processing components to assemble and compress heterogeneous features, PG delivers acceleration at three levels: (1)fast training iteration: feature experiments require only configuration changes, with built-in token compression for ultra-long sequences; (2)fast deployment: a new scenario only needs to conform to the PG schema and plug into a universal pipeline, with no scenario-specific engineering; (3)fast online inference: engine applies unified optimizations over the standardized configuration, reducing PG's overhead to a negligible level. PG has been deployed on Taobao Search with statistically significant online A/B uplifts of +0.47% in transaction count and +0.51% in GMV, and has been applied across multiple Taobao search and recommendation teams as the iteration framework for generative retrieval.",
+      "why_relevant_zh": "关键词匹配到 Token Merging / Compression；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12204v1",
@@ -1410,17 +1454,18 @@
         "cs.LG"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12204v1",
-        "pdf": "https://arxiv.org/pdf/2607.12204v1",
+        "abstract": "https://arxiv.org/abs/2607.12204v1",
+        "pdf": "https://arxiv.org/pdf/2607.12204.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 72,
-      "summary_zh": "提出支持向量注意力，实现可认证的token丢弃和精确遗忘。",
-      "why_relevant_zh": "直接涉及token选择与丢弃，具有动态选择特性，但主要针对注意力机制。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Attention can be viewed as an online learner over context, yet existing test-time memories cannot certify that dropping a token leaves outputs unchanged or delete its influence outright.",
+      "abstract_zh": "Attention can be viewed as an online learner over context, yet existing test-time memories cannot certify that dropping a token leaves outputs unchanged or delete its influence outright. We introduce Support Vector Attention (SV-Attention), a max-margin memory whose weights are support coefficients of a one-class SVM with fixed box parameter C. Its active-set partition gives reserve tokens exactly zero weight, certifying output-preserving eviction; a reversible incremental solver deletes a token to recover the state produced by retraining without it under the same C. In fp64 experiments, decrement and refit recover identical partitions whenever the optimum is unique, and their decision functions match to a median deviation of about 10^-9 (10^-13 on learned keys); the 10^-2 worst case is confined to ill-conditioned duplicates and remains below coefficient decay in every regime. The exact path reuses the maintained KKT inverse in a custom backward. Training uses a separate stabilized batched approximation and does not carry the exact-deletion certificate; it reaches 9,125 tokens/s on a 3.22M-parameter model, while remaining 35.8 times slower than an MPS softmax reference. At matched budgets, certified selection reaches 0.86 vs. 0.32 rare-item recall and retains 0.80 vs. 0.05 deterioration hours on real MIMIC-IV streams. We also demonstrate surgical forgetting, exact editing, patient-record deletion, and a forgettable retrieval memory over real sentence embeddings. On enwik8, the hybrid obtains 2.178 BPC vs. 2.383 for a matched-state sliding-window Transformer across seven seeds (8.6% paired improvement, p=0.001); a three-seed TinyStories result is directionally positive but not significant (p=0.057).",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12079v1",
@@ -1440,17 +1485,18 @@
         "cs.CL"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12079v1",
-        "pdf": "https://arxiv.org/pdf/2607.12079v1",
+        "abstract": "https://arxiv.org/abs/2607.12079v1",
+        "pdf": "https://arxiv.org/pdf/2607.12079.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 68,
-      "summary_zh": "改进fMRI语言解码基线，并揭示高容量语言模型可能掩盖解码失败。",
-      "why_relevant_zh": "作为基准和评估研究，涉及令牌效率（如语言先验主导），但非直接剪枝方法。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Decoding continuous language from fMRI signals remains a core challenge in non-invasive brain-computer interface research.",
+      "abstract_zh": "Decoding continuous language from fMRI signals remains a core challenge in non-invasive brain-computer interface research. We present two complementary investigations. First, we improve the Huth et al. ridge regression encoding pipeline through expanded voxel selection (10K->15K), substitution of GPT-2 medium for GPT-1 as the beam-search proposal model, and GPU-accelerated bootstrap training, achieving mean METEOR = 0.149 and BLEU-1 = 0.200 across three held-out narratives for subject UTS03 -- an 11% relative METEOR gain over our replication baseline. Second, we introduce fMRIFlamingo, which maps BOLD activity to a frozen Llama-3.2-1B with trainable gated cross-attention layers via a learned brain tokenizer and a Perceiver Resampler. Despite achieving 42.86% Top-1 accuracy on a 1-in-100 ranking task, well above chance, a blind control ablation with zeroed fMRI inputs yields near-identical scores, revealing that apparent decoding success is driven primarily by the frozen language prior rather than by neural input. These results demonstrate that high-capacity language models do not inherently improve fMRI decoding and can actively obscure failures without rigorous blind-control evaluation.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11451v1",
@@ -1474,17 +1520,18 @@
         "cs.HC"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11451v1",
-        "pdf": "https://arxiv.org/pdf/2607.11451v1",
+        "abstract": "https://arxiv.org/abs/2607.11451v1",
+        "pdf": "https://arxiv.org/pdf/2607.11451.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "本文提出ManiScope，利用LLM辅助分析加密货币操纵风险。",
-      "why_relevant_zh": "涉及动态token选择和LLM辅助分析，但主题为金融分析，与token剪枝方法关联较弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Cryptocurrency markets are vulnerable to trade-based manipulation, such as wash trading, which can distort price signals and mislead investors.",
+      "abstract_zh": "Cryptocurrency markets are vulnerable to trade-based manipulation, such as wash trading, which can distort price signals and mislead investors. Prior research has mainly focused on detecting manipulation using fixed rules or labeled examples, offering limited flexibility and interpretability for assessing potential risks. Existing visual analytics tools can reveal basic manipulation-related signals, such as token distribution, but still require substantial manual effort to integrate holder relationships, suspicious behaviors, and market dynamics for risk assessment. To address these limitations, we propose ManiScope, an LLM-assisted visual analytics system for analyzing trade-based manipulation risks in cryptocurrency markets. ManiScope provides coordinated views of token distributions, holder relationships, detailed holder behaviors, price dynamics, and suspicious trading patterns. To further enhance user analysis, ManiScope introduces a human-LLM collaborative visual analytics framework. Rather than acting as a basic reactive LLM assistant, the framework positions the LLM as a co-analyst that infers users' analytical intent and emerging hypotheses from interaction context and surfaces relevant visual, statistical, and synthesized evidence for hypothesis evaluation. This design reduces repetitive inspection and strengthens evidence-based reasoning. We evaluate ManiScope through two case studies and a user study with 12 experienced cryptocurrency practitioners. The results suggest that ManiScope supports effective risk assessment of manipulation, reduces manual effort in evidence-seeking, and organizes findings around user hypotheses.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12056v1",
@@ -1503,17 +1550,18 @@
         "cs.HC"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12056v1",
-        "pdf": "https://arxiv.org/pdf/2607.12056v1",
+        "abstract": "https://arxiv.org/abs/2607.12056v1",
+        "pdf": "https://arxiv.org/pdf/2607.12056.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 64,
-      "summary_zh": "提出面向AI代理的网站设计框架，通过结构清晰性和动作提示减少令牌消耗。",
-      "why_relevant_zh": "通过优化网站结构减少代理的令牌消耗，属于动态令牌选择（输入自适应）范畴。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Online shopping is increasingly shifting toward a model in which AI agents independently search for products, compare options, evaluate constraints, and carry out parts of the purchasing process for users.",
+      "abstract_zh": "Online shopping is increasingly shifting toward a model in which AI agents independently search for products, compare options, evaluate constraints, and carry out parts of the purchasing process for users. Website design must now support both human and agent-mediated interaction. This paper introduces the agent-ready website, a design framework for enhancing the readability, interpretability, verifiability, and actionability of e-commerce platforms for AI agents. Existing web design, SEO, and generative engine optimization (GEO) metrics do not fully assess a website's capacity for agent-mediated interaction. The proposed framework is structured around three dimensions agent interpretability, agent executability, and agent decision reliability supported by features such as machine readability, semantic clarity, agent actionability, and contextual decision-reliability signals. The framework is evaluated through a controlled experiment comparing a human-oriented baseline and an agent-ready version of an identical website prototype, with identical catalogs, pricing, stock, and shopping workflows. The evaluation involved five tasks, three browser-agent models (GPT-4.1, Gemini-2.5 Flash, and Grok-4 Fast), and 300 runs, measuring PASS,PARTIAL,FAIL outcomes, strict and functional success rates, error patterns, step counts, and token consumption. The agent-ready website achieved 134 PASS runs out of 150 versus 74 out of 150 for the baseline (strict success rates of 89.3% vs. 49.3%), with the largest gains in product detail extraction, comparison, and multi-constraint selection. It also reduced PARTIAL outcomes from 43 to 3 and lowered the average step count from 9.31 to 6.49. These results provide preliminary evidence that enhanced structural clarity, action cues, evidence signals, and temporal validity indicators can substantially improve the reliability and efficiency of AI browser agents.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11436v1",
@@ -1539,17 +1587,19 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11436v1",
-        "pdf": "https://arxiv.org/pdf/2607.11436v1",
+        "abstract": "https://arxiv.org/abs/2607.11436v1",
+        "pdf": "https://arxiv.org/pdf/2607.11436.pdf",
         "code": ""
       },
       "topics": [
-        "vlm-acceleration"
+        "vlm-acceleration",
+        "survey-benchmark"
       ],
       "relevance_score": 52,
-      "summary_zh": "提出TRACE框架，通过调度视觉中继窗口来增强VLM的接地推理能力。",
-      "why_relevant_zh": "通过控制视觉令牌在推理过程中的分配和保留，实现高效的视觉令牌利用，属于VLM加速范畴。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Vision-language models increasingly succeed on multimodal reasoning benchmarks, yet their visual evidence often becomes unstable once it enters the language stack, weakening evidence-grounded reasoning.",
+      "abstract_zh": "Vision-language models increasingly succeed on multimodal reasoning benchmarks, yet their visual evidence often becomes unstable once it enters the language stack, weakening evidence-grounded reasoning. To understand this fragility, we examine the internal dynamics of VLMs through a mechanistic lens and uncover a stable three-stage redistribution of multimodal attention focus across depth: an early question-conditioned organization, a critical middle visual-dominant relay, and a late return to answer formation. We operationalize the middle phase as the Visual Relay Window (VRW), and show that its geometry varies with task demand, is causally tied to grounded generation, and distinguishes unsupported answers from stronger reasoning trajectories. Guided by this internal rhythm, we propose TRACE, a task-adaptive inference-time control framework with lightweight trained modules. It reshapes relay allocation during prefill and preserves assembled visual support after handoff during decoding. Across four open-weight VLM backbones and seven benchmarks, TRACE delivers large gains on grounding-sensitive settings, improving them by 4.33 points on average and by up to 6.6 points, while also improving reasoning-heavy tasks. These results show that explicitly controlling multimodal focus across depth offers a unified and effective mechanism for strengthening evidence-grounded multimodal reasoning.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11844v1",
@@ -1569,8 +1619,8 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11844v1",
-        "pdf": "https://arxiv.org/pdf/2607.11844v1",
+        "abstract": "https://arxiv.org/abs/2607.11844v1",
+        "pdf": "https://arxiv.org/pdf/2607.11844.pdf",
         "code": ""
       },
       "topics": [
@@ -1578,9 +1628,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 52,
-      "summary_zh": "引入多视角体育视频理解基准SportMV-Bench，并提出代理框架提升多模态大模型性能。",
-      "why_relevant_zh": "涉及多模态大模型的高效推理（视图选择），但非直接令牌剪枝，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Recent Multimodal Large Language Models (MLLMs) achieve strong performance on single-view video understanding benchmarks.",
+      "abstract_zh": "Recent Multimodal Large Language Models (MLLMs) achieve strong performance on single-view video understanding benchmarks. However, sports videos involve dense occlusion, rapid motion, and complex interactions that are difficult to resolve from a single viewpoint. In practice, sports events are recorded from multiple camera angles, providing complementary evidence used by referees. Yet, no existing benchmark evaluates MLLMs on multi-view sports video understanding. To address this gap, we introduce SportMV-Bench, a comprehensive benchmark built from official match recordings, through a dedicated pipeline combining LLM-based generation, MLLM-based verification, and human filtering to ensure quality and consistency. SportMV-Bench containing 787 multi-view video bundles and 2592 question-answer pairs across three categories: Perception-Aware Recognition (PAR), Rule-aware Event Interpretation (REI), and Adjudicative Decision Reasoning(ADR). Our analysis shows that current MLLMs fail to effectively exploit multi-view information, with the bottlenecks lying in fine-grained visual perception and view selection rather than logical reasoning or domain knowledge. We propose SportMV-Agent, an agentic framework that orchestrates an iterative loop of active view selection, perception tool execution, and evidence-grounded reasoning, achieving a significant 14.46% relative improvement over the strongest MLLM baseline.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11581v1",
@@ -1601,8 +1652,8 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11581v1",
-        "pdf": "https://arxiv.org/pdf/2607.11581v1",
+        "abstract": "https://arxiv.org/abs/2607.11581v1",
+        "pdf": "https://arxiv.org/pdf/2607.11581.pdf",
         "code": ""
       },
       "topics": [
@@ -1610,9 +1661,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 52,
-      "summary_zh": "本文提出CycleGRPO框架，统一区域理解和定位，无需文本标注。",
-      "why_relevant_zh": "涉及VLM加速和token级奖励，但核心是强化学习框架，token剪枝非主要焦点。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：This paper introduces Actor as Its Own Critic, a unified reinforcement learning framework, Cycle Group Relative Policy Optimization (CycleGRPO), that jointly optimizes region understanding and localization for Multimodal",
+      "abstract_zh": "This paper introduces Actor as Its Own Critic, a unified reinforcement learning framework, Cycle Group Relative Policy Optimization (CycleGRPO), that jointly optimizes region understanding and localization for Multimodal Large Language Models (MLLMs). Unlike existing separate pipelines, we leverage the inherent duality between the two tasks to construct a self-evaluating reinforcement learning paradigm: \"region $\\to$ text $\\to$ region''. Specifically, a single MLLM first acts as the actor to generate region captions, then immediately transitions to a critic to ground its generated text back in the spatial domain. Therefore, CycleGRPO requires only region inputs, e.g., masks or bounding boxes, entirely bypassing the need for textual ground truths. A quality-aware token-level cycle-consistency reward is employed to assess the semantic discriminability of text captions via their physical localization accuracy. Empirically, built upon SAMTok, our CycleGRPO framework successfully bootstraps both capabilities simultaneously. Without any task-specific fine-tuning, the framework yields consistent performance gains across a wide range of benchmarks, including region captioning, region VQA, grounded dialogue, and referring segmentation. Overall, CycleGRPO offers a straightforward and scalable way to advance pixel-level capabilities in MLLMs. Code and models are released at https://github.com/devinxzhang/CycleGRPO.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12177v1",
@@ -1630,8 +1682,8 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12177v1",
-        "pdf": "https://arxiv.org/pdf/2607.12177v1",
+        "abstract": "https://arxiv.org/abs/2607.12177v1",
+        "pdf": "https://arxiv.org/pdf/2607.12177.pdf",
         "code": ""
       },
       "topics": [
@@ -1639,9 +1691,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 48,
-      "summary_zh": "综述地理空间基础模型，涵盖预训练到智能推理。",
-      "why_relevant_zh": "作为综述论文，与VLM加速相关，但非具体token剪枝方法。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：The analysis of satellite and aerial imagery has entered a new era with the advent of foundation models.",
+      "abstract_zh": "The analysis of satellite and aerial imagery has entered a new era with the advent of foundation models. This paper describes the concept of Geospatial Foundation Models (GeoFMs), which are artificial intelligence/machine learning (AI/ML) models pre-trained on massive geospatial datasets through varied methodologies. We first articulate the core paradigm shift that GeoFMs enable: a separation of duties, where large-scale model providers perform the computationally intensive pretraining, allowing domain experts to rapidly fine-tune or prompt these models for specific, mission-critical tasks. This approach democratizes access to state-of-the-art AI/ML while maintaining the security and confidentiality of the downstream task. We then explore the novel capabilities unlocked by different types of GeoFMs, distinguishing between the finetunable vision models produced by self-supervised techniques like masked auto-encoding, and the vision-language models produced by contrastive learning which enable zero-shot tasks like open-vocabulary image analysis. Next, we discuss the practical considerations for operationalizing GeoFMs, from performance-cost analysis to the broader MLOps ecosystem. To that end, we introduce a taxonomy of model adaptation strategies and propose a framework for domain experts to select the most cost-effective adaptation approach for their particular mission set. Finally, we present a forward-looking vision of Agentic Geospatial Reasoning, where Large Language Models act as intelligent orchestrators, leveraging GeoFMs as tools to answer high-level user queries in natural language and automate complex analytical workflows, moving the field from perception to cognition.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11598v1",
@@ -1659,17 +1712,18 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11598v1",
-        "pdf": "https://arxiv.org/pdf/2607.11598v1",
+        "abstract": "https://arxiv.org/abs/2607.11598v1",
+        "pdf": "https://arxiv.org/pdf/2607.11598.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 48,
-      "summary_zh": "本文提出交互式测试时计算扩展，通过外部工具反馈提升模型性能。",
-      "why_relevant_zh": "涉及VLM作为评判器，但主要关注计算扩展而非token剪枝，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：There are two standard ways to spend more compute at test time: let a model reason longer, or sample more attempts and keep one.",
+      "abstract_zh": "There are two standard ways to spend more compute at test time: let a model reason longer, or sample more attempts and keep one. Both share a hidden limit: they are internal. Every extra token comes from the same frozen weights and the same prompt, so neither can tell the model anything it does not already know. We study a third way, interaction: the model proposes an artifact, an external instrument observes how it actually behaves, and the model revises. Each cycle imports a real observation, so interaction breaks through the ceiling the other two hit. We argue that a single variable governs this third axis, grounding, and that it must hold on both sides of the loop. The feedback that drives revision must come from an instrument that actually observes the flaw, and so must the metric that scores the result. On hard coding tasks at a fixed token budget, reasoning-only and best-of-N sampling both plateau (the latter even when an oracle picks the best sample), while every interaction strategy keeps improving; our proposer-reviewer harness reaches a perfect 100% pass rate with no run-to-run variance, and the gain holds across three model families. On rendered visual artifacts, the usual judge (a vision-language model, or VLM, reading a screenshot) rates 14 of 15 visibly broken figures \"perfect,\" because the screenshot hides the flaws before the judge can see them. A tool that measures the real layout instead shows the loop removing 40-74% of defects across four modalities; and that same VLM, used as the reviewer, makes slide layouts worse where the measuring tool repairs them. Interaction scaling is real and distinct from reasoning and sampling, but only visible when both the feedback and the metric are grounded.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11228v1",
@@ -1693,8 +1747,8 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11228v1",
-        "pdf": "https://arxiv.org/pdf/2607.11228v1",
+        "abstract": "https://arxiv.org/abs/2607.11228v1",
+        "pdf": "https://arxiv.org/pdf/2607.11228.pdf",
         "code": ""
       },
       "topics": [
@@ -1702,9 +1756,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "提出DeepBias框架，通过自适应生成和探测评估LVLM中的社会偏见。",
-      "why_relevant_zh": "论文主要关注偏见评估，与token剪枝或加速无直接关系，但涉及VLM的评估，勉强相关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：While Large Vision-Language Models (LVLMs) demonstrate remarkable capabilities, they remain highly susceptible to embedded social biases.",
+      "abstract_zh": "While Large Vision-Language Models (LVLMs) demonstrate remarkable capabilities, they remain highly susceptible to embedded social biases. Existing bias evaluation protocols predominantly rely on static datasets, which provide only a superficial assessment, as their fixed test cases cannot adaptively evolve to measure the true depth and limits of model vulnerabilities. We introduce DeepBias, an adaptive framework for the in-depth probing of social biases in LVLMs with carefully designed agents. Our approach operates through a dynamic ''generation-evolution-probing'' loop. First, a generative ProposerAgent synthesizes test data and is iteratively updated via Direct Preference Optimization (DPO) based on the target LVLM's responses, exploring model-specific failure modes. Second, an autonomous skill-driven DiggerAgent rewrites each test data across multiple probing turns, adaptively selecting from a curated skill library of deepening and rewriting strategies. At each turn, this process is conditioned on the model's previous response, enabling progressively deeper biases to be exposed. Furthermore, we build a benchmark named DeepBiasBench using our framework. By employing an ensemble of five diverse state-of-the-art LVLMs as anchors, the benchmark captures vulnerabilities shared across architectures. Comprehensive experiments demonstrate the effectiveness of our framework and show that DeepBias provides a challenging benchmark for in-depth bias evaluation, establishing an evolutionary paradigm for LVLM safety assessment.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12112v1",
@@ -1731,17 +1786,19 @@
         "cs.DC"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12112v1",
-        "pdf": "https://arxiv.org/pdf/2607.12112v1",
+        "abstract": "https://arxiv.org/abs/2607.12112v1",
+        "pdf": "https://arxiv.org/pdf/2607.12112.pdf",
         "code": ""
       },
       "topics": [
-        "vlm-acceleration"
+        "vlm-acceleration",
+        "survey-benchmark"
       ],
       "relevance_score": 44,
-      "summary_zh": "提出FedCMM框架，通过弹性权重巩固和生成重放缓解联邦多模态大模型中的灾难性遗忘。",
-      "why_relevant_zh": "涉及多模态大模型的高效微调，但核心是持续学习而非令牌剪枝，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Federated fine-tuning of Multimodal Large Language Models (MLLMs) across distributed networks enables privacy-sensitive adaptation to evolving data streams, yet a fundamental obstacle prevents robust deployment in dynami",
+      "abstract_zh": "Federated fine-tuning of Multimodal Large Language Models (MLLMs) across distributed networks enables privacy-sensitive adaptation to evolving data streams, yet a fundamental obstacle prevents robust deployment in dynamic environments: catastrophic forgetting, wherein sequential task updates erase previously acquired knowledge across visual, linguistic, and cross-modal representations. Addressing this challenge is especially critical for autonomous networked AI operating in safety-sensitive domains, such as content moderation, where reliable retention of prior knowledge underpins system integrity. To overcome this, we propose Federated Continual Multimodal Learning (FedCMM), a framework that embeds continual-learning safeguards into the federated optimization loop at three complementary levels. At the parameter level, modality-aware elastic weight consolidation computes separate Fisher information matrices for the vision encoder, language backbone, and cross-modal projector, providing granular, asymmetry-aware protection against modality-specific forgetting. At the data level, each client trains a lightweight local generative replay module to synthesize raw-data-free embedding-level multimodal replay tuples without any raw data sharing. At the aggregation level, Task-similarity-aware gradient aggregation autonomously filters and reweights client updates by gradient cosine similarity, suppressing conflicting directions and stabilizing the global learning trajectory. Extensive experiments on two benchmarks demonstrate that FedCMM consistently outperforms recent baselines on accuracy and backward transfer, confirming that holistic, modality-aware optimization enables robust evolutive adaptation across heterogeneous networked AI deployments.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11633v1",
@@ -1762,17 +1819,18 @@
         "cs.RO"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11633v1",
-        "pdf": "https://arxiv.org/pdf/2607.11633v1",
+        "abstract": "https://arxiv.org/abs/2607.11633v1",
+        "pdf": "https://arxiv.org/pdf/2607.11633.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 44,
-      "summary_zh": "本文提出利用非语言线索触发机器人主动响应，并引入VLM生成token。",
-      "why_relevant_zh": "涉及VLM加速和token生成，但核心是交互设计而非token剪枝，相关性中等。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Service robots in retail stores increasingly rely on cascaded speech pipelines (STT-LLM-TTS), yet many customer-robot interactions are initiated or guided by nonverbal behaviors such as approaching, waving, pointing, or ",
+      "abstract_zh": "Service robots in retail stores increasingly rely on cascaded speech pipelines (STT-LLM-TTS), yet many customer-robot interactions are initiated or guided by nonverbal behaviors such as approaching, waving, pointing, or showing items. This paper studies such cues in a real-world store deployment with a teleoperated humanoid robot and shows that a non-negligible portion of robot turns are triggered by nonverbal behaviors rather than spoken input, revealing a limitation of audio-only dialogue systems. In a 6-day in-the-wild deployment, 15.3\\% of robot utterances were initiated by users' nonverbal behaviors rather than spoken input. Based on an analysis of observed customer behaviors, we define a set of frequent, service-relevant nonverbal cues and develop a real-time multi-person, multi-label recognizer that runs online from video. We then propose a dialogue framework that conditions LLM-based utterance generation on recognized nonverbal cue tokens, and optionally leverages a vision-language model when items are shown, enabling proactive robot responses without hand-crafted rules. We evaluate the approach offline on nonverbal-triggered turns and demonstrate an online prototype that reacts to users' nonverbal cues in real time.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11270v1",
@@ -1798,17 +1856,18 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11270v1",
-        "pdf": "https://arxiv.org/pdf/2607.11270v1",
+        "abstract": "https://arxiv.org/abs/2607.11270v1",
+        "pdf": "https://arxiv.org/pdf/2607.11270.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 40,
-      "summary_zh": "提出Lumo-2潜在世界-动作模型，通过多阶段模态预对齐实现跨模态推理和动作生成。",
-      "why_relevant_zh": "论文涉及潜在空间中的动态推理和动作token选择，但与显式token剪枝或压缩关系较弱，相关性一般。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Learning, at its core, extends beyond memorization to the ability to reason and solve novel problems by navigating a space of possibilities.",
+      "abstract_zh": "Learning, at its core, extends beyond memorization to the ability to reason and solve novel problems by navigating a space of possibilities. We introduce Lumo-2, a latent world-action model that generates actions by reasoning over world dynamics in latent space. The learned latent world dynamics capture physically grounded visual transitions, naturally encoding future possibilities and providing a unified substrate for cross-modal alignment. This formulation enables predictive reasoning akin to world modelling while remaining lightweight and focused on physical dynamics relevant to control. Central to our approach is the hypothesis that action generation quality is governed by the geometry of the latent space. We observe that standard reconstruction-based action tokenization objectives induce representations biased toward low-level signal fidelity, leading to misalignment between reconstruction quality and downstream control performance. To address this limitation, we propose a multi-stage modality pre-alignment strategy in which action representations are progressively aligned with latent world dynamics, vision, and language. This process enforces cross-modal consistency, promotes abstraction, and induces a structured latent space for predictive reasoning. We provide a systematic empirical study of latent world modelling and modality alignment, analyzing their roles in scaling laws and out-of-distribution generalization. Results show that Lumo-2 consistently outperforms strong vision-language-action (VLA) and world-action model (WAM) baselines, with gains on challenging real-world tasks requiring temporal reasoning, physical understanding, or high control complexity, including long-horizon and dexterous manipulation. These findings suggest that structured multimodal alignment and predictive reasoning are fundamental principles for advancing embodied intelligence.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11388v1",
@@ -1833,17 +1892,18 @@
         "cs.MA"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11388v1",
-        "pdf": "https://arxiv.org/pdf/2607.11388v1",
+        "abstract": "https://arxiv.org/abs/2607.11388v1",
+        "pdf": "https://arxiv.org/pdf/2607.11388.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "提出StructAgent框架，通过统一因果结构提升长时数字代理的性能。",
-      "why_relevant_zh": "通过结构化状态和验证器减少冗余令牌处理，提升VLM推理效率。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Recent advances in large language models (LLMs) and vision-language models (VLMs) have enabled increasingly capable digital agents for computer use.",
+      "abstract_zh": "Recent advances in large language models (LLMs) and vision-language models (VLMs) have enabled increasingly capable digital agents for computer use. However, real-world tasks are often long-horizon and involve evolving contexts containing accumulated observations, intermediate edits, failed attempts, and partially completed executions. Existing agents typically operate over raw interaction history, making task progress difficult to interpret, verify, and recover, which ultimately limits reliable long-horizon execution. In this paper, we argue that addressing this challenge requires explicitly structuring both the agent's state and workflow around a unified causal representation of task progress. We present \\textbf{StructAgent}, a state-centered framework that introduces a unified state for maintaining compact, verifiable task progress and a structured workflow that regulates progress through verifier-backed state transitions. Building on this design, StructAgent further enables explicit progress checkpointing, evidence-driven task completion, targeted failure recovery, and tool-supported execution, while ensuring that all progress updates remain grounded in verification. Extensive experiments demonstrate that StructAgent consistently improves a wide range of LLM and VLM backbones on long-horizon computer-use tasks. On OSWorld-Verified, it improves Qwen3.5-9B from 27.0\\% to 46.9\\% success rate and Qwen3.5-27B from 31.6\\% to 62.2\\%, while achieving a new open-source state of the art of 78.9\\% with MiniMax-M3. Moreover, the same framework generalizes beyond desktop environments to Minecraft, demonstrating the generality of our design.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12111v1",
@@ -1871,17 +1931,18 @@
         "cs.NI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12111v1",
-        "pdf": "https://arxiv.org/pdf/2607.12111v1",
+        "abstract": "https://arxiv.org/abs/2607.12111v1",
+        "pdf": "https://arxiv.org/pdf/2607.12111.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 40,
-      "summary_zh": "提出PFAdapter，通过分层LoRA分解实现个性化联邦多模态大模型的高效通信。",
-      "why_relevant_zh": "关注多模态大模型的通信效率，但未直接涉及令牌剪枝或选择，相关性较低。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Agentic AI systems are reshaping communications and networking by deploying autonomous intelligent agents capable of collaborative learning while maintaining data privacy at network edges.",
+      "abstract_zh": "Agentic AI systems are reshaping communications and networking by deploying autonomous intelligent agents capable of collaborative learning while maintaining data privacy at network edges. Within distributed network environments, Multimodal Large Language Models (MLLMs) serve as cognitive engines for edge devices, yet federated fine-tuning faces substantial challenges in balancing global knowledge aggregation with local adaptation under heterogeneous network conditions. Conventional federated protocols typically rely on uniform parameter aggregation, which conflates domain-invariant features with client-specific nuances, thereby resulting in suboptimal personalization and excessive communication overhead. To address these challenges, we propose PFAdapter, a communication-efficient framework introducing hierarchical LoRA decomposition to explicitly separate adapter parameters into global-shared and local-private components. Query and key projections are assigned to global synchronization for capturing universal multimodal semantics across the network, while value and output projections remain localized for edge-specific adaptation. Additionally, orthogonality regularization based on the Frobenius norm enforces strict separation between these components, preventing redundant feature learning. Selective aggregation protocols synchronize only global-shared components across the federated network, preserving local expertise and reducing communication costs by nearly 50%. Extensive experiments on VQA-RAD, SLAKE, Hateful Memes, and CrisisMMD datasets demonstrate that PFAdapter consistently outperforms state-of-the-art baselines, achieving accuracy improvements ranging from 2.4% to 4.8% across diverse edge intelligence tasks. Consequently, our framework establishes an efficient solution for agentic AI deployment in resource-constrained communication networks.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11562v1",
@@ -1911,8 +1972,8 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11562v1",
-        "pdf": "https://arxiv.org/pdf/2607.11562v1",
+        "abstract": "https://arxiv.org/abs/2607.11562v1",
+        "pdf": "https://arxiv.org/pdf/2607.11562.pdf",
         "code": ""
       },
       "topics": [
@@ -1920,9 +1981,10 @@
         "survey-benchmark"
       ],
       "relevance_score": 40,
-      "summary_zh": "本文提出MonkeyOCRv2，一种文档AI的视觉-文本基础模型。",
-      "why_relevant_zh": "涉及VLM作为编码器，但主要关注文档理解，token剪枝非核心。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Mainstream visual encoders are pretrained on natural images and cannot be effectively applied to document images without document-oriented adaptation, as dense text and fine-grained character strokes demand character-lev",
+      "abstract_zh": "Mainstream visual encoders are pretrained on natural images and cannot be effectively applied to document images without document-oriented adaptation, as dense text and fine-grained character strokes demand character-level visual perception. We present MonkeyOCRv2, a visual-text pretrained model for document AI. First, we construct MonkeyDoc v2, to our knowledge the largest document-image pretraining corpus, comprising 113 million images spanning 17 languages. Second, we propose a pretraining strategy that jointly learns image-to-text generation and pixel-level document reconstruction: the former aligns visual representations with textual content, while the latter preserves character strokes and layout details. Extensive experiments are conducted on five representative document analysis tasks, including text recognition, formula recognition, text detection, document tampering detection, and overlapping text segmentation. Replacing the original encoders with MonkeyOCRv2 consistently improves performance across all five tasks. Finally, we validate its effectiveness as the vision encoder of multimodal large language models on the more challenging tasks of document parsing and document understanding. Kept frozen and paired with a lightweight language model, it yields a 0.7B document parsing model that sets a new open-source state-of-the-art on MDPBench, a recent benchmark spanning digital-born and photographed documents across 17 languages, surpassing the previous best 3B dots.mocr by 2.8% absolute with a vision encoder roughly 11$\\times$ smaller. The frozen encoder also powers a document understanding model that outperforms counterparts built on CLIP, DINO, and SAM across eight benchmarks under identical training settings. These results suggest that document-oriented visual pretraining can serve as a foundation for document intelligence in its own right.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration, Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12042v1",
@@ -1946,17 +2008,18 @@
         "cs.LG"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12042v1",
-        "pdf": "https://arxiv.org/pdf/2607.12042v1",
+        "abstract": "https://arxiv.org/abs/2607.12042v1",
+        "pdf": "https://arxiv.org/pdf/2607.12042.pdf",
         "code": ""
       },
       "topics": [
-        "token-merging-compression"
+        "survey-benchmark"
       ],
       "relevance_score": 36,
-      "summary_zh": "提出SymbOmni，通过符号概念学习实现代理式全模态模型的累积进化，并减少令牌消耗。",
-      "why_relevant_zh": "提到令牌消耗减少40%，但核心是符号学习而非令牌剪枝，相关性中等偏低。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Visual generation is increasingly ubiquitous in diverse domains, from text-to-image/video synthesis to multimodal interactive creation.",
+      "abstract_zh": "Visual generation is increasingly ubiquitous in diverse domains, from text-to-image/video synthesis to multimodal interactive creation. Yet prevailing monolithic models remain fundamentally constrained by their inability to learn cumulatively and evolve autonomously, which is a limitation we term the \"perpetual novice\" problem. They lack mechanisms for structuring experience into reusable knowledge and therefore rely on brittle, \"from-scratch\" reasoning for each task, resulting in poor compositional generalization and inefficient knowledge retention. Motivated by these limitations, we propose SymbOmni, an agentic omni-model designed for cumulative evolution through Symbolic Concept Learning. At its core is the Symbolic Concept Box, an optimizable memory module that abstracts low-level operations into reusable Symbolic Workflow Instructions. SymbOmni operates through an induction-transduction cycle: experiences are abstracted into symbolic concepts (induction), which are then adaptively composed to solve novel tasks (transduction). The training is done by verbalized backpropagation with language-based feedback to enable continuous self-improvement without gradient-based model fine-tuning. Comprehensive experiments validate that (I) SymbOmni significantly outperforms existing agent-based systems for iterative creation and also surpasses closed-source models (e.g., Nano Banana, GPT-Image-1) in both image quality and task success rates; (II) SymbOmni effectively reduces token consumption by over 40% while maintaining competitive generation quality; and (III) SymbOmni enables effective continual learning by achieving cumulative gains across multiple online-learning benchmarks and setting a new state of the art.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.12048v1",
@@ -1980,17 +2043,18 @@
         "cs.CL"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.12048v1",
-        "pdf": "https://arxiv.org/pdf/2607.12048v1",
+        "abstract": "https://arxiv.org/abs/2607.12048v1",
+        "pdf": "https://arxiv.org/pdf/2607.12048.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 36,
-      "summary_zh": "系统评估持续学习方法在异构医学视觉问答中的表现，发现现有方法难以平衡稳定性与可塑性。",
-      "why_relevant_zh": "涉及多模态模型的高效适应，但未直接研究令牌剪枝，相关性弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Deploying medical visual question answering (MedVQA) systems in real-world clinical settings requires models that adapt to new clinical tasks without forgetting previously acquired knowledge.",
+      "abstract_zh": "Deploying medical visual question answering (MedVQA) systems in real-world clinical settings requires models that adapt to new clinical tasks without forgetting previously acquired knowledge. Continual learning (CL) provides a practical framework for this setting. Despite rapid progress in medical vision-language models, the behavior of CL methods when training these models across heterogeneous MedVQA tasks remains underexplored. This work presents a systematic evaluation of CL for MedVQA across diverse clinical objectives, including classification, multi-label classification, detection, cell counting, and report generation. Specifically, we explore (1) the ability of existing CL methods to mitigate catastrophic forgetting; (2) their sensitivity to task ordering, analyzing how different task sequences influence performance retention and forgetting; and (3) the evolution of low-rank adaptation parameters as new tasks are learned, revealing patterns of weight drift under different CL methods. Our findings suggest that existing CL methods struggle to maintain stability-plasticity balance when tasks with different objectives and supervision formats are interleaved. Code and full experimental setup will be publicly available.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11211v1",
@@ -2026,17 +2090,18 @@
         "cs.LG"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11211v1",
-        "pdf": "https://arxiv.org/pdf/2607.11211v1",
+        "abstract": "https://arxiv.org/abs/2607.11211v1",
+        "pdf": "https://arxiv.org/pdf/2607.11211.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 32,
-      "summary_zh": "提出FastTPS方法，通过KV缓存拼接和融合注意力加速LLM推理的token阶段。",
-      "why_relevant_zh": "论文聚焦于推理加速，但未涉及token剪枝或动态选择，仅与token阶段优化相关，相关性较弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：The popularity of large language models (LLMs) escalates an ongoing demand for effective inference.",
+      "abstract_zh": "The popularity of large language models (LLMs) escalates an ongoing demand for effective inference. However, due to the sequential processing of tokens during the token phase in decoder-only LLMs inference, the inherent low parallelism leads to reduced throughput and suboptimal utilization of the computing units on artificial intelligence (AI) accelerators, particularly when handling long-sequence inputs that impose significant memory overhead. Recently, many reported methods have been developed as potential solutions, since they emerge with numeric deviation. This paper presents FastTPS, a high performance and low-precision loss method for accelerating the token-phase in LLM inference on general AI accelerators which includes three key components: (1) AI accelerator-enabled reloading-free KV Cache concatenation which decreases memory access overhead as well as enables full fusion of Attention, (2) high-efficiency and high-accuracy 'RoPE' attention based on the tiling optimized FLAT, and (3) highly-fused MLP with fine-grain pipeline scheduling. Our results confirm that FastTPS significantly alleviates memory bottlenecks in the token phase, delivering a 6x speed improvement (compared to none-fusion) on an AMD Ryzen AI 300 series NPU with BF16 precision while sustaining 93% peak memory bandwidth utilization during Phi3-mini-4k-instruct inference.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11434v1",
@@ -2056,17 +2121,18 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11434v1",
-        "pdf": "https://arxiv.org/pdf/2607.11434v1",
+        "abstract": "https://arxiv.org/abs/2607.11434v1",
+        "pdf": "https://arxiv.org/pdf/2607.11434.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 32,
-      "summary_zh": "提出多模态RLHF偏好对齐框架，用于汉喃手稿的现代越南语翻译。",
-      "why_relevant_zh": "涉及多模态特征融合和令牌选择，但主要关注翻译质量，令牌效率不是核心。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Translating Han-Nom manuscripts into modern Vietnamese is challenging because historical pages are often degraded, the script contains rare logographic characters, and parallel supervision is limited.",
+      "abstract_zh": "Translating Han-Nom manuscripts into modern Vietnamese is challenging because historical pages are often degraded, the script contains rare logographic characters, and parallel supervision is limited. We propose a multimodal RLHF preference-alignment framework that conditions Vietnamese generation on manuscript images and aligned Han-Nom source text. The model combines four streams: CLIP ViT-L/14@336 for visual features, bert-base-chinese for Han-Nom representations, vinai/phobert-base for Vietnamese representations, and T5-small encoder states. Modality-specific projections and a fusion block compress the resulting 2,048-dimensional concatenation into a shared 512-dimensional representation. Starting from the same supervised fine-tuned policy, we compare PPO, DPO, and KTO under matched work-level macro-averaged evaluation. DPO achieves the best BLEU-4, ROUGE-L, BERTScore, semantic similarity, CER, WER, and token accuracy, whereas PPO obtains the highest precision, recall, and F1. KTO remains competitive through its desirable-undesirable utility objective. All preference-aligned policies improve the BLEU-4 and semantic-similarity scores available for the SFT baseline. These results indicate that multimodal preference optimization complements supervised learning by improving lexical and semantic quality in low-resource historical translation.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11586v1",
@@ -2083,17 +2149,18 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11586v1",
-        "pdf": "https://arxiv.org/pdf/2607.11586v1",
+        "abstract": "https://arxiv.org/abs/2607.11586v1",
+        "pdf": "https://arxiv.org/pdf/2607.11586.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 20,
-      "summary_zh": "本文提出MoE芯片推理中的热专家映射框架，动态管理token路由。",
-      "why_relevant_zh": "涉及token路由和动态选择，但聚焦硬件系统而非模型内token剪枝。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Mixture-of-Experts (MoE) large language models (LLM) activate only a small number of experts during inference, but token routing introduces persistent expert hotness skew: a small set of hot experts continuously receives",
+      "abstract_zh": "Mixture-of-Experts (MoE) large language models (LLM) activate only a small number of experts during inference, but token routing introduces persistent expert hotness skew: a small set of hot experts continuously receives most tokens, while the remaining experts are lightly loaded. On 3.5D multi-chiplet systems, this skew not only causes compute imbalance but also amplifies pressure on communication, memory bandwidth, I/O, and execution queues. Therefore, the core problem is not simply to reduce token movement, but to dynamically place and reuse hot expert replicas across different memory tiers. This paper proposes HCRMap, a hot expert residency mapping framework for pressure-aware expert replica management in 3.5D MoE inference. Based on expert hotness, weight loading cost, migration overhead, and runtime resource pressure, HCRMap dynamically determines which experts should be promoted, retained, demoted, or evicted. It then maps routed token groups to suitable resident replicas, thereby jointly mitigating communication, memory, and queue bottlenecks. Experimental results show that HCRMap reduces end-to-end latency by 43.6% and 43.0% over Hydra in the prefill and decode stages, respectively; by 34.5% and 33.1% over MoEntwine; and by 46.7% and 46.0% over PIMoE.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11987v1",
@@ -2127,17 +2194,18 @@
         "cs.CV"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11987v1",
-        "pdf": "https://arxiv.org/pdf/2607.11987v1",
+        "abstract": "https://arxiv.org/abs/2607.11987v1",
+        "pdf": "https://arxiv.org/pdf/2607.11987.pdf",
         "code": ""
       },
       "topics": [
         "dynamic-token-selection"
       ],
       "relevance_score": 20,
-      "summary_zh": "本文提出解剖知识蒸馏框架，通过token路由在固定预算下选择信息性token。",
-      "why_relevant_zh": "涉及动态token选择，但应用于医学图像，与通用token剪枝方法关联较弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Perineural invasion (PNI) is associated with poor postoperative outcomes in intrahepatic cholangiocarcinoma, but it is confirmed by surgical pathology.",
+      "abstract_zh": "Perineural invasion (PNI) is associated with poor postoperative outcomes in intrahepatic cholangiocarcinoma, but it is confirmed by surgical pathology. Existing preoperative imaging models often rely on radiologist-defined variables, contrast-enhanced imaging, or manual annotations. We propose an anatomy-privileged teacher--student framework for patient-level PNI prediction from T2-weighted MRI. During training, the teacher uses MRI with tumor and liver masks to learn dense token routing, and the student distills this guidance to retain and aggregate informative tokens under a fixed budget. Anatomical supervision is restricted to training, and the deployed model does not require masks at inference. In 155 patients, the proposed method achieved the highest mean AUROC of 0.750 among matched MRI-only baselines evaluated under the same protocol, with 1.43 GFLOPs and 8.02 ms per case on a Jetson Orin Nano Super Developer Kit.",
+      "why_relevant_zh": "关键词匹配到 Dynamic Token Selection；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11338v1",
@@ -2159,17 +2227,18 @@
         "cs.AI"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11338v1",
-        "pdf": "https://arxiv.org/pdf/2607.11338v1",
+        "abstract": "https://arxiv.org/abs/2607.11338v1",
+        "pdf": "https://arxiv.org/pdf/2607.11338.pdf",
         "code": ""
       },
       "topics": [
         "vlm-acceleration"
       ],
       "relevance_score": 16,
-      "summary_zh": "提出AutoVSR，自动从电路图生成符号表达式。",
-      "why_relevant_zh": "使用VLM进行视觉推理，但令牌效率不是主要贡献，相关性较弱。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Symbolic expressions can effectively characterize and predict circuit behavior, but deriving them directly from circuit schematics is challenging.",
+      "abstract_zh": "Symbolic expressions can effectively characterize and predict circuit behavior, but deriving them directly from circuit schematics is challenging. This process requires accurate visual-to-symbolic construction of circuit structure from images and correct multi-step symbolic derivation, both of which impose strict correctness requirements. This work proposes AutoVSR, an automated framework for visual-to-symbolic generation of circuit expressions using Vision Language Models (VLMs). By reconstructing circuit diagrams into an executable intermediate representation (Executable IR) and leveraging a symbolic solver for reasoning, AutoVSR significantly improves the accuracy of symbolic expression generation. AutoVSR introduces two key innovations: an IR construction method guided by component rule retrieval and verification-based feedback, and a symbolic solver implemented as a planning agent equipped with a symbolic tool library for reliable multi-step derivation. Compared with end-to-end VLM approaches and specialized methods on the main symbolic expression generation task, AutoVSR achieves accuracy improvements of 30.01--59.45% and 41.96--51.84%, respectively. Moreover, AutoVSR surpasses closed-source state-of-the-art VLMs in inference cost and computational efficiency. Code is available at https://github.com/LongfeiLi1/AutoVSR.",
+      "why_relevant_zh": "关键词匹配到 VLM / MLLM Acceleration；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11751v1",
@@ -2189,17 +2258,18 @@
         "cs.MA"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11751v1",
-        "pdf": "https://arxiv.org/pdf/2607.11751v1",
+        "abstract": "https://arxiv.org/abs/2607.11751v1",
+        "pdf": "https://arxiv.org/pdf/2607.11751.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "本文研究多智能体系统中的分布式后门攻击，指出局部监控无法检测组合性危害。",
-      "why_relevant_zh": "论文主要关注安全检测而非token剪枝，仅因涉及监控视角的局限性而弱相关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：As multi-agent, tool-using LLM systems are deployed, a common safety net is a runtime monitor that checks each message, tool call, or step on its own.",
+      "abstract_zh": "As multi-agent, tool-using LLM systems are deployed, a common safety net is a runtime monitor that checks each message, tool call, or step on its own. We show this net has a fundamental hole. A distributed backdoor splits a harmful payload across agents, so every local check passes while the assembled object is the attack. The monitor can be right on every step and still miss the attack. The problem is not splitting itself: split fragments can still leak suspicious tokens or provenance edges. The hard case is \\emph{local benignness}. No fragment carries the harm, and what is left looks like ordinary benign traffic. We formalize this as an \\emph{observability boundary}: a monitor catches only what its view can tell apart from benign traffic. We prove that once the fragments look benign in the monitored view, no detector on that view can catch them, however strong it is. Across a controlled testbed, an external benchmark, and end-to-end agent runs, local monitors lose the signal exactly as local evidence disappears, and it returns only when the monitor sees the assembled object. A monitor trained only on benign traffic recovers the attack's code structure across held-out encodings (0.874 mean AUROC). A decoded-view gate, given the encoding family, blocks every tested attack. But seeing more is not enough: full-trace monitors and decoders still fail unless they reach the representation where the payload is exposed. Local safety is not global safety when harm is compositional, and the open problem is finding that representation.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11423v1",
@@ -2225,17 +2295,18 @@
         "cs.CL"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11423v1",
-        "pdf": "https://arxiv.org/pdf/2607.11423v1",
+        "abstract": "https://arxiv.org/abs/2607.11423v1",
+        "pdf": "https://arxiv.org/pdf/2607.11423.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出ToFu，一个白盒、令牌高效的智能体工具。",
-      "why_relevant_zh": "虽然提到令牌效率，但重点是智能体框架设计，而非令牌剪枝或压缩。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Agentic coding tools present new opportunities to transform research workflows.",
+      "abstract_zh": "Agentic coding tools present new opportunities to transform research workflows. The performance of agent systems built depends on both large language models (LLMs) and the harness around LLMs, which is the orchestration code that determines an agent's behavior. We present ToFu, an agentic harness for researchers that reads your codebase, edits files, runs commands, and integrates with your development tools. ToFu plays a dual role in research. As a research assistant, it supports practical research workflows with superior token efficiency, lower cost, and multilingual capability compared with existing agentic harnesses. Its release under the MIT License further enables local deployment for privacy-sensitive users. As a research object, ToFu provides a white-box agentic harness that allows researchers to inspect, modify, and evaluate its orchestration logic, tool-use behavior, and harness design, while retaining strong benchmark performance and an application-level user experience.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11358v1",
@@ -2257,17 +2328,18 @@
         "cs.CL"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11358v1",
-        "pdf": "https://arxiv.org/pdf/2607.11358v1",
+        "abstract": "https://arxiv.org/abs/2607.11358v1",
+        "pdf": "https://arxiv.org/pdf/2607.11358.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出RefineEvo，一种规划引导的启发式进化框架。",
-      "why_relevant_zh": "提到令牌效率，但主要关注组合优化，与令牌剪枝无关。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Automatic Heuristic Design (AHD) has emerged as a transformative approach for solving combinatorial optimization problems.",
+      "abstract_zh": "Automatic Heuristic Design (AHD) has emerged as a transformative approach for solving combinatorial optimization problems. While recent Large Language Model (LLM)-based methods have shown promise, they predominantly rely on fixed evolutionary operators and struggle to effectively accumulate and reuse historical search experience. This paper proposes RefineEvo, a novel evolutionary framework that transforms AHD from a static trial-and-error process into a planning-guided, experience-driven system. RefineEvo introduces a Planner to dynamically schedule evolutionary operators and trigger refinement based on the current search state, and a Reflector to distill valuable lessons into a Bidirectional Experience Pool containing both positive insights and negative pitfalls. This synergistic framework enables the system to adapt its search tools to the evolving complexity of the problem and leverage trajectory-aware, situation-conditioned insights to guide generation. Experiments on several classic combinatorial optimization benchmarks demonstrate that RefineEvo consistently outperforms strong baselines. In particular, RefineEvo delivers superior solution quality while improving token efficiency, enabling more efficient and autonomous heuristic design.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11427v1",
@@ -2289,17 +2361,18 @@
         "cs.RO"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11427v1",
-        "pdf": "https://arxiv.org/pdf/2607.11427v1",
+        "abstract": "https://arxiv.org/abs/2607.11427v1",
+        "pdf": "https://arxiv.org/pdf/2607.11427.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "提出环境依赖的动作表示，用于机器人操作。",
-      "why_relevant_zh": "与令牌剪枝无关，主要关注动作表示学习。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Learning effective action representations is critical for robotic manipulation, where raw control trajectories are often noisy, redundant, and difficult to model directly.",
+      "abstract_zh": "Learning effective action representations is critical for robotic manipulation, where raw control trajectories are often noisy, redundant, and difficult to model directly. Existing methods mainly encode the structure of the action stream itself, treating the role of actions in the environment as implicit. Yet manipulation is about changing the world: the same action segment can induce different outcomes under different scene contexts, making action semantics inherently environment-dependent. We propose EDAR, an Environment-Dependent Action Representation that grounds action tokens in both executable control structure and expected visual consequences. By coupling motor commands with their environment-conditioned effects, EDAR encourages the learned action space to capture interaction semantics rather than merely command-level patterns. Experiments on simulated and real-robot manipulation benchmarks demonstrate that EDAR improves downstream policy learning, especially in long-horizon manipulation. These results highlight the importance of grounding action representations in executable control structure and environment-conditioned visual change.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     },
     {
       "id": "arxiv-2607.11414v1",
@@ -2316,17 +2389,18 @@
         "cs.CL"
       ],
       "links": {
-        "abstract": "http://arxiv.org/abs/2607.11414v1",
-        "pdf": "https://arxiv.org/pdf/2607.11414v1",
+        "abstract": "https://arxiv.org/abs/2607.11414v1",
+        "pdf": "https://arxiv.org/pdf/2607.11414.pdf",
         "code": ""
       },
       "topics": [
         "survey-benchmark"
       ],
       "relevance_score": 12,
-      "summary_zh": "利用LLM内部状态检测金融问答中的幻觉。",
-      "why_relevant_zh": "与令牌剪枝无关，主要关注幻觉检测。",
-      "deepseek_used": true
+      "summary_zh": "候选论文：Large language models (LLMs) in financial applications fail most consequentially when they are confidently wrong.",
+      "abstract_zh": "Large language models (LLMs) in financial applications fail most consequentially when they are confidently wrong. Hedged, uncertain answers invite scrutiny, whereas confident errors silently degrade downstream decisions without warning. We ask how reliably such confidently wrong answers, or confident hallucinations, can be detected from a model's internal activations, and whether those activations carry information beyond its observable outputs. We train linear probes on the residual stream and evaluate them on two established question-answering (QA) benchmarks built from real filings, FinQA and TAT-QA. Behavioral confidence is measured as the agreement among eight resampled answers to the same question, and probe effectiveness is compared against baselines, such as token log-probabilities and the model's own True/False self-assessment of its answer. Our findings show that among confident answers, those for which all eight resamples agree, 15-23% are wrong on FinQA. There the probes have a significant advantage over baseline methods in detecting hallucinations, holding 0.68-0.77 AUROC while the best baselines fall to 0.55-0.63, across Qwen3-8B, Llama-3.1-8B, and Gemma-2-9B. Our results suggest that probing can be a cost-effective triage mechanism for routing LLM answers to human review and quality control procedures in high-stakes financial applications.",
+      "why_relevant_zh": "关键词匹配到 Survey / Benchmark；DeepSeek API 未配置时使用本地规则打分。",
+      "deepseek_used": false
     }
   ]
 }

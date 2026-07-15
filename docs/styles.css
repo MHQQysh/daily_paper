@@ -181,6 +181,18 @@ input {
   gap: 7px;
 }
 
+.date-group {
+  display: grid;
+  gap: 7px;
+}
+
+.date-label {
+  margin: 8px 0 1px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
 .paper-row {
   width: 100%;
   display: grid;
@@ -367,6 +379,23 @@ input {
 
 .abstract {
   margin-bottom: 24px;
+}
+
+.original-abstract {
+  margin: -8px 0 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  color: var(--muted);
+}
+
+.original-abstract summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.original-abstract p {
+  line-height: 1.65;
 }
 
 .links {
