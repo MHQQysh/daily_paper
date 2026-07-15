@@ -1,0 +1,36 @@
+name: Daily paper update
+
+on:
+  schedule:
+    - cron: "10 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch papers
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_MODEL: deepseek-chat
+          PAPER_LOOKBACK_DAYS: "3"
+          PAPER_MAX_RESULTS: "100"
+          PAPER_MIN_SCORE: "18"
+        run: python scripts/fetch_papers.py
+
+      - name: Commit updates
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update daily papers"
+          file_pattern: data/papers.json docs/papers.json

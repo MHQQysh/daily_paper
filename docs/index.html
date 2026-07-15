@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Daily Paper</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Paper directions">
+        <div class="brand">
+          <div>
+            <h1>Daily Paper</h1>
+            <p>Token pruning watchlist</p>
+          </div>
+          <button class="icon-button mobile-close" id="closeSidebar" aria-label="Close navigation">x</button>
+        </div>
+
+        <label class="search-box">
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="title, author, keyword">
+        </label>
+
+        <div class="sidebar-tools">
+          <button class="tool-button active" id="allButton" type="button">All papers</button>
+          <button class="tool-button" id="highButton" type="button">High relevance</button>
+        </div>
+
+        <nav id="topicTree" class="topic-tree"></nav>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <button class="icon-button menu-button" id="openSidebar" aria-label="Open navigation">=</button>
+          <div>
+            <div class="eyebrow">Pure online paper tracker</div>
+            <h2 id="viewTitle">All papers</h2>
+          </div>
+          <div class="status" id="statusText">Loading</div>
+        </header>
+
+        <section class="dashboard">
+          <div class="metric">
+            <span id="paperCount">0</span>
+            <label>papers</label>
+          </div>
+          <div class="metric">
+            <span id="topicCount">0</span>
+            <label>directions</label>
+          </div>
+          <div class="metric">
+            <span id="latestDate">-</span>
+            <label>latest</label>
+          </div>
+        </section>
+
+        <section class="detail" id="paperDetail">
+          <div class="empty-state">
+            <h3>Select a paper from the left</h3>
+            <p>Expand a direction, choose a paper, and the summary plus links will appear here.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
