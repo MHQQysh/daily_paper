@@ -5,6 +5,7 @@ import unittest
 from unittest import mock
 
 from scripts import fetch_papers
+from scripts import pdf_import
 from scripts import paper_service
 
 
@@ -27,6 +28,13 @@ class PaperServiceTests(unittest.TestCase):
             result = paper_service.resolve_paper_input("A descriptive paper title")
         self.assertEqual(result, expected)
         self.assertIn('ti:"A descriptive paper title"', fetch.call_args.args[0]["search_query"])
+
+    def test_pdf_url_uses_generic_pdf_importer(self):
+        expected = {"title": "PDF candidate", "import_token": "token"}
+        with mock.patch.object(pdf_import, "resolve_pdf_url", return_value=expected) as resolve:
+            result = paper_service.resolve_paper_input("https://openreview.net/pdf?id=test123")
+        self.assertEqual(result, [expected])
+        resolve.assert_called_once_with("https://openreview.net/pdf?id=test123")
 
     def test_analysis_filters_recommended_topics(self):
         paper = {
@@ -53,6 +61,63 @@ class PaperServiceTests(unittest.TestCase):
             analyzed = paper_service.analyze_paper(paper, topics_payload, "sk-test")
         self.assertEqual(analyzed["topics"], ["vision"])
         self.assertTrue(analyzed["deepseek_used"])
+
+    def test_pdf_analysis_extracts_metadata_and_preserves_validated_links(self):
+        candidate = {
+            "id": "pdf-stable",
+            "source": "OpenReview",
+            "source_id": "pdf-stable",
+            "title": "OpenReview paper test123",
+            "authors": [],
+            "published": "",
+            "abstract": "",
+            "links": {
+                "abstract": "https://openreview.net/forum?id=test123",
+                "pdf": "https://openreview.net/pdf?id=test123",
+                "code": "",
+            },
+            "import_token": "import-token",
+        }
+        topics_payload = [{"id": key, **value} for key, value in TOPICS.items()]
+        response = {
+            "paper": {
+                "title": "Extracted Paper Title",
+                "authors": ["Alice Example", "Bob Example"],
+                "published": "2026-07-01",
+                "abstract": "A faithful English abstract.",
+                "topics": ["vision", "unknown"],
+                "relevance_score": 91,
+                "summary_zh": "中文总结",
+                "abstract_zh": "中文摘要",
+                "why_relevant_zh": "相关原因",
+            }
+        }
+        cache_entry = {"text": "Full extracted PDF text " * 100, "candidate": candidate.copy()}
+        with mock.patch.object(pdf_import.PDF_IMPORT_CACHE, "get", return_value=cache_entry), mock.patch.object(
+            pdf_import.PDF_IMPORT_CACHE, "discard"
+        ) as discard, mock.patch.object(fetch_papers, "call_deepseek_json", return_value=response) as deepseek:
+            analyzed = paper_service.analyze_paper(candidate, topics_payload, "sk-test")
+
+        self.assertEqual(analyzed["title"], "Extracted Paper Title")
+        self.assertEqual(analyzed["authors"], ["Alice Example", "Bob Example"])
+        self.assertEqual(analyzed["topics"], ["vision"])
+        self.assertEqual(analyzed["links"], candidate["links"])
+        self.assertNotIn("import_token", analyzed)
+        self.assertTrue(analyzed["deepseek_used"])
+        self.assertIn("Full extracted PDF text", deepseek.call_args.args[0][1]["content"])
+        discard.assert_called_once_with("import-token")
+
+    def test_pdf_analysis_requires_deepseek_key(self):
+        candidate = {
+            "id": "pdf-stable",
+            "source": "PDF",
+            "source_id": "pdf-stable",
+            "title": "PDF paper",
+            "links": {"pdf": "https://example.org/paper.pdf"},
+            "import_token": "import-token",
+        }
+        with self.assertRaisesRegex(ValueError, "DeepSeek API key"):
+            paper_service.analyze_paper(candidate, [], "")
 
     def test_add_duplicate_unions_manual_topics(self):
         existing = {

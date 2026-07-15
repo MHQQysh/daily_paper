@@ -1,1 +1,1 @@
-# The tracker uses only the Python standard library.
+pypdf>=6.0,<7

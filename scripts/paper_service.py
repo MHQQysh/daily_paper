@@ -11,8 +11,10 @@ import xml.etree.ElementTree as ET
 
 try:
     from scripts import fetch_papers as fp
+    from scripts import pdf_import
 except ImportError:
     import fetch_papers as fp
+    import pdf_import
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +47,12 @@ def extract_arxiv_id(value: str) -> str:
     return match.group(1) if match else ""
 
 
+def is_pdf_url_input(value: str) -> bool:
+    text = (value or "").strip()
+    parsed = urllib.parse.urlsplit(text)
+    return parsed.scheme.lower() in {"http", "https"} and bool(parsed.netloc) and not extract_arxiv_id(text)
+
+
 def _parse_feed(raw: bytes) -> list[dict[str, Any]]:
     ns = {"atom": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
     root = ET.fromstring(raw)
@@ -70,7 +78,7 @@ def _fetch_arxiv(params: dict[str, str]) -> list[dict[str, Any]]:
 def resolve_paper_input(value: str, max_candidates: int = 5) -> list[dict[str, Any]]:
     text = fp.normalize_text(value)
     if len(text) < 3:
-        raise ValueError("Enter an arXiv link, arXiv ID, or a longer paper title.")
+        raise ValueError("Enter a PDF URL, arXiv link, arXiv ID, or a longer paper title.")
     arxiv_id = extract_arxiv_id(text)
     if arxiv_id:
         base_id = fp.arxiv_base_id(arxiv_id).lower()
@@ -86,6 +94,8 @@ def resolve_paper_input(value: str, max_candidates: int = 5) -> list[dict[str, A
         if local_match:
             return [local_match]
         return _fetch_arxiv({"id_list": arxiv_id, "max_results": "1"})
+    if is_pdf_url_input(text):
+        return [pdf_import.resolve_pdf_url(text)]
 
     phrase = text.replace('"', "")[:300]
     phrase_key = fp.normalize_title(phrase)
@@ -108,11 +118,125 @@ def resolve_paper_input(value: str, max_candidates: int = 5) -> list[dict[str, A
     )
 
 
+def _pdf_deepseek_prompt(document_text: str, topics: dict[str, dict[str, Any]]) -> list[dict[str, str]]:
+    topic_catalog = [
+        {
+            "id": topic_id,
+            "name": topic["name"],
+            "description": topic.get("description", ""),
+            "keywords": topic.get("keywords", []),
+        }
+        for topic_id, topic in topics.items()
+    ]
+    system = (
+        "You extract structured academic-paper metadata from PDF text for a personalized paper tracker. "
+        "Return strict JSON only. Do not include markdown. Do not invent unavailable metadata."
+    )
+    user = {
+        "task": (
+            "Read the extracted paper text. Recover the paper title, ordered authors, publication date when explicit, "
+            "and the paper's own English abstract. Translate that abstract into Chinese, summarize the contribution, "
+            "and classify it against the configured directions."
+        ),
+        "topic_catalog": topic_catalog,
+        "rules": [
+            "Keep only topic ids from topic_catalog.",
+            "Use an empty published string when an exact date is unavailable.",
+            "The abstract field must be the paper abstract in English, not a generated whole-paper summary.",
+            "relevance_score is an integer from 0 to 100.",
+            "summary_zh is one concise Chinese sentence.",
+            "abstract_zh is a faithful Chinese translation of the English abstract.",
+            "why_relevant_zh is one concise Chinese sentence explaining relevance.",
+        ],
+        "document_text": document_text,
+        "output_schema": {
+            "paper": {
+                "title": "paper title",
+                "authors": ["author name"],
+                "published": "YYYY-MM-DD or empty",
+                "abstract": "English abstract",
+                "topics": ["topic-id"],
+                "relevance_score": 0,
+                "summary_zh": "中文一句话总结",
+                "abstract_zh": "中文摘要翻译",
+                "why_relevant_zh": "中文相关性说明",
+            }
+        },
+    }
+    return [
+        {"role": "system", "content": system},
+        {"role": "user", "content": json.dumps(user, ensure_ascii=False)},
+    ]
+
+
+def _normalize_pdf_analysis(
+    item: dict[str, Any], candidate: dict[str, Any], topics: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
+    title = fp.normalize_text(item.get("title", ""))
+    abstract = fp.normalize_text(item.get("abstract", ""))
+    if not title or not abstract:
+        raise ValueError("DeepSeek did not return a paper title and English abstract")
+    raw_authors = item.get("authors", [])
+    if isinstance(raw_authors, str):
+        raw_authors = [raw_authors]
+    if not isinstance(raw_authors, list):
+        raw_authors = []
+    authors = [fp.normalize_text(author) for author in raw_authors if fp.normalize_text(author)][:100]
+    published = fp.normalize_text(item.get("published", ""))
+    if published:
+        try:
+            dt.date.fromisoformat(published)
+        except ValueError:
+            published = ""
+    try:
+        relevance_score = max(0, min(100, int(item.get("relevance_score", 0))))
+    except (TypeError, ValueError):
+        relevance_score = 0
+    raw_topics = item.get("topics", [])
+    if not isinstance(raw_topics, list):
+        raw_topics = []
+    return {
+        **{key: value for key, value in candidate.items() if key in PAPER_FIELDS},
+        "title": title,
+        "authors": authors,
+        "published": published,
+        "abstract": abstract,
+        "topics": [topic_id for topic_id in raw_topics if topic_id in topics],
+        "relevance_score": relevance_score,
+        "summary_zh": fp.normalize_text(item.get("summary_zh", "")),
+        "abstract_zh": fp.normalize_text(item.get("abstract_zh", "")),
+        "why_relevant_zh": fp.normalize_text(item.get("why_relevant_zh", "")),
+        "deepseek_used": True,
+    }
+
+
+def _analyze_pdf_paper(
+    paper: dict[str, Any], topics: dict[str, dict[str, Any]], api_key: str, model: str
+) -> dict[str, Any]:
+    if not api_key:
+        raise ValueError("A DeepSeek API key is required to read a PDF URL")
+    token = fp.normalize_text(paper.get("import_token", ""))
+    if not token:
+        raise ValueError("PDF import token is missing; paste the URL again")
+    cached = pdf_import.PDF_IMPORT_CACHE.get(token)
+    parsed = fp.call_deepseek_json(_pdf_deepseek_prompt(cached["text"], topics), model=model, api_key=api_key)
+    item = parsed.get("paper", {})
+    if not item and parsed.get("papers"):
+        item = parsed["papers"][0]
+    if not isinstance(item, dict) or not item:
+        raise ValueError("DeepSeek returned no PDF analysis")
+    result = _normalize_pdf_analysis(item, cached["candidate"], topics)
+    pdf_import.PDF_IMPORT_CACHE.discard(token)
+    return result
+
+
 def analyze_paper(
     paper: dict[str, Any], topics_payload: list[dict[str, Any]], api_key: str, model: str = "deepseek-chat"
 ) -> dict[str, Any]:
     topics = fp.normalize_topics_payload({"topics": topics_payload})
     fp.TOPICS = topics
+    if isinstance(paper, dict) and paper.get("import_token"):
+        return _analyze_pdf_paper(paper, topics, api_key, model)
     fallback = fp.fallback_enrichment(_sanitize_paper(paper))
     if not api_key:
         fallback["analysis_warning"] = "DeepSeek API key is not configured; using English metadata."

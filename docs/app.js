@@ -684,7 +684,9 @@ async function analyzeManualCandidate(index) {
     return;
   }
   paperCandidates.innerHTML = "";
-  paperAddStatus.textContent = "DeepSeek is translating the paper and recommending directions...";
+  paperAddStatus.textContent = paper.import_token
+    ? "DeepSeek is reading the paper, translating it, and recommending directions..."
+    : "DeepSeek is translating the paper and recommending directions...";
   try {
     const result = await postLocalApi("/api/papers/analyze", {
       paper,
@@ -711,12 +713,13 @@ async function openPaperAddDialog() {
   }
   resetPaperAddDialog();
   paperDialog.showModal();
-  paperAddStatus.textContent = "Searching arXiv...";
+  const isPdfUrl = /^https?:\/\//i.test(value);
+  paperAddStatus.textContent = isPdfUrl ? "Downloading and reading PDF..." : "Searching arXiv...";
   try {
     const result = await postLocalApi("/api/papers/resolve", { input: value });
     state.manualCandidates = result.candidates || [];
     if (!state.manualCandidates.length) {
-      paperAddStatus.textContent = "No matching arXiv paper was found.";
+      paperAddStatus.textContent = isPdfUrl ? "No readable PDF paper was found." : "No matching arXiv paper was found.";
       return;
     }
     if (state.manualCandidates.length === 1) {
@@ -743,8 +746,10 @@ async function confirmManualPaper() {
   confirmPaperAdd.disabled = true;
   paperAddStatus.textContent = "Adding paper to the library...";
   try {
+    const paperToAdd = { ...state.manualPaper };
+    delete paperToAdd.import_token;
     const result = await postLocalApi("/api/papers/add", {
-      paper: state.manualPaper,
+      paper: paperToAdd,
       selected_topics: selectedTopics,
     });
     searchInput.value = "";

@@ -49,11 +49,19 @@ Double-click `start_daily_paper.cmd`. It starts the loopback-only local server a
 
 `http://127.0.0.1:8766/`
 
+Install the local PDF reader dependency once when setting up the project:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
 On localhost, the run panel asks for a DeepSeek API key instead of a GitHub token. The key is stored in this browser's local storage. Choose a date or range and click `Run local search`; the page starts the fetch, shows progress, and reloads the updated paper list automatically.
 
 Automatic browser searches are append-only: newly found papers are merged into the library and older papers are not removed by a search. The completed run report shows the DeepSeek-generated queries and the counts for added, updated, and duplicate papers.
 
 To add one paper manually, paste an arXiv URL, arXiv ID, or title into the sidebar search field and click `+`. Title searches return up to five candidates. After choosing one, review DeepSeek's suggested directions, edit the checkboxes if needed, and confirm the addition.
+
+The same field accepts a public direct PDF URL from sites such as OpenReview or CVF Open Access. The local server temporarily downloads up to 30 MB, extracts at most 120,000 characters, and asks DeepSeek to recover the title, authors, abstract, Chinese translation, and recommended directions. PDF bytes and extracted full text are discarded; the saved record keeps the original PDF link. A DeepSeek key is required, and scanned PDFs without selectable text are not currently supported. OpenReview links protected by a login or browser challenge cannot be fetched anonymously and return a clear access error.
 
 To remove an unwanted paper, select it and click the trash icon in the detail view. Local deletion asks for confirmation, creates a timestamped backup, and removes only the current record. It does not create an ignore rule, so a future search may add the paper again.
 

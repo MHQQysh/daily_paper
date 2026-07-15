@@ -8,7 +8,7 @@ import urllib.request
 from http.server import ThreadingHTTPServer
 
 from scripts import paper_service
-from scripts.local_server import LocalRequestHandler, build_fetch_command, sanitize_output, validate_run_payload
+from scripts.local_server import OPERATION_LOCK, LocalRequestHandler, build_fetch_command, sanitize_output, validate_run_payload
 
 
 class LocalServerValidationTests(unittest.TestCase):
@@ -104,6 +104,32 @@ class LocalServerValidationTests(unittest.TestCase):
             body = json.loads(raised.exception.read().decode("utf-8"))
             self.assertEqual(body["error"], "Paper was not found")
         finally:
+            server.shutdown()
+            server.server_close()
+            worker.join(timeout=5)
+
+    def test_pdf_resolution_returns_conflict_while_another_operation_runs(self):
+        server = ThreadingHTTPServer(("127.0.0.1", 0), LocalRequestHandler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        acquired = OPERATION_LOCK.acquire(blocking=False)
+        self.assertTrue(acquired)
+        try:
+            payload = json.dumps({"input": "https://example.org/paper.pdf"}).encode("utf-8")
+            request = urllib.request.Request(
+                f"http://127.0.0.1:{server.server_port}/api/papers/resolve",
+                data=payload,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with mock.patch.object(paper_service, "resolve_paper_input", return_value=[]):
+                with self.assertRaises(urllib.error.HTTPError) as raised:
+                    urllib.request.urlopen(request, timeout=5)
+            self.assertEqual(raised.exception.code, 409)
+            body = json.loads(raised.exception.read().decode("utf-8"))
+            self.assertIn("Another paper operation", body["error"])
+        finally:
+            OPERATION_LOCK.release()
             server.shutdown()
             server.server_close()
             worker.join(timeout=5)

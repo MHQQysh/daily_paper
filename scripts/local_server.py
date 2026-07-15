@@ -235,7 +235,17 @@ class LocalRequestHandler(SimpleHTTPRequestHandler):
                 response_payload = JOB_MANAGER.start(request)
                 response_status = HTTPStatus.ACCEPTED
             elif path == "/api/papers/resolve":
-                response_payload = {"candidates": paper_service.resolve_paper_input(str(payload.get("input", "")))}
+                input_value = str(payload.get("input", ""))
+                if paper_service.is_pdf_url_input(input_value):
+                    if not OPERATION_LOCK.acquire(blocking=False):
+                        raise RuntimeError("Another paper operation is already running.")
+                    try:
+                        candidates = paper_service.resolve_paper_input(input_value)
+                    finally:
+                        OPERATION_LOCK.release()
+                else:
+                    candidates = paper_service.resolve_paper_input(input_value)
+                response_payload = {"candidates": candidates}
                 response_status = HTTPStatus.OK
             elif path == "/api/papers/analyze":
                 api_key = str(payload.get("deepseek_api_key", "") or "").strip()
