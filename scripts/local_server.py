@@ -206,6 +206,9 @@ class LocalRequestHandler(SimpleHTTPRequestHandler):
         if path in {"/api/status", "/api/health"}:
             self._send_json(JOB_MANAGER.snapshot())
             return
+        if path == "/api/topics":
+            self._send_json({"topics": paper_service.load_topic_catalog()})
+            return
         if path.startswith("/api/"):
             self._send_json({"error": "API endpoint not found"}, HTTPStatus.NOT_FOUND)
             return
@@ -215,6 +218,7 @@ class LocalRequestHandler(SimpleHTTPRequestHandler):
         path = urlparse(self.path).path
         if path not in {
             "/api/run",
+            "/api/topics/save",
             "/api/papers/resolve",
             "/api/papers/analyze",
             "/api/papers/add",
@@ -234,6 +238,14 @@ class LocalRequestHandler(SimpleHTTPRequestHandler):
                 request = validate_run_payload(payload)
                 response_payload = JOB_MANAGER.start(request)
                 response_status = HTTPStatus.ACCEPTED
+            elif path == "/api/topics/save":
+                if not OPERATION_LOCK.acquire(blocking=False):
+                    raise RuntimeError("Another paper operation is already running.")
+                try:
+                    response_payload = paper_service.save_topics(payload.get("topics", []))
+                finally:
+                    OPERATION_LOCK.release()
+                response_status = HTTPStatus.OK
             elif path == "/api/papers/resolve":
                 input_value = str(payload.get("input", ""))
                 if paper_service.is_pdf_url_input(input_value):

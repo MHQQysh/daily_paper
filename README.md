@@ -57,6 +57,8 @@ python -m pip install -r requirements.txt
 
 On localhost, the run panel asks for a DeepSeek API key instead of a GitHub token. The key is stored in this browser's local storage. Choose a date or range and click `Run local search`; the page starts the fetch, shows progress, and reloads the updated paper list automatically.
 
+Use `Edit directions` to add, rename, or remove research directions and edit their keyword lists. Chinese direction names receive stable unique IDs, so categories such as `可解释性` and `流形` remain separate. In local mode, Save creates a backup and persists the catalog to `config/topics.json`; on the hosted static page, custom directions remain in that browser and are included when it triggers a workflow.
+
 Automatic browser searches are append-only: newly found papers are merged into the library and older papers are not removed by a search. The completed run report shows the DeepSeek-generated queries and the counts for added, updated, and duplicate papers.
 
 To add one paper manually, paste an arXiv URL, arXiv ID, or title into the sidebar search field and click `+`. Title searches return up to five candidates. After choosing one, review DeepSeek's suggested directions, edit the checkboxes if needed, and confirm the addition.

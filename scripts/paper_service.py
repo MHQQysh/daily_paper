@@ -282,6 +282,7 @@ def _sanitize_paper(paper: Any) -> dict[str, Any]:
 
 def _backup_before_mutation(prefix: str) -> Path | None:
     sources = {
+        "topics.json": fp.CONFIG_PATH,
         "data-papers.json": fp.DATA_PATH,
         "docs-papers.json": fp.DOCS_PATH,
         "run-status.json": fp.STATUS_PATH,
@@ -295,6 +296,99 @@ def _backup_before_mutation(prefix: str) -> Path | None:
     for name, source in existing.items():
         shutil.copy2(source, backup_dir / name)
     return backup_dir
+
+
+def validate_topics_payload(topics_payload: Any) -> list[dict[str, Any]]:
+    if not isinstance(topics_payload, list) or not 1 <= len(topics_payload) <= 100:
+        raise ValueError("topics must contain between 1 and 100 directions")
+
+    normalized: list[dict[str, Any]] = []
+    used_ids: set[str] = set()
+    used_names: set[str] = set()
+    for index, item in enumerate(topics_payload, start=1):
+        if not isinstance(item, dict):
+            raise ValueError(f"direction {index} must be an object")
+        topic_id = fp.normalize_text(item.get("id", "")).lower()
+        name = fp.normalize_text(item.get("name", ""))
+        description = fp.normalize_text(item.get("description", ""))
+        raw_keywords = item.get("keywords", [])
+        if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,119}", topic_id):
+            raise ValueError(f"direction {index} has an invalid id")
+        if topic_id in used_ids:
+            raise ValueError("direction ids must be unique")
+        if not name or len(name) > 120:
+            raise ValueError(f"direction {index} name must contain 1 to 120 characters")
+        name_key = name.casefold()
+        if name_key in used_names:
+            raise ValueError("direction names must be unique")
+        if not isinstance(raw_keywords, list):
+            raise ValueError(f"direction {index} keywords must be a list")
+        keywords: list[str] = []
+        seen_keywords: set[str] = set()
+        for raw_keyword in raw_keywords:
+            keyword = fp.normalize_text(raw_keyword)
+            keyword_key = keyword.casefold()
+            if not keyword or keyword_key in seen_keywords:
+                continue
+            if len(keyword) > 200:
+                raise ValueError(f"direction {index} keyword is longer than 200 characters")
+            seen_keywords.add(keyword_key)
+            keywords.append(keyword)
+        if not 1 <= len(keywords) <= 100:
+            raise ValueError(f"direction {index} must contain between 1 and 100 keywords")
+        if len(description) > 500:
+            raise ValueError(f"direction {index} description is longer than 500 characters")
+        normalized.append(
+            {
+                "id": topic_id,
+                "name": name,
+                "description": description or ", ".join(keywords[:5]),
+                "keywords": keywords,
+            }
+        )
+        used_ids.add(topic_id)
+        used_names.add(name_key)
+    return normalized
+
+
+def load_topic_catalog() -> list[dict[str, Any]]:
+    return [
+        {
+            "id": topic_id,
+            "name": topic["name"],
+            "description": topic.get("description", ""),
+            "keywords": topic.get("keywords", []),
+        }
+        for topic_id, topic in fp.load_topics().items()
+    ]
+
+
+def _write_json(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        json.dump(payload, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+
+
+def save_topics(topics_payload: list[dict[str, Any]]) -> dict[str, Any]:
+    topics = validate_topics_payload(topics_payload)
+    _backup_before_mutation("before-topic-save")
+    _write_json(fp.CONFIG_PATH, {"topics": topics})
+    for path in (fp.DATA_PATH, fp.DOCS_PATH):
+        if not path.exists():
+            continue
+        store = fp.read_store(path)
+        store["topics"] = topics
+        _write_json(path, store)
+    fp.TOPICS = {
+        item["id"]: {
+            "name": item["name"],
+            "description": item["description"],
+            "keywords": item["keywords"],
+        }
+        for item in topics
+    }
+    return {"topics": topics, "count": len(topics)}
 
 
 def add_paper(paper: dict[str, Any], selected_topics: list[str]) -> dict[str, Any]:

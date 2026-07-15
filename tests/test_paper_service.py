@@ -16,6 +16,82 @@ TOPICS = {
 
 
 class PaperServiceTests(unittest.TestCase):
+    def test_load_topic_catalog_preserves_configured_ids(self):
+        with mock.patch.object(fetch_papers, "load_topics", return_value=TOPICS):
+            catalog = paper_service.load_topic_catalog()
+        self.assertEqual([item["id"] for item in catalog], ["vision", "interpretability"])
+        self.assertEqual(catalog[1]["name"], "Interpretability")
+
+    def test_save_topics_rejects_duplicate_ids_and_empty_keywords(self):
+        with self.assertRaisesRegex(ValueError, "unique"):
+            paper_service.validate_topics_payload(
+                [
+                    {"id": "topic-same", "name": "First", "keywords": ["first"]},
+                    {"id": "topic-same", "name": "Second", "keywords": ["second"]},
+                ]
+            )
+        with self.assertRaisesRegex(ValueError, "keyword"):
+            paper_service.validate_topics_payload(
+                [{"id": "topic-empty", "name": "Empty", "keywords": []}]
+            )
+
+    def test_save_topics_updates_catalog_without_changing_papers(self):
+        topics = [
+            {
+                "id": "topic-example",
+                "name": "Example",
+                "description": "",
+                "keywords": ["example keyword"],
+            }
+        ]
+        data_store = {
+            "last_updated": "2026-07-15T00:00:00+00:00",
+            "topics": [],
+            "papers": [{"id": "paper-1", "title": "Keep me"}],
+        }
+        docs_store = {
+            "last_updated": "2026-07-14T00:00:00+00:00",
+            "topics": [],
+            "papers": [{"id": "paper-2", "title": "Keep this too"}],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_path = root / "config" / "topics.json"
+            data_path = root / "data" / "papers.json"
+            docs_path = root / "docs" / "papers.json"
+            data_path.parent.mkdir(parents=True)
+            docs_path.parent.mkdir(parents=True)
+            data_path.write_text(json.dumps(data_store), encoding="utf-8")
+            docs_path.write_text(json.dumps(docs_store), encoding="utf-8")
+            with mock.patch.object(fetch_papers, "CONFIG_PATH", config_path), mock.patch.object(
+                fetch_papers, "DATA_PATH", data_path
+            ), mock.patch.object(fetch_papers, "DOCS_PATH", docs_path), mock.patch.object(
+                paper_service, "_backup_before_mutation", return_value=root / "backup"
+            ) as backup:
+                result = paper_service.save_topics(topics)
+
+            saved_config = json.loads(config_path.read_text(encoding="utf-8"))
+            saved_data = json.loads(data_path.read_text(encoding="utf-8"))
+            saved_docs = json.loads(docs_path.read_text(encoding="utf-8"))
+
+        expected_catalog = [
+            {
+                "id": "topic-example",
+                "name": "Example",
+                "description": "example keyword",
+                "keywords": ["example keyword"],
+            }
+        ]
+        self.assertEqual(saved_config, {"topics": expected_catalog})
+        self.assertEqual(saved_data["topics"], expected_catalog)
+        self.assertEqual(saved_docs["topics"], expected_catalog)
+        self.assertEqual(saved_data["papers"], data_store["papers"])
+        self.assertEqual(saved_docs["papers"], docs_store["papers"])
+        self.assertEqual(saved_data["last_updated"], data_store["last_updated"])
+        self.assertEqual(saved_docs["last_updated"], docs_store["last_updated"])
+        self.assertEqual(result, {"topics": expected_catalog, "count": 1})
+        backup.assert_called_once_with("before-topic-save")
+
     def test_extract_arxiv_id_from_url(self):
         self.assertEqual(
             paper_service.extract_arxiv_id("https://arxiv.org/pdf/2607.12345v2.pdf"),

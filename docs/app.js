@@ -31,6 +31,8 @@ const highButton = document.getElementById("highButton");
 const editTopicsButton = document.getElementById("editTopicsButton");
 const topicDialog = document.getElementById("topicDialog");
 const topicEditor = document.getElementById("topicEditor");
+const topicEditorStatus = document.getElementById("topicEditorStatus");
+const addTopicButton = document.getElementById("addTopicButton");
 const saveTopicsButton = document.getElementById("saveTopicsButton");
 const resetTopicsButton = document.getElementById("resetTopicsButton");
 const copyTopicsButton = document.getElementById("copyTopicsButton");
@@ -67,12 +69,51 @@ function byId(topicId) {
   return state.topics.find((topic) => topic.id === topicId);
 }
 
-function slugify(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 100) || "direction";
+function stableTopicId(name) {
+  let hash = 2166136261;
+  for (const character of String(name || "").normalize("NFKC").toLowerCase()) {
+    hash ^= character.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `topic-${(hash >>> 0).toString(36)}`;
+}
+
+function normalizeTopicIds(topics, preferredTopics = []) {
+  const preferredByName = new Map(
+    preferredTopics.map((topic) => [String(topic.name || "").trim().toLowerCase(), topic]),
+  );
+  const usedIds = new Set();
+  return (topics || []).map((topic) => {
+    const name = String(topic.name || "").trim();
+    const rawId = String(topic.id || "").trim().toLowerCase();
+    const preferredTopic = preferredByName.get(name.toLowerCase());
+    const preferredId = preferredTopic?.id;
+    const reusable = /^[a-z0-9][a-z0-9-]{0,119}$/.test(rawId)
+      && rawId !== "direction"
+      && !usedIds.has(rawId);
+    let baseId = preferredId && !usedIds.has(preferredId)
+      ? preferredId
+      : reusable
+        ? rawId
+        : stableTopicId(name);
+    if (!/^[a-z0-9][a-z0-9-]{0,119}$/.test(baseId) || baseId === "direction") {
+      baseId = stableTopicId(name);
+    }
+    let topicId = baseId;
+    let suffix = 2;
+    while (usedIds.has(topicId)) {
+      topicId = `${baseId}-${suffix}`;
+      suffix += 1;
+    }
+    usedIds.add(topicId);
+    return {
+      ...topic,
+      id: topicId,
+      name,
+      description: String(preferredTopic?.description || topic.description || "").trim(),
+      keywords: (topic.keywords || []).map((keyword) => String(keyword).trim()).filter(Boolean),
+    };
+  });
 }
 
 function escapeHtml(value) {
@@ -112,34 +153,6 @@ function applyTopicModel() {
   });
 }
 
-function formatTopicsForEditor(topics) {
-  return topics
-    .map((topic) => `${topic.name} | ${(topic.keywords || []).join(", ")}`)
-    .join("\n");
-}
-
-function parseTopicsFromEditor(value) {
-  return value
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [rawName, rawKeywords = ""] = line.split("|");
-      const name = rawName.trim();
-      const keywords = rawKeywords
-        .split(",")
-        .map((keyword) => keyword.trim())
-        .filter(Boolean);
-      return {
-        id: slugify(name),
-        name,
-        description: keywords.slice(0, 5).join(", "),
-        keywords,
-      };
-    })
-    .filter((topic) => topic.name && topic.keywords.length);
-}
-
 function loadStoredTopics(serverTopics) {
   if (localStorage.getItem(TOPIC_SCHEMA_STORAGE_KEY) !== TOPIC_SCHEMA_VERSION) {
     localStorage.removeItem(TOPIC_STORAGE_KEY);
@@ -153,14 +166,87 @@ function loadStoredTopics(serverTopics) {
   try {
     const parsed = JSON.parse(stored);
     if (Array.isArray(parsed.topics) && parsed.topics.length) {
+      const topics = normalizeTopicIds(parsed.topics, serverTopics);
+      if (JSON.stringify(topics) !== JSON.stringify(parsed.topics)) {
+        localStorage.setItem(TOPIC_STORAGE_KEY, JSON.stringify({ topics }));
+      }
       state.customTopics = true;
-      return parsed.topics;
+      return topics;
     }
   } catch {
     localStorage.removeItem(TOPIC_STORAGE_KEY);
   }
   state.customTopics = false;
   return serverTopics;
+}
+
+function setTopicEditorStatus(message = "", isError = false) {
+  topicEditorStatus.textContent = message;
+  topicEditorStatus.classList.toggle("error", isError);
+}
+
+function topicEditorRow(topic = {}) {
+  const topicId = String(topic.id || "");
+  return `
+    <div class="topic-edit-row" data-topic-id="${escapeHtml(topicId)}" data-topic-description="${escapeHtml(topic.description || "")}">
+      <label class="topic-edit-field">
+        <span>Name</span>
+        <input data-topic-name type="text" maxlength="120" value="${escapeHtml(topic.name || "")}">
+      </label>
+      <label class="topic-edit-field topic-edit-field-keywords">
+        <span>Keywords</span>
+        <input data-topic-keywords type="text" value="${escapeHtml((topic.keywords || []).join(", "))}">
+      </label>
+      <button class="icon-button topic-delete-button" data-remove-topic type="button" title="Delete direction" aria-label="Delete direction">
+        <i data-lucide="trash-2" aria-hidden="true"></i>
+      </button>
+    </div>
+  `;
+}
+
+function renderTopicEditor(topics) {
+  topicEditor.innerHTML = (topics || []).map((topic) => topicEditorRow(topic)).join("");
+  setTopicEditorStatus();
+  refreshIcons();
+}
+
+function addTopicEditorRow() {
+  topicEditor.insertAdjacentHTML("beforeend", topicEditorRow());
+  setTopicEditorStatus();
+  refreshIcons();
+  const inputs = topicEditor.querySelectorAll("[data-topic-name]");
+  inputs[inputs.length - 1]?.focus();
+}
+
+function readTopicsFromEditor() {
+  const rows = Array.from(topicEditor.querySelectorAll(".topic-edit-row"));
+  if (!rows.length) {
+    throw new Error("Add at least one direction.");
+  }
+  const topics = rows.map((row, index) => {
+    const name = row.querySelector("[data-topic-name]").value.trim();
+    const keywords = row.querySelector("[data-topic-keywords]").value
+      .split(",")
+      .map((keyword) => keyword.trim())
+      .filter(Boolean);
+    if (!name) {
+      throw new Error(`Direction ${index + 1} needs a name.`);
+    }
+    if (!keywords.length) {
+      throw new Error(`${name} needs at least one keyword.`);
+    }
+    return {
+      id: row.dataset.topicId || "",
+      name,
+      description: row.dataset.topicDescription || keywords.slice(0, 5).join(", "),
+      keywords: [...new Set(keywords)],
+    };
+  });
+  const names = topics.map((topic) => topic.name.toLowerCase());
+  if (new Set(names).size !== names.length) {
+    throw new Error("Direction names must be unique.");
+  }
+  return normalizeTopicIds(topics, state.serverTopics);
 }
 
 function paperMatches(paper) {
@@ -387,6 +473,23 @@ function render() {
   renderMetrics();
 }
 
+async function loadProjectTopics(fallbackTopics) {
+  const normalizedFallback = normalizeTopicIds(fallbackTopics || []);
+  if (!IS_LOCAL_MODE) {
+    return normalizedFallback;
+  }
+  try {
+    const response = await fetch("/api/topics", { cache: "no-store" });
+    if (!response.ok) {
+      return normalizedFallback;
+    }
+    const payload = await response.json();
+    return normalizeTopicIds(payload.topics || normalizedFallback);
+  } catch {
+    return normalizedFallback;
+  }
+}
+
 async function loadData() {
   try {
     const response = await fetch("papers.json", { cache: "no-store" });
@@ -395,7 +498,7 @@ async function loadData() {
     }
     const data = await response.json();
     state.sourcePapers = (data.papers || []).map(clonePaper);
-    state.serverTopics = data.topics || [];
+    state.serverTopics = await loadProjectTopics(data.topics || []);
     state.topics = loadStoredTopics(state.serverTopics);
     applyTopicModel();
     state.topics.forEach((topic) => state.openTopics.add(topic.id));
@@ -802,21 +905,40 @@ highButton.addEventListener("click", () => setMode("high"));
 openSidebar.addEventListener("click", () => document.body.classList.add("sidebar-open"));
 closeSidebar.addEventListener("click", () => document.body.classList.remove("sidebar-open"));
 editTopicsButton.addEventListener("click", () => {
-  topicEditor.value = formatTopicsForEditor(state.topics);
+  renderTopicEditor(state.topics);
   topicDialog.showModal();
 });
-saveTopicsButton.addEventListener("click", () => {
-  const topics = parseTopicsFromEditor(topicEditor.value);
-  if (!topics.length) {
+addTopicButton.addEventListener("click", () => addTopicEditorRow());
+topicEditor.addEventListener("click", (event) => {
+  const removeButton = event.target.closest("[data-remove-topic]");
+  if (!removeButton) {
     return;
   }
-  localStorage.setItem(TOPIC_STORAGE_KEY, JSON.stringify({ topics }));
-  state.customTopics = true;
-  state.topics = topics;
-  state.openTopics = new Set(topics.map((topic) => topic.id));
-  applyTopicModel();
-  topicDialog.close();
-  render();
+  removeButton.closest(".topic-edit-row")?.remove();
+  setTopicEditorStatus();
+});
+saveTopicsButton.addEventListener("click", async () => {
+  saveTopicsButton.disabled = true;
+  setTopicEditorStatus("Saving directions...");
+  try {
+    let topics = readTopicsFromEditor();
+    if (IS_LOCAL_MODE) {
+      const result = await postLocalApi("/api/topics/save", { topics });
+      topics = normalizeTopicIds(result.topics || topics);
+      state.serverTopics = topics;
+    }
+    localStorage.setItem(TOPIC_STORAGE_KEY, JSON.stringify({ topics }));
+    state.customTopics = true;
+    state.topics = topics;
+    state.openTopics = new Set(topics.map((topic) => topic.id));
+    applyTopicModel();
+    render();
+    topicDialog.close();
+  } catch (error) {
+    setTopicEditorStatus(error.message, true);
+  } finally {
+    saveTopicsButton.disabled = false;
+  }
 });
 resetTopicsButton.addEventListener("click", () => {
   localStorage.removeItem(TOPIC_STORAGE_KEY);
@@ -824,17 +946,21 @@ resetTopicsButton.addEventListener("click", () => {
   state.topics = state.serverTopics;
   state.openTopics = new Set(state.topics.map((topic) => topic.id));
   applyTopicModel();
-  topicEditor.value = formatTopicsForEditor(state.topics);
+  renderTopicEditor(state.topics);
   render();
 });
 copyTopicsButton.addEventListener("click", async () => {
-  const topics = parseTopicsFromEditor(topicEditor.value);
-  const content = JSON.stringify({ topics }, null, 2);
-  await navigator.clipboard.writeText(content);
-  copyTopicsButton.textContent = "Copied";
-  setTimeout(() => {
-    copyTopicsButton.textContent = "Copy JSON";
-  }, 1200);
+  try {
+    const topics = readTopicsFromEditor();
+    const content = JSON.stringify({ topics }, null, 2);
+    await navigator.clipboard.writeText(content);
+    copyTopicsButton.textContent = "Copied";
+    setTimeout(() => {
+      copyTopicsButton.textContent = "Copy JSON";
+    }, 1200);
+  } catch (error) {
+    setTopicEditorStatus(error.message, true);
+  }
 });
 saveTokenButton.addEventListener("click", () => saveApiToken());
 lookbackDays.addEventListener("change", () => {

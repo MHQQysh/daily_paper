@@ -55,6 +55,14 @@
         "multimodal interpretability",
         "vision-language interpretability"
       ]
+    },
+    {
+      "id": "topic-7exr6y",
+      "name": "流形",
+      "description": "Manifold",
+      "keywords": [
+        "Manifold"
+      ]
     }
   ]
 }

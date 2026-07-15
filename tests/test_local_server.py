@@ -61,6 +61,25 @@ class LocalServerValidationTests(unittest.TestCase):
     def test_api_key_is_removed_from_output(self):
         self.assertEqual(sanitize_output("failed for sk-secret", "sk-secret"), "failed for [redacted]")
 
+    def test_topic_catalog_route_returns_project_configuration(self):
+        server = ThreadingHTTPServer(("127.0.0.1", 0), LocalRequestHandler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        try:
+            expected = [{"id": "topic-example", "name": "Example", "keywords": ["example"]}]
+            with mock.patch.object(paper_service, "load_topic_catalog", return_value=expected) as load:
+                with urllib.request.urlopen(
+                    f"http://127.0.0.1:{server.server_port}/api/topics", timeout=5
+                ) as response:
+                    body = json.loads(response.read().decode("utf-8"))
+            self.assertEqual(response.status, 200)
+            self.assertEqual(body, {"topics": expected})
+            load.assert_called_once()
+        finally:
+            server.shutdown()
+            server.server_close()
+            worker.join(timeout=5)
+
     def test_delete_route_returns_service_result(self):
         server = ThreadingHTTPServer(("127.0.0.1", 0), LocalRequestHandler)
         worker = threading.Thread(target=server.serve_forever, daemon=True)
@@ -103,6 +122,31 @@ class LocalServerValidationTests(unittest.TestCase):
             self.assertEqual(raised.exception.code, 404)
             body = json.loads(raised.exception.read().decode("utf-8"))
             self.assertEqual(body["error"], "Paper was not found")
+        finally:
+            server.shutdown()
+            server.server_close()
+            worker.join(timeout=5)
+
+    def test_topic_save_route_returns_persisted_catalog(self):
+        server = ThreadingHTTPServer(("127.0.0.1", 0), LocalRequestHandler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        try:
+            topics = [{"id": "topic-example", "name": "Example", "keywords": ["example"]}]
+            payload = json.dumps({"topics": topics}).encode("utf-8")
+            request = urllib.request.Request(
+                f"http://127.0.0.1:{server.server_port}/api/topics/save",
+                data=payload,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            expected = {"topics": topics, "count": 1}
+            with mock.patch.object(paper_service, "save_topics", return_value=expected) as save:
+                with urllib.request.urlopen(request, timeout=5) as response:
+                    body = json.loads(response.read().decode("utf-8"))
+            self.assertEqual(response.status, 200)
+            self.assertEqual(body, expected)
+            save.assert_called_once_with(topics)
         finally:
             server.shutdown()
             server.server_close()

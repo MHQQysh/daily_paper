@@ -111,7 +111,14 @@
           <h3>Edit directions</h3>
           <button class="icon-button" value="cancel" aria-label="Close editor">x</button>
         </div>
-        <textarea id="topicEditor" spellcheck="false"></textarea>
+        <div class="topic-editor-toolbar">
+          <button class="tool-button" id="addTopicButton" type="button">
+            <i data-lucide="plus" aria-hidden="true"></i>
+            Add direction
+          </button>
+        </div>
+        <div class="topic-edit-list" id="topicEditor"></div>
+        <div class="topic-editor-status" id="topicEditorStatus" role="status"></div>
         <div class="dialog-actions">
           <button class="tool-button" id="resetTopicsButton" type="button">Reset</button>
           <button class="tool-button" id="copyTopicsButton" type="button">Copy JSON</button>
