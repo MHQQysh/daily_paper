@@ -15,7 +15,8 @@ class LocalServerValidationTests(unittest.TestCase):
     def test_valid_request_is_normalized(self):
         request = validate_run_payload(
             {
-                "target_date": "2026-07-13",
+                "start_date": "2026-07-10",
+                "end_date": "2026-07-13",
                 "papers_per_topic": "7",
                 "fresh": True,
                 "topics": [{"id": "token-pruning", "name": "Token pruning", "keywords": ["token pruning"]}],
@@ -23,7 +24,8 @@ class LocalServerValidationTests(unittest.TestCase):
             }
         )
 
-        self.assertEqual(request["target_date"], "2026-07-13")
+        self.assertEqual(request["start_date"], "2026-07-10")
+        self.assertEqual(request["end_date"], "2026-07-13")
         self.assertEqual(request["papers_per_topic"], 7)
         self.assertNotIn("fresh", request)
 
@@ -31,11 +33,18 @@ class LocalServerValidationTests(unittest.TestCase):
         with mock.patch("scripts.local_server.previous_utc_date", return_value="2026-07-14"):
             request = validate_run_payload({})
 
-        self.assertEqual(request["target_date"], "2026-07-14")
+        self.assertEqual(request["start_date"], "2026-07-14")
+        self.assertEqual(request["end_date"], "2026-07-14")
 
     def test_invalid_date_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, "target_date"):
-            validate_run_payload({"target_date": "2026-99-99"})
+        with self.assertRaisesRegex(ValueError, "start_date"):
+            validate_run_payload({"start_date": "2026-99-99"})
+
+    def test_invalid_date_range_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "start_date"):
+            validate_run_payload({"start_date": "2026-07-13", "end_date": "2026-07-10"})
+        with self.assertRaisesRegex(ValueError, "31 days"):
+            validate_run_payload({"start_date": "2026-06-01", "end_date": "2026-07-02"})
 
     def test_out_of_range_values_are_rejected(self):
         with self.assertRaisesRegex(ValueError, "papers_per_topic"):
@@ -44,7 +53,8 @@ class LocalServerValidationTests(unittest.TestCase):
     def test_command_contains_selected_options(self):
         request = validate_run_payload(
             {
-                "target_date": "2026-07-13",
+                "start_date": "2026-07-10",
+                "end_date": "2026-07-13",
                 "papers_per_topic": 10,
                 "fresh": True,
                 "topics": [{"id": "visual-token-pruning", "name": "Visual token pruning", "keywords": ["visual token"]}],
@@ -53,7 +63,9 @@ class LocalServerValidationTests(unittest.TestCase):
 
         command = build_fetch_command(request)
 
-        self.assertIn("--date", command)
+        self.assertIn("--start-date", command)
+        self.assertIn("2026-07-10", command)
+        self.assertIn("--end-date", command)
         self.assertIn("2026-07-13", command)
         self.assertIn("--papers-per-topic", command)
         self.assertIn("10", command)

@@ -46,13 +46,20 @@ def validate_run_payload(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("request body must be a JSON object")
 
-    target_date = str(payload.get("target_date", "") or "").strip()
-    if not target_date:
-        target_date = previous_utc_date()
+    start_date = str(payload.get("start_date", "") or "").strip() or previous_utc_date()
+    end_date = str(payload.get("end_date", "") or "").strip() or previous_utc_date()
     try:
-        dt.date.fromisoformat(target_date)
+        start = dt.date.fromisoformat(start_date)
     except ValueError as exc:
-        raise ValueError("target_date must use YYYY-MM-DD") from exc
+        raise ValueError("start_date must use YYYY-MM-DD") from exc
+    try:
+        end = dt.date.fromisoformat(end_date)
+    except ValueError as exc:
+        raise ValueError("end_date must use YYYY-MM-DD") from exc
+    if start > end:
+        raise ValueError("start_date must not be later than end_date")
+    if (end - start).days + 1 > 31:
+        raise ValueError("date range cannot exceed 31 days")
 
     topics = payload.get("topics", [])
     if not isinstance(topics, list):
@@ -65,7 +72,8 @@ def validate_run_payload(payload: Any) -> dict[str, Any]:
         raise ValueError("deepseek_api_key is too long")
 
     return {
-        "target_date": target_date,
+        "start_date": start_date,
+        "end_date": end_date,
         "papers_per_topic": _bounded_int(payload, "papers_per_topic", 5, 1, 50),
         "topics": topics,
         "deepseek_api_key": api_key,
@@ -76,8 +84,10 @@ def build_fetch_command(request: dict[str, Any]) -> list[str]:
     command = [
         sys.executable,
         str(FETCH_SCRIPT),
-        "--date",
-        request["target_date"],
+        "--start-date",
+        request["start_date"],
+        "--end-date",
+        request["end_date"],
         "--papers-per-topic",
         str(request["papers_per_topic"]),
     ]

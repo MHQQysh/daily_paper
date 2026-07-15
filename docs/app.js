@@ -36,7 +36,8 @@ const addTopicButton = document.getElementById("addTopicButton");
 const saveTopicsButton = document.getElementById("saveTopicsButton");
 const resetTopicsButton = document.getElementById("resetTopicsButton");
 const copyTopicsButton = document.getElementById("copyTopicsButton");
-const targetDate = document.getElementById("targetDate");
+const startDate = document.getElementById("startDate");
+const endDate = document.getElementById("endDate");
 const papersPerTopic = document.getElementById("papersPerTopic");
 const apiToken = document.getElementById("apiToken");
 const tokenLabel = document.getElementById("tokenLabel");
@@ -503,9 +504,9 @@ async function loadData() {
     const firstPaper = filteredPapers()[0];
     if (firstPaper) {
       state.selectedPaperId = firstPaper.id;
-      if (!targetDate.value) {
-        targetDate.value = firstPaper.published || "";
-      }
+      const defaultDate = firstPaper.published || "";
+      startDate.value = startDate.value || defaultDate;
+      endDate.value = endDate.value || defaultDate;
     }
     statusText.textContent = data.last_updated ? `Updated ${new Date(data.last_updated).toLocaleString()}` : "Not updated yet";
     render();
@@ -537,9 +538,13 @@ function formatRunStatus(status) {
     : "";
   return `
     <strong>Last run:</strong> ${escapeHtml(time)}${workflow}<br>
-    <strong>Date:</strong> ${escapeHtml(status.target_date || "-")},
+    <strong>Range:</strong> ${escapeHtml(status.start_date || status.target_date || "-")}
+    to ${escapeHtml(status.end_date || status.target_date || "-")},
+    <strong>days:</strong> ${Number(status.daily_retrievals || 1)},
     <strong>requested:</strong> ${status.papers_per_topic ? Number(status.papers_per_topic) : "-"} per direction,
     <strong>retrieved:</strong> ${Number(status.raw_found || 0)},
+    <strong>deduplicated:</strong> ${Number(status.deduplicated_found ?? status.raw_found ?? 0)},
+    <strong>shortlisted:</strong> ${Number(status.shortlisted ?? status.candidates ?? 0)},
     <strong>selected:</strong> ${Number(status.selected_union ?? status.kept ?? 0)},
     <strong>added:</strong> ${Number(status.added || 0)},
     <strong>updated:</strong> ${Number(status.updated || 0)},
@@ -617,7 +622,8 @@ async function triggerWorkflow() {
   const options = selectedRunOptions();
   const previousRunAt = state.lastKnownRunAt;
   const inputs = {
-    target_date: options.targetDate,
+    start_date: options.startDate,
+    end_date: options.endDate,
     papers_per_topic: String(options.papersPerTopic),
     topics_json: JSON.stringify({ topics: state.topics }),
   };
@@ -643,21 +649,32 @@ async function triggerWorkflow() {
 }
 
 function selectedRunOptions() {
-  const selectedDate = targetDate.value;
+  const selectedStart = startDate.value;
+  const selectedEnd = endDate.value;
   const count = Number(papersPerTopic.value);
-  if (!selectedDate) {
-    throw new Error("Choose a date first.");
+  if (!selectedStart || !selectedEnd) {
+    throw new Error("Choose both a start date and an end date.");
+  }
+  const startValue = new Date(`${selectedStart}T00:00:00Z`);
+  const endValue = new Date(`${selectedEnd}T00:00:00Z`);
+  if (startValue > endValue) {
+    throw new Error("Start date must not be later than end date.");
+  }
+  const rangeDays = Math.floor((endValue - startValue) / 86400000) + 1;
+  if (rangeDays > 31) {
+    throw new Error("Date range cannot exceed 31 days.");
   }
   if (!Number.isInteger(count) || count < 1 || count > 50) {
     throw new Error("Papers per direction must be an integer from 1 to 50.");
   }
-  return { targetDate: selectedDate, papersPerTopic: count };
+  return { startDate: selectedStart, endDate: selectedEnd, papersPerTopic: count };
 }
 
 function localRequestPayload() {
   const options = selectedRunOptions();
   return {
-    target_date: options.targetDate,
+    start_date: options.startDate,
+    end_date: options.endDate,
     papers_per_topic: options.papersPerTopic,
     topics: state.topics,
     deepseek_api_key: getApiToken(),
@@ -991,9 +1008,15 @@ confirmPaperAdd.addEventListener("click", () => {
   });
 });
 
-configureRunMode();
-loadData();
-loadRunStatus();
+async function initializeApp() {
+  configureRunMode();
+  await loadData();
+  await loadRunStatus();
+}
+
+initializeApp().catch((error) => {
+  runStatus.textContent = error.message;
+});
 if (IS_LOCAL_MODE) {
   loadLocalJobStatus().then((status) => {
     if (status.state === "running") {

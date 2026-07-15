@@ -431,6 +431,31 @@ def resolve_target_date(value: str, today: dt.date | None = None) -> str:
     return (current - dt.timedelta(days=1)).isoformat()
 
 
+def resolve_date_range(
+    start_value: str, end_value: str, today: dt.date | None = None
+) -> tuple[str, str]:
+    previous = (today or dt.datetime.now(dt.timezone.utc).date()) - dt.timedelta(days=1)
+    try:
+        start_date = dt.date.fromisoformat(start_value) if start_value else previous
+        end_date = dt.date.fromisoformat(end_value) if end_value else previous
+    except ValueError as exc:
+        raise ValueError("dates must use YYYY-MM-DD") from exc
+    if start_date > end_date:
+        raise ValueError("start date must not be later than end date")
+    if (end_date - start_date).days + 1 > 31:
+        raise ValueError("date range cannot exceed 31 days")
+    return start_date.isoformat(), end_date.isoformat()
+
+
+def iter_date_range(start_date: str, end_date: str) -> list[str]:
+    start = dt.date.fromisoformat(start_date)
+    end = dt.date.fromisoformat(end_date)
+    return [
+        (start + dt.timedelta(days=offset)).isoformat()
+        for offset in range((end - start).days + 1)
+    ]
+
+
 def fetch_daily_category_papers(target_date: str, max_scan: int = 1000) -> list[dict[str, Any]]:
     selected_date = dt.date.fromisoformat(resolve_target_date(target_date))
     today = dt.datetime.now(dt.timezone.utc).date()
@@ -455,6 +480,34 @@ def fetch_daily_category_papers(target_date: str, max_scan: int = 1000) -> list[
     )
 
 
+def fetch_category_range(
+    start_date: str, end_date: str, max_per_day: int = 1000
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    papers: list[dict[str, Any]] = []
+    identity_index: dict[str, int] = {}
+    raw_found = 0
+    dates = iter_date_range(start_date, end_date)
+    for day_number, target_date in enumerate(dates, start=1):
+        print(f"Retrieving range day {day_number}/{len(dates)}: {target_date}.", flush=True)
+        daily_papers = fetch_daily_category_papers(target_date, max_scan=max_per_day)
+        raw_found += len(daily_papers)
+        for paper in daily_papers:
+            keys = paper_identity_keys(paper) or [f"id:{paper.get('id', '')}"]
+            existing_index = next((identity_index[key] for key in keys if key in identity_index), None)
+            if existing_index is None:
+                existing_index = len(papers)
+                papers.append(dict(paper))
+            else:
+                papers[existing_index] = {**papers[existing_index], **paper}
+            for key in keys:
+                identity_index[key] = existing_index
+    papers.sort(
+        key=lambda paper: (paper.get("published", ""), paper.get("title", "")),
+        reverse=True,
+    )
+    return papers, {"daily_retrievals": len(dates), "raw_found": raw_found}
+
+
 def fallback_topic_scores(paper: dict[str, Any]) -> dict[str, int]:
     text = f"{paper.get('title', '')} {paper.get('abstract', '')}".lower()
     scores: dict[str, int] = {}
@@ -467,8 +520,69 @@ def fallback_topic_scores(paper: dict[str, Any]) -> dict[str, int]:
             keyword_text = normalize_text(keyword).lower()
             if keyword_text and keyword_text in text:
                 score += 30 if " " in keyword_text else 12
+        description_terms = {
+            term
+            for term in re.findall(r"[a-z0-9][a-z0-9-]{3,}", normalize_text(topic.get("description", "")).lower())
+            if term not in {"about", "across", "closely", "methods", "models", "related", "using"}
+        }
+        score += min(20, sum(2 for term in description_terms if term in text))
         scores[topic_id] = min(100, score)
     return scores
+
+
+def shortlist_candidates(
+    papers: list[dict[str, Any]], papers_per_topic: int, per_topic_limit: int | None = None
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    limit = per_topic_limit or min(200, max(50, papers_per_topic * 8))
+    selected: list[dict[str, Any]] = []
+    identity_index: dict[str, int] = {}
+    counts: dict[str, int] = {}
+    scores = {paper.get("id", ""): fallback_topic_scores(paper) for paper in papers}
+    dates = sorted({paper.get("published", "") for paper in papers}, reverse=True)
+    quota = max(1, limit // max(1, len(dates)))
+
+    for topic_id in TOPICS:
+        ranked = sorted(
+            papers,
+            key=lambda paper: (
+                scores.get(paper.get("id", ""), {}).get(topic_id, 0),
+                paper.get("published", ""),
+                paper.get("title", ""),
+            ),
+            reverse=True,
+        )
+        chosen: list[dict[str, Any]] = []
+        chosen_ids: set[str] = set()
+        for published in dates:
+            daily = [paper for paper in ranked if paper.get("published", "") == published]
+            for paper in daily[:quota]:
+                if len(chosen) >= limit:
+                    break
+                chosen.append(paper)
+                chosen_ids.add(paper.get("id", ""))
+        for paper in ranked:
+            if len(chosen) >= limit:
+                break
+            if paper.get("id", "") in chosen_ids:
+                continue
+            chosen.append(paper)
+            chosen_ids.add(paper.get("id", ""))
+        counts[topic_id] = len(chosen)
+
+        for paper in chosen:
+            keys = paper_identity_keys(paper) or [f"id:{paper.get('id', '')}"]
+            selected_index = next((identity_index[key] for key in keys if key in identity_index), None)
+            if selected_index is None:
+                selected_index = len(selected)
+                selected.append(dict(paper))
+            for key in keys:
+                identity_index[key] = selected_index
+
+    selected.sort(
+        key=lambda paper: (paper.get("published", ""), paper.get("title", "")),
+        reverse=True,
+    )
+    return selected, counts
 
 
 def topic_ranking_prompt(papers: list[dict[str, Any]]) -> list[dict[str, str]]:
@@ -967,7 +1081,7 @@ def write_status(status: dict[str, Any]) -> None:
 
 def main() -> int:
     global TOPICS
-    parser = argparse.ArgumentParser(description="Fetch and rank one day of arXiv papers.")
+    parser = argparse.ArgumentParser(description="Fetch and rank an inclusive date range of arXiv papers.")
     parser.add_argument(
         "--papers-per-topic",
         type=int,
@@ -977,23 +1091,36 @@ def main() -> int:
     parser.add_argument("--model", default=os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"))
     parser.add_argument("--fresh", action="store_true", help="Ignore the existing store and rebuild from this run.")
     parser.add_argument("--topics-json", default=os.environ.get("PAPER_TOPICS_JSON", ""))
-    parser.add_argument("--date", default=os.environ.get("PAPER_TARGET_DATE", ""), help="Only process one date, YYYY-MM-DD.")
+    parser.add_argument("--start-date", default=os.environ.get("PAPER_START_DATE", ""), help="Inclusive start date, YYYY-MM-DD.")
+    parser.add_argument("--end-date", default=os.environ.get("PAPER_END_DATE", ""), help="Inclusive end date, YYYY-MM-DD.")
     args = parser.parse_args()
     if not 1 <= args.papers_per_topic <= 50:
         parser.error("--papers-per-topic must be between 1 and 50")
     TOPICS = load_topics(args.topics_json)
 
     existing_store = {"papers": []} if args.fresh else read_store(DATA_PATH)
-    target_date = resolve_target_date(args.date)
+    start_date, end_date = resolve_date_range(args.start_date, args.end_date)
     print(
-        f"Starting fetch: target_date={target_date}, papers_per_topic={args.papers_per_topic}, "
+        f"Starting fetch: start_date={start_date}, end_date={end_date}, "
+        f"papers_per_topic={args.papers_per_topic}, "
         f"fresh={args.fresh}, topics={len(TOPICS)}.",
         flush=True,
     )
-    raw = fetch_daily_category_papers(target_date)
-    print(f"Fetched broad arXiv candidates: {len(raw)}.", flush=True)
-    topic_scores = rank_papers_by_topic(raw, model=args.model)
-    selected, selected_counts = select_per_topic(raw, topic_scores, args.papers_per_topic)
+    raw, retrieval_stats = fetch_category_range(start_date, end_date)
+    print(
+        f"Fetched {retrieval_stats['raw_found']} broad arXiv records; "
+        f"deduplicated={len(raw)}.",
+        flush=True,
+    )
+    shortlisted, shortlist_counts = shortlist_candidates(raw, args.papers_per_topic)
+    print(
+        "Local shortlist per direction: "
+        + ", ".join(f"{topic_id}={count}" for topic_id, count in shortlist_counts.items())
+        + f"; unique union={len(shortlisted)}.",
+        flush=True,
+    )
+    topic_scores = rank_papers_by_topic(shortlisted, model=args.model)
+    selected, selected_counts = select_per_topic(shortlisted, topic_scores, args.papers_per_topic)
     print(
         "Selected per direction: "
         + ", ".join(f"{topic_id}={count}" for topic_id, count in selected_counts.items())
@@ -1007,10 +1134,15 @@ def main() -> int:
     write_outputs(merged)
     status = {
         "last_run_at": dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat(),
-        "target_date": target_date,
+        "start_date": start_date,
+        "end_date": end_date,
         "papers_per_topic": args.papers_per_topic,
-        "raw_found": len(raw),
-        "candidates": len(raw),
+        "daily_retrievals": retrieval_stats["daily_retrievals"],
+        "raw_found": retrieval_stats["raw_found"],
+        "deduplicated_found": len(raw),
+        "shortlisted": len(shortlisted),
+        "shortlisted_per_topic": shortlist_counts,
+        "candidates": len(shortlisted),
         "selected_per_topic": selected_counts,
         "selected_union": len(selected),
         "kept": len(kept),
@@ -1030,9 +1162,11 @@ def main() -> int:
         )
     write_status(status)
     print(
-        "Fetched {raw} arXiv papers, selected {selected}, kept {kept}, added {added}, "
+        "Fetched {raw} arXiv records, shortlisted {shortlisted}, selected {selected}, "
+        "kept {kept}, added {added}, "
         "updated {updated}, total stored {total}.".format(
-            raw=len(raw),
+            raw=retrieval_stats["raw_found"],
+            shortlisted=len(shortlisted),
             selected=len(selected),
             kept=len(kept),
             added=merge_stats["added"],

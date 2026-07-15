@@ -1,5 +1,6 @@
 param(
-    [string]$Date = "",
+    [string]$StartDate = "",
+    [string]$EndDate = "",
     [int]$PapersPerTopic = 5,
     [switch]$NoDeepSeek
 )
@@ -9,8 +10,11 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 Set-Location $Root
 
-if (-not $Date) {
-    $Date = (Get-Date).AddDays(-1).ToString("yyyy-MM-dd")
+if (-not $StartDate) {
+    $StartDate = (Get-Date).AddDays(-1).ToString("yyyy-MM-dd")
+}
+if (-not $EndDate) {
+    $EndDate = (Get-Date).AddDays(-1).ToString("yyyy-MM-dd")
 }
 
 if (-not $NoDeepSeek -and -not $env:DEEPSEEK_API_KEY) {
@@ -28,12 +32,13 @@ if (-not $NoDeepSeek -and -not $env:DEEPSEEK_API_KEY) {
 
 $argsList = @(
     "scripts\fetch_papers.py",
-    "--date", $Date,
+    "--start-date", $StartDate,
+    "--end-date", $EndDate,
     "--papers-per-topic", "$PapersPerTopic"
 )
 
-Write-Host "Running local one-day update..."
-Write-Host "Date=$Date PapersPerTopic=$PapersPerTopic Mode=append-only"
+Write-Host "Running local date-range update..."
+Write-Host "StartDate=$StartDate EndDate=$EndDate PapersPerTopic=$PapersPerTopic Mode=append-only"
 python @argsList
 
 Write-Host ""

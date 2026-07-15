@@ -28,7 +28,7 @@
 **Interfaces:**
 - Produces: `resolve_date_range(start_value: str, end_value: str, today: date | None = None) -> tuple[str, str]`
 - Produces: `iter_date_range(start_date: str, end_date: str) -> list[str]`
-- Produces: `fetch_category_range(start_date: str, end_date: str, max_per_day: int = 1000) -> tuple[list[dict], int]`
+- Produces: `fetch_category_range(start_date: str, end_date: str, max_per_day: int = 1000) -> tuple[list[dict], dict[str, int]]`
 
 - [ ] **Step 1: Write failing tests for defaults, inclusive ranges, reversed dates, and 31-day bounds**
 

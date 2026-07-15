@@ -36,10 +36,62 @@ class ArxivFetchTests(unittest.TestCase):
         self.assertIn("(cat:cs.AI OR cat:cs.CV OR cat:cs.LG OR cat:cs.CL)", call["search_expression"])
         self.assertIn("submittedDate:[202607100000 TO 202607102359]", call["search_expression"])
 
-    def test_empty_target_date_defaults_to_previous_utc_day(self):
+    def test_date_range_defaults_to_previous_utc_day(self):
         today = dt.date(2026, 7, 15)
-        self.assertEqual(fetch_papers.resolve_target_date("", today=today), "2026-07-14")
-        self.assertEqual(fetch_papers.resolve_target_date("2026-07-10", today=today), "2026-07-10")
+        self.assertEqual(fetch_papers.resolve_date_range("", "", today=today), ("2026-07-14", "2026-07-14"))
+        self.assertEqual(
+            fetch_papers.resolve_date_range("2026-07-10", "2026-07-12", today=today),
+            ("2026-07-10", "2026-07-12"),
+        )
+
+    def test_date_range_is_inclusive_and_rejects_invalid_bounds(self):
+        self.assertEqual(
+            fetch_papers.iter_date_range("2026-07-10", "2026-07-12"),
+            ["2026-07-10", "2026-07-11", "2026-07-12"],
+        )
+        with self.assertRaisesRegex(ValueError, "start date"):
+            fetch_papers.resolve_date_range("2026-07-12", "2026-07-10")
+        with self.assertRaisesRegex(ValueError, "31 days"):
+            fetch_papers.resolve_date_range("2026-06-01", "2026-07-02")
+
+    def test_category_range_fetches_each_day_and_deduplicates(self):
+        daily = {
+            "2026-07-10": [{"id": "a", "title": "Shared Paper", "published": "2026-07-10"}],
+            "2026-07-11": [
+                {"id": "a-v2", "title": "Shared Paper", "published": "2026-07-11"},
+                {"id": "b", "title": "Unique Paper", "published": "2026-07-11"},
+            ],
+        }
+        with mock.patch.object(
+            fetch_papers, "fetch_daily_category_papers", side_effect=lambda day, max_scan=1000: daily[day]
+        ) as fetch:
+            papers, stats = fetch_papers.fetch_category_range("2026-07-10", "2026-07-11")
+
+        self.assertEqual(fetch.call_count, 2)
+        self.assertEqual(stats, {"daily_retrievals": 2, "raw_found": 3})
+        self.assertEqual({paper["title"] for paper in papers}, {"Shared Paper", "Unique Paper"})
+
+    def test_shortlist_balances_dates_and_deduplicates_topics(self):
+        topics = {
+            "vision": {"name": "Vision", "description": "visual tokens", "keywords": ["visual token"]},
+            "grpo": {"name": "GRPO", "description": "policy optimization", "keywords": ["grpo"]},
+        }
+        papers = [
+            {
+                "id": f"paper-{day}",
+                "title": f"Visual token GRPO {day}",
+                "abstract": "visual token grpo",
+                "published": f"2026-07-{day}",
+            }
+            for day in ("10", "11", "12")
+        ]
+        with mock.patch.object(fetch_papers, "TOPICS", topics):
+            shortlisted, counts = fetch_papers.shortlist_candidates(
+                papers, papers_per_topic=1, per_topic_limit=3
+            )
+
+        self.assertEqual({paper["published"] for paper in shortlisted}, {"2026-07-10", "2026-07-11", "2026-07-12"})
+        self.assertEqual(counts, {"vision": 3, "grpo": 3})
 
     def test_deepseek_ranking_normalizes_topic_scores(self):
         topics = {

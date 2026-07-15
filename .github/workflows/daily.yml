@@ -5,8 +5,12 @@ on:
     - cron: "10 0 * * *"
   workflow_dispatch:
     inputs:
-      target_date:
-        description: "Single UTC date to process, YYYY-MM-DD; blank means previous UTC day"
+      start_date:
+        description: "Inclusive UTC start date, YYYY-MM-DD; blank means previous UTC day"
+        required: false
+        default: ""
+      end_date:
+        description: "Inclusive UTC end date, YYYY-MM-DD; blank means previous UTC day"
         required: false
         default: ""
       papers_per_topic:
@@ -43,12 +47,14 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_MODEL: deepseek-chat
-          PAPER_TARGET_DATE: ${{ github.event.inputs.target_date || '' }}
+          PAPER_START_DATE: ${{ github.event.inputs.start_date || '' }}
+          PAPER_END_DATE: ${{ github.event.inputs.end_date || '' }}
           PAPER_PAPERS_PER_TOPIC: ${{ github.event.inputs.papers_per_topic || '5' }}
           PAPER_TOPICS_JSON: ${{ github.event.inputs.topics_json || '' }}
         run: |
           python scripts/fetch_papers.py \
-            --date "$PAPER_TARGET_DATE" \
+            --start-date "$PAPER_START_DATE" \
+            --end-date "$PAPER_END_DATE" \
             --papers-per-topic "$PAPER_PAPERS_PER_TOPIC"
 
       - name: Commit updates
